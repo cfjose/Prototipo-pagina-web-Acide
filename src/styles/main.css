@@ -1,0 +1,140 @@
+@import "tailwindcss";
+
+/*
+  Design tokens (Tailwind v4, CSS-first config).
+  Placeholder — se reemplazan por los valores reales al extraer el
+  archivo de Figma (colores, tipografía, radios, sombras, etc.).
+  Cada --color-*, --font-*, --text-*, --radius-*, --shadow-* de acá
+  genera automáticamente sus utilities (bg-accent, text-ink, rounded-lg...).
+*/
+@theme {
+  --color-canvas: #ffffff;
+  --color-surface: #f5f5f7;
+  --color-ink: #111114;
+  --color-muted: #5c5c66;
+  --color-primary: #1a1a2e;
+  --color-accent: #4f5dff;
+  --color-line: #e2e2e6;
+
+  --font-heading: "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+
+  --text-display: clamp(2.5rem, 4vw + 1rem, 4.5rem);
+  --text-h2: clamp(2rem, 2.5vw + 1rem, 3rem);
+  --text-h3: clamp(1.5rem, 1.5vw + 1rem, 2rem);
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 24px;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+
+  --ease-default: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  body {
+    font-family: var(--font-body);
+    color: var(--color-ink);
+    background: var(--color-canvas);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  h1 {
+    font-size: var(--text-display);
+  }
+  h2 {
+    font-size: var(--text-h2);
+  }
+  h3 {
+    font-size: var(--text-h3);
+  }
+}
+
+@layer components {
+  .container {
+    @apply mx-auto max-w-[1280px] px-5 sm:px-8 lg:px-12;
+  }
+
+  .btn {
+    @apply inline-flex items-center gap-2 rounded-[var(--radius-sm)] px-5 py-3 text-sm font-semibold transition-transform duration-300 ease-[var(--ease-default)];
+  }
+  .btn--primary {
+    @apply bg-accent text-white;
+  }
+  .btn--primary:hover {
+    @apply -translate-y-0.5 shadow-md;
+  }
+  .btn--ghost {
+    @apply border border-line text-ink;
+  }
+  .btn--ghost:hover {
+    @apply border-accent text-accent;
+  }
+
+  .card {
+    @apply rounded-[var(--radius-md)] bg-surface p-5 transition-transform duration-300 ease-[var(--ease-default)];
+  }
+  .card:hover {
+    @apply -translate-y-1;
+  }
+
+  .nav-link {
+    @apply relative;
+  }
+  .nav-link::after {
+    content: "";
+    @apply absolute -bottom-1 left-0 h-px w-full origin-right scale-x-0 bg-current transition-transform duration-300 ease-[var(--ease-default)];
+  }
+  .nav-link:hover::after {
+    @apply origin-left scale-x-100;
+  }
+}
+
+/*
+  Estados iniciales para elementos animados por GSAP.
+  Van fuera de @layer para no competir en especificidad con utilities,
+  y en CSS plano (no inline) para evitar layout shift antes de que
+  el JS tome control.
+*/
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+}
+[data-reveal-fade] {
+  opacity: 0;
+}
+[data-reveal-scale] {
+  opacity: 0;
+  transform: scale(0.94);
+}
+
+/* Si JS no carga (falla de red, bloqueado, etc.), no dejar el contenido invisible */
+.no-js [data-reveal],
+.no-js [data-reveal-fade],
+.no-js [data-reveal-scale] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Respeta la preferencia de accesibilidad del sistema operativo */
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal],
+  [data-reveal-fade],
+  [data-reveal-scale] {
+    opacity: 1;
+    transform: none;
+    transition: none !important;
+    animation: none !important;
+  }
+}

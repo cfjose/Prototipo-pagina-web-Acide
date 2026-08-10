@@ -1,0 +1,58 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const servicios = [
+  { title: "Servicio uno", copy: "Contenido de ejemplo — se reemplaza con el copy real." },
+  { title: "Servicio dos", copy: "Contenido de ejemplo — se reemplaza con el copy real." },
+  { title: "Servicio tres", copy: "Contenido de ejemplo — se reemplaza con el copy real." },
+];
+---
+
+<BaseLayout>
+  <header
+    data-nav
+    data-scrolled="false"
+    class="fixed inset-x-0 top-0 z-50 border-b border-transparent bg-canvas/80 py-4 backdrop-blur-md transition-colors duration-300 data-[scrolled=true]:border-line"
+  >
+    <div class="container flex items-center justify-between">
+      <span class="text-[1.1rem] font-bold">Acide</span>
+      <nav class="hidden gap-8 sm:flex">
+        <a class="nav-link" href="#servicios">Servicios</a>
+        <a class="nav-link" href="#nosotros">Nosotros</a>
+        <a class="nav-link" href="#contacto">Contacto</a>
+      </nav>
+      <a href="#contacto" class="btn btn--primary">Hablemos</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="container pb-12 pt-36">
+      <p class="text-sm font-semibold uppercase tracking-[0.12em] text-accent" data-reveal-fade>
+        Prototipo interactivo
+      </p>
+      <h1 data-reveal>Esto va a reemplazar el prototipo estático de Figma.</h1>
+      <p class="mt-4 max-w-[42ch] text-muted" data-reveal>
+        Base lista para recibir el diseño real: paleta, tipografía, spacing y
+        assets se completan al conectar el archivo de Figma.
+      </p>
+    </section>
+
+    <section id="servicios" class="container py-24">
+      <h2 data-reveal>Ejemplo de grid con scroll reveal</h2>
+      <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          servicios.map((s) => (
+            <div class="card" data-reveal>
+              <h3 class="mb-3">{s.title}</h3>
+              <p class="text-muted">{s.copy}</p>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+
+  <footer class="container border-t border-line py-16">
+    <p class="text-muted">Acide — prototipo, no representa el sitio final.</p>
+  </footer>
+</BaseLayout>
