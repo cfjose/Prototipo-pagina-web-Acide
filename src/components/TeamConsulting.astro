@@ -1,0 +1,119 @@
+---
+import { Image } from "astro:assets";
+import strategyImage from "../assets/img/team-consulting/strategy-meeting.png";
+import advisoryImage from "../assets/img/hero/handshake.png";
+import consultingImage from "../assets/img/hero/desk-writing.png";
+
+/*
+  Las descripciones de "Asesoría" y "Consultoría" son copy modelo — en
+  Figma solo está escrita la de "Capacitaciones" (el item expandido por
+  default). Reemplazar por el copy real del cliente cuando esté.
+
+  Las imágenes de Asesoría / Consultoría reutilizan fotos del hero (mismo
+  criterio que en la sección anterior, no hay herramienta de generación
+  de imágenes disponible) — encajan temáticamente pero ya se vieron antes
+  en la página.
+*/
+const items = [
+  {
+    title: "Capacitaciones",
+    description:
+      "Acompañamos a equipos que quieren dejar de improvisar y empezar a tomar decisiones con datos, método y visión de largo plazo.",
+    image: strategyImage,
+    alt: "Consultora presentando una estrategia de crecimiento a un equipo directivo",
+  },
+  {
+    title: "Asesoría",
+    description:
+      "Te acompañamos en las decisiones difíciles — desde elegir la arquitectura correcta hasta priorizar qué construir primero, con la experiencia de haberlo hecho antes en decenas de proyectos.",
+    image: advisoryImage,
+    alt: "Dos personas de negocios dándose la mano",
+  },
+  {
+    title: "Consultoría",
+    description:
+      "Diagnosticamos el estado real de tu operación digital y armamos un plan concreto, con prioridades claras y pasos accionables — no un informe que junta polvo.",
+    image: consultingImage,
+    alt: "Persona escribiendo un boceto de estrategia en un escritorio",
+  },
+];
+---
+
+<section class="wrapper py-16 lg:py-28">
+  <div class="flex flex-col gap-5 lg:gap-6">
+    <h2
+      data-text-reveal
+      data-reveal
+      class="max-w-[600px] font-display text-[32px] font-bold leading-[1.1] tracking-[-1px] sm:text-[44px] sm:tracking-[-1.4px] lg:max-w-[732px] lg:text-[66px] lg:tracking-[-1.98px]"
+    >
+      <span class="text-secondary">Hacemos consultoría que </span><span class="text-teal">transforma equipos</span>
+    </h2>
+    <div class="lg:flex lg:justify-end">
+      <p
+        data-text-reveal
+        data-reveal
+        class="font-body text-[16px] leading-[1.5] tracking-[-0.3px] text-ink sm:text-[18px] sm:tracking-[-0.5px] lg:max-w-[600px] lg:text-[26px] lg:tracking-[-0.5px]"
+      >
+        No siempre la respuesta es más tecnología. A veces lo que tu empresa necesita es claridad: saber dónde estás,
+        hacia dónde ir y qué camino tomar. Ahí es donde entramos nosotros.
+      </p>
+    </div>
+  </div>
+
+  <div class="mt-12 flex flex-col gap-12 lg:mt-16 lg:flex-row lg:items-center lg:gap-[92px]">
+    <div
+      class="relative aspect-[933/685] w-full overflow-hidden rounded-tl-[48px] rounded-br-[48px] sm:rounded-tl-[70px] sm:rounded-br-[70px] lg:aspect-auto lg:h-[685px] lg:flex-1 lg:rounded-tl-[100px] lg:rounded-br-[100px]"
+      data-reveal-scale
+    >
+      {
+        items.map((item, i) => (
+          <div
+            class="absolute inset-0"
+            data-service-image-item
+            style={i === 0 ? "opacity: 1; z-index: 2;" : "opacity: 0; z-index: 1;"}
+          >
+            <Image src={item.image} alt={item.alt} width={933} height={685} class="h-full w-full object-cover" />
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="flex flex-col lg:w-[465px] lg:shrink-0">
+      <div class="flex flex-col" data-accordion="teal" data-reveal>
+        {
+          items.map((item, i) => (
+            <div class="border-t border-black/10 first:border-t-0" data-accordion-item data-active={i === 0 ? "true" : "false"}>
+              <button type="button" class="flex w-full items-center py-3 text-left" data-accordion-trigger>
+                <span
+                  data-accordion-trigger-text
+                  class:list={[
+                    "font-body text-[24px] tracking-[-0.5px] transition-colors duration-300 sm:text-[30px] sm:tracking-[-0.6px]",
+                    i === 0 ? "font-bold text-teal" : "font-medium text-ink",
+                  ]}
+                >
+                  {item.title}
+                </span>
+              </button>
+              <div
+                class:list={[
+                  "grid overflow-hidden transition-[grid-template-rows] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                  i === 0 ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+                ]}
+                data-accordion-panel
+              >
+                <div class="min-h-0">
+                  <p
+                    data-accordion-description
+                    class="pb-4 font-body text-[16px] leading-[1.5] tracking-[-0.3px] text-ink sm:text-[18px] sm:tracking-[-0.5px]"
+                  >
+                    {item.description}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>

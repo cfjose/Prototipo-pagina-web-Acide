@@ -1,0 +1,117 @@
+---
+import { Image } from "astro:assets";
+import client1 from "../assets/img/testimonials/client-1.png";
+import quotesIcon from "../assets/img/testimonials/quotes-vector.svg";
+import handshake from "../assets/img/hero/handshake.png";
+import strategyMeeting from "../assets/img/team-consulting/strategy-meeting.png";
+import teamImage from "../assets/img/digital-today/team.png";
+
+/*
+  Solo el testimonio de Alejandra Martínez está escrito en Figma (el resto
+  de la sección se muestra con los 4 puntos de paginación, pero un solo
+  caso redactado). Los otros 3 son copy modelo — mismo tono, largo similar
+  para que el crossfade no salte de tamaño — usando nombres de clientes
+  reales que ya aparecen en la grilla de logos más abajo (Aurora, Cloudox,
+  Nexus). Reemplazar por testimonios reales cuando estén.
+
+  Las fotos 2-4 reutilizan imágenes de otras secciones (mismo criterio que
+  antes, sin herramienta de generación de imágenes disponible).
+*/
+const testimonials = [
+  {
+    quote:
+      "Llegamos a Acide con una idea a medio armar y nos devolvieron un producto que superó lo que imaginábamos. Desde el día uno entendieron lo que necesitábamos y nos acompañaron sin soltar el timón. Profesionales de verdad.",
+    name: "Alejandra Martínez",
+    role: "Gerente en TechGroup",
+    image: client1,
+    alt: "Alejandra Martínez trabajando en una tablet en una oficina luminosa",
+  },
+  {
+    quote:
+      "Necesitábamos una app que no se sintiera como una app corporativa más. Acide entendió el producto casi mejor que nosotros y lo tradujo en algo que nuestros usuarios realmente disfrutan usar.",
+    name: "Rodrigo Fernández",
+    role: "CEO en Aurora",
+    image: handshake,
+    alt: "Rodrigo Fernández cerrando un acuerdo de negocios",
+  },
+  {
+    quote:
+      "El equipo de Acide se metió de lleno en nuestra estrategia de marketing digital — no vinieron con una fórmula genérica, armaron algo a medida y los resultados se notaron en el primer trimestre.",
+    name: "Camila Torres",
+    role: "Directora de Marketing en Cloudox",
+    image: strategyMeeting,
+    alt: "Camila Torres presentando una estrategia a su equipo",
+  },
+  {
+    quote:
+      "La auditoría que nos hicieron encontró problemas que ni sabíamos que teníamos. Con ese diagnóstico pudimos priorizar en serio, en vez de seguir apagando incendios.",
+    name: "Martín Silva",
+    role: "Fundador de Nexus",
+    image: teamImage,
+    alt: "Equipo de Nexus trabajando frente a pantallas con código",
+  },
+];
+---
+
+<section class="wrapper py-16 lg:py-28">
+  <div class="rounded-[24px] bg-[#f5f5f6] px-6 py-12 sm:px-10 lg:p-16" data-testimonial-pin>
+    <h2 data-text-reveal data-reveal class="text-center font-display text-[32px] font-bold leading-[1.1] tracking-[-1px] sm:text-[44px] sm:tracking-[-1.4px] lg:text-[66px] lg:tracking-[-1.98px]">
+      Ya confiaron <span class="text-navy">en nosotros</span>
+    </h2>
+
+    <div class="mt-12 flex flex-col gap-10 lg:mt-16 lg:flex-row lg:items-center lg:gap-16">
+      <div class="relative aspect-[527/297] w-full overflow-hidden rounded-[20px] lg:flex-1" data-reveal-scale>
+        {
+          testimonials.map((t, i) => (
+            <div class="absolute inset-0" data-testimonial-image style={i === 0 ? "opacity: 1; z-index: 2;" : "opacity: 0; z-index: 1;"}>
+              <Image src={t.image} alt={t.alt} width={527} height={297} class="h-full w-full object-cover" />
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="flex flex-col items-start gap-6 lg:w-[500px] lg:shrink-0">
+        <img src={quotesIcon.src} width="55" height="40" alt="" aria-hidden="true" class="w-[40px] rotate-180 sm:w-[55px]" />
+
+        <div class="grid w-full">
+          {
+            testimonials.map((t, i) => (
+              <p
+                data-testimonial-quote
+                class="[grid-area:1/1] font-body text-[20px] leading-[1.5] tracking-[-0.4px] text-ink sm:text-[26px] sm:tracking-[-0.5px]"
+                style={i === 0 ? "opacity: 1;" : "opacity: 0;"}
+              >
+                {t.quote}
+              </p>
+            ))
+          }
+        </div>
+
+        <div class="grid w-full border-t border-secondary/40 pt-3">
+          {
+            testimonials.map((t, i) => (
+              <div data-testimonial-author class="[grid-area:1/1] flex flex-col font-body" style={i === 0 ? "opacity: 1;" : "opacity: 0;"}>
+                <p class="text-[18px] tracking-[-0.5px] text-ink">{t.name}</p>
+                <p class="text-[14px] text-secondary">{t.role}</p>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-12 flex items-center justify-center gap-2 lg:mt-16" data-testimonial-dots>
+      {
+        testimonials.map((t, i) => (
+          <button
+            type="button"
+            data-testimonial-dot
+            aria-label={`Ver testimonio de ${t.name}`}
+            class="h-[14px] rounded-full transition-[width,background-color] duration-300 ease-[var(--ease-default)]"
+            style={i === 0 ? "width: 28px; background-color: var(--color-teal);" : "width: 14px; background-color: #d9d9d9;"}
+          />
+        ))
+      }
+    </div>
+  </div>
+</section>

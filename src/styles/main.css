@@ -2,33 +2,23 @@
 
 /*
   Design tokens (Tailwind v4, CSS-first config).
-  Placeholder — se reemplazan por los valores reales al extraer el
-  archivo de Figma (colores, tipografía, radios, sombras, etc.).
-  Cada --color-*, --font-*, --text-*, --radius-*, --shadow-* de acá
-  genera automáticamente sus utilities (bg-accent, text-ink, rounded-lg...).
+  Extraídos del archivo de Figma de Acide, sección por sección — no hay
+  valores inventados acá, solo lo que ya vimos en el diseño. Se van
+  sumando a medida que avanzamos con más secciones.
+  Cada --color-* y --font-* genera su utility automáticamente
+  (bg-teal, text-navy, font-display...).
 */
 @theme {
   --color-canvas: #ffffff;
-  --color-surface: #f5f5f7;
-  --color-ink: #111114;
-  --color-muted: #5c5c66;
-  --color-primary: #1a1a2e;
-  --color-accent: #4f5dff;
-  --color-line: #e2e2e6;
+  --color-navy: #14416a; /* Blue / Deep Navy — títulos, texto fuerte */
+  --color-slate: #6a8d92; /* tono apagado usado en el H1 del hero */
+  --color-secondary: #737373; /* Gray / Secondary Text — nav, texto secundario */
+  --color-ink: #272727; /* Dark / Primary Text — cuerpo de texto */
+  --color-teal: #119da4; /* Teal / Primary Teal — CTAs */
+  --color-red: #f43159; /* Red / Accent Pink — acentos gráficos */
 
-  --font-heading: "Inter", system-ui, sans-serif;
-  --font-body: "Inter", system-ui, sans-serif;
-
-  --text-display: clamp(2.5rem, 4vw + 1rem, 4.5rem);
-  --text-h2: clamp(2rem, 2.5vw + 1rem, 3rem);
-  --text-h3: clamp(1.5rem, 1.5vw + 1rem, 2rem);
-
-  --radius-sm: 6px;
-  --radius-md: 12px;
-  --radius-lg: 24px;
-
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --font-display: "Inter Variable", "Inter", sans-serif;
+  --font-body: "Satoshi", sans-serif;
 
   --ease-default: cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -39,54 +29,30 @@
     color: var(--color-ink);
     background: var(--color-canvas);
   }
-
-  h1,
-  h2,
-  h3,
-  h4 {
-    font-family: var(--font-heading);
-    font-weight: 700;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-  }
-
-  h1 {
-    font-size: var(--text-display);
-  }
-  h2 {
-    font-size: var(--text-h2);
-  }
-  h3 {
-    font-size: var(--text-h3);
-  }
 }
 
 @layer components {
-  .container {
-    @apply mx-auto max-w-[1280px] px-5 sm:px-8 lg:px-12;
+  /*
+    OJO: no llamar esta clase ".container" — Tailwind ya trae su propia
+    utility incorporada con ese nombre (max-width hasta 1536px en 2xl) y,
+    por el orden de @layer (utilities > components), la pisa en silencio
+    aunque esta regla aparezca después en el archivo. Todo el sitio tiene
+    como ancho máximo real 1490px (así está en Figma, lienzo 1920 con
+    215px de margen a cada lado) — no more que eso, para que las
+    animaciones y el texto no se deformen en pantallas anchas.
+  */
+  .wrapper {
+    @apply mx-auto max-w-[1490px] px-5 sm:px-8;
   }
 
   .btn {
-    @apply inline-flex items-center gap-2 rounded-[var(--radius-sm)] px-5 py-3 text-sm font-semibold transition-transform duration-300 ease-[var(--ease-default)];
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-6 py-4 font-body text-[18px] font-bold tracking-[-0.5px] transition-transform duration-300 ease-[var(--ease-default)];
   }
   .btn--primary {
-    @apply bg-accent text-white;
+    @apply bg-teal text-white;
   }
   .btn--primary:hover {
-    @apply -translate-y-0.5 shadow-md;
-  }
-  .btn--ghost {
-    @apply border border-line text-ink;
-  }
-  .btn--ghost:hover {
-    @apply border-accent text-accent;
-  }
-
-  .card {
-    @apply rounded-[var(--radius-md)] bg-surface p-5 transition-transform duration-300 ease-[var(--ease-default)];
-  }
-  .card:hover {
-    @apply -translate-y-1;
+    @apply -translate-y-0.5 shadow-lg shadow-teal/25;
   }
 
   .nav-link {
@@ -106,34 +72,53 @@
   Van fuera de @layer para no competir en especificidad con utilities,
   y en CSS plano (no inline) para evitar layout shift antes de que
   el JS tome control.
+
+  IMPORTANTE: desde GSAP 3.13, x/y/scale/rotate animan las propiedades CSS
+  individuales (translate/scale/rotate), no el shorthand `transform`. Si acá
+  seteamos `transform: scaleX(0)`, GSAP anima una propiedad distinta y el
+  shorthand se queda pisando el render para siempre. Por eso usamos las
+  mismas propiedades individuales en el estado inicial.
 */
 [data-reveal] {
   opacity: 0;
-  transform: translateY(24px);
+  translate: 0 24px;
 }
 [data-reveal-fade] {
   opacity: 0;
 }
 [data-reveal-scale] {
   opacity: 0;
-  transform: scale(0.94);
+  scale: 0.94;
+}
+[data-hero-underline] {
+  scale: 0 1;
+  transform-origin: left;
+}
+[data-hero-description] {
+  opacity: 0;
 }
 
 /* Si JS no carga (falla de red, bloqueado, etc.), no dejar el contenido invisible */
 .no-js [data-reveal],
 .no-js [data-reveal-fade],
-.no-js [data-reveal-scale] {
+.no-js [data-reveal-scale],
+.no-js [data-hero-underline],
+.no-js [data-hero-description] {
   opacity: 1;
-  transform: none;
+  translate: none;
+  scale: none;
 }
 
 /* Respeta la preferencia de accesibilidad del sistema operativo */
 @media (prefers-reduced-motion: reduce) {
   [data-reveal],
   [data-reveal-fade],
-  [data-reveal-scale] {
+  [data-reveal-scale],
+  [data-hero-underline],
+  [data-hero-description] {
     opacity: 1;
-    transform: none;
+    translate: none;
+    scale: none;
     transition: none !important;
     animation: none !important;
   }

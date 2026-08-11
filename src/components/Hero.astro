@@ -1,0 +1,112 @@
+---
+import { Image } from "astro:assets";
+import underline from "../assets/img/hero/underline.svg";
+import phoneApp from "../assets/img/hero/phone-app.png";
+import deskPalette from "../assets/img/hero/desk-palette.png";
+import digitalWave from "../assets/img/hero/digital-wave.png";
+import handshake from "../assets/img/hero/handshake.png";
+import deskWriting from "../assets/img/hero/desk-writing.png";
+import serverRoom from "../assets/img/hero/server-room.png";
+
+// Columna izquierda flota hacia arriba, derecha hacia abajo (ver hero-gallery.js).
+// Los tiles ahora son horizontales (374x300 en Figma, no verticales como antes).
+// Corner "tl-br" = esquinas redondeadas arriba-izq/abajo-der, "tr-bl" = al revés
+// (en el Figma actualizado, la columna izquierda tiene la del medio invertida).
+const columnLeft = [
+  { src: deskPalette, alt: "Laptop con paleta de colores y notas de diseño", corner: "tl-br" },
+  { src: handshake, alt: "Dos personas de negocios dándose la mano", corner: "tr-bl" },
+  { src: serverRoom, alt: "Pasillo de un centro de datos", corner: "tl-br" },
+];
+const columnRight = [
+  { src: phoneApp, alt: "Celular en un soporte mostrando un dashboard de métricas", corner: "tl-br" },
+  { src: digitalWave, alt: "Visualización de datos digitales en movimiento", corner: "tl-br" },
+  { src: deskWriting, alt: "Persona escribiendo un boceto en un escritorio", corner: "tl-br" },
+];
+
+const cornerClass = {
+  "tl-br": "rounded-tl-[28px] rounded-br-[28px] sm:rounded-tl-[60px] sm:rounded-br-[60px]",
+  "tr-bl": "rounded-tr-[28px] rounded-bl-[28px] sm:rounded-tr-[60px] sm:rounded-bl-[60px]",
+};
+---
+
+<section class="wrapper flex flex-col gap-14 pb-16 pt-4 lg:flex-row lg:items-center lg:gap-[120px] lg:pt-10">
+  <div class="flex flex-col items-start gap-10 lg:w-[610px] lg:shrink-0 lg:gap-16">
+    <div class="relative" data-hero-title>
+      <h1
+        class="max-w-[560px] font-display text-[38px] font-bold leading-[1.12] tracking-[-1.2px] sm:text-[52px] sm:tracking-[-2px] lg:w-[610px] lg:max-w-none lg:text-[78px] lg:leading-[1.05] lg:tracking-[-4px]"
+      >
+        <span class="text-slate">Tu próxima gran idea merece el </span><span class="text-navy">mejor trabajo</span>
+      </h1>
+      <img
+        data-hero-underline
+        src={underline.src}
+        width={underline.width}
+        height={underline.height}
+        alt=""
+        aria-hidden="true"
+        class="mt-3 h-auto w-[220px] sm:w-[320px] lg:absolute lg:-bottom-3 lg:left-0 lg:mt-0 lg:w-[520px]"
+      />
+    </div>
+
+    <div class="flex flex-col items-start gap-8 lg:gap-10">
+      <p
+        data-hero-description
+        class="max-w-[560px] font-body text-[16px] leading-[1.5] tracking-[-0.3px] text-ink sm:text-[18px] sm:tracking-[-0.5px] lg:max-w-[486px]"
+      >
+        Detrás de cada empresa que crece hay una decisión valiente: apostar por la tecnología correcta. Nosotros la
+        construimos contigo — desde la primera línea de código hasta el producto que tus usuarios no van a querer
+        soltar.
+      </p>
+      <a href="#contacto" class="btn btn--primary">Descubre cómo lo hicimos</a>
+    </div>
+  </div>
+
+  <div class="relative grid w-full grid-cols-2 gap-3 lg:flex-1" data-hero-gallery>
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute inset-x-0 top-0 z-10 h-[13.41%] bg-gradient-to-b from-white to-white/0"
+    >
+    </div>
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-[13.41%] bg-gradient-to-t from-white to-white/0"
+    >
+    </div>
+    <div class="aspect-[374/690] overflow-hidden" data-hero-viewport>
+      <div class="flex flex-col gap-3" data-hero-track data-hero-col="up">
+        {
+          [...columnLeft, ...columnLeft].map((img, i) => (
+            <div class="aspect-[374/300] overflow-hidden will-change-transform" data-hero-image>
+              <Image
+                src={img.src}
+                alt={i < columnLeft.length ? img.alt : ""}
+                aria-hidden={i < columnLeft.length ? undefined : "true"}
+                width={374}
+                height={300}
+                class={`h-full w-full object-cover ${cornerClass[img.corner]}`}
+              />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+    <div class="aspect-[374/690] overflow-hidden" data-hero-viewport>
+      <div class="flex flex-col gap-3" data-hero-track data-hero-col="down">
+        {
+          [...columnRight, ...columnRight].map((img, i) => (
+            <div class="aspect-[374/300] overflow-hidden will-change-transform" data-hero-image>
+              <Image
+                src={img.src}
+                alt={i < columnRight.length ? img.alt : ""}
+                aria-hidden={i < columnRight.length ? undefined : "true"}
+                width={374}
+                height={300}
+                class={`h-full w-full object-cover ${cornerClass[img.corner]}`}
+              />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>

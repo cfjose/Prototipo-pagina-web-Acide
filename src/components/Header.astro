@@ -1,0 +1,65 @@
+---
+import logo from "../assets/img/logo.svg";
+
+const navLinks = [
+  { label: "Servicios", href: "#servicios" },
+  { label: "Proyectos", href: "#proyectos" },
+  { label: "Sobre nosotros", href: "#nosotros" },
+  { label: "Blog", href: "#blog" },
+];
+---
+
+<header class="relative z-50 bg-canvas">
+  <div class="wrapper flex items-center justify-between py-6">
+    <a href="/" class="shrink-0">
+      <img src={logo.src} width={logo.width} height={logo.height} alt="Acide" class="h-[28px] w-auto lg:h-[34px]" />
+    </a>
+
+    <nav class="hidden items-center gap-8 font-body text-[18px] tracking-[-0.5px] text-secondary xl:flex xl:gap-[94px]">
+      {
+        navLinks.map((link) => (
+          <a href={link.href} class="nav-link hover:text-ink">
+            {link.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <a href="#contacto" class="btn btn--primary hidden xl:inline-flex">Contáctanos</a>
+
+    <button
+      type="button"
+      data-menu-toggle
+      aria-expanded="false"
+      aria-controls="mobile-nav"
+      class="-mr-2 flex items-center justify-center rounded-lg p-2 xl:hidden"
+    >
+      <span class="sr-only">Abrir menú</span>
+      <svg data-menu-icon-open width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M3 6h18M3 12h18M3 18h18" />
+      </svg>
+      <svg data-menu-icon-close class="hidden" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M6 6l12 12M18 6L6 18" />
+      </svg>
+    </button>
+  </div>
+
+  <div
+    id="mobile-nav"
+    data-mobile-nav
+    class="grid grid-rows-[0fr] overflow-hidden transition-[grid-template-rows] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] xl:hidden"
+  >
+    <div class="min-h-0">
+      <nav class="wrapper flex flex-col gap-1 pb-6 font-body text-[18px] text-secondary">
+        {
+          navLinks.map((link) => (
+            <a href={link.href} class="border-b border-black/5 py-4">
+              {link.label}
+            </a>
+          ))
+        }
+        <a href="#contacto" class="btn btn--primary mt-4 w-full">Contáctanos</a>
+      </nav>
+    </div>
+  </div>
+</header>

@@ -1,0 +1,129 @@
+---
+import { Image } from "astro:assets";
+import teamImage from "../assets/img/digital-today/team.png";
+import appImage from "../assets/img/hero/phone-app.png";
+import marketingImage from "../assets/img/hero/desk-palette.png";
+import auditImage from "../assets/img/hero/server-room.png";
+
+/*
+  Las descripciones de "Aplicaciones Web", "Marketing Digital" y
+  "Auditoría Digital" son copy modelo — en Figma solo está escrita la de
+  "Sitios Web" (el item que aparece expandido por default en el diseño).
+  Reemplazar por el copy real del cliente cuando esté.
+
+  Las imágenes de Aplicaciones Web / Marketing Digital / Auditoría Digital
+  reutilizan fotos del hero (no hay herramienta de generación de imágenes
+  disponible) — encajan temáticamente pero se repiten en la página. Pedile
+  al cliente fotos únicas para esta sección si eso no te cierra.
+*/
+const services = [
+  {
+    title: "Sitios Web",
+    description:
+      "Más de una década transformando ideas en productos digitales que no solo funcionan — generan resultados medibles para empresas de toda la región.",
+    image: teamImage,
+    alt: "Equipo trabajando frente a pantallas con código y dashboards",
+  },
+  {
+    title: "Aplicaciones Web",
+    description:
+      "Diseñamos y desarrollamos aplicaciones a medida que resuelven problemas reales, desde el primer sketch hasta el deploy en producción, con foco en performance y experiencia de uso.",
+    image: appImage,
+    alt: "Celular en un soporte mostrando un dashboard de métricas",
+  },
+  {
+    title: "Marketing Digital",
+    description:
+      "Estrategias de adquisición y contenido que conectan con las personas correctas en el momento correcto — medimos cada resultado para que la inversión se traduzca en crecimiento real.",
+    image: marketingImage,
+    alt: "Laptop con paleta de colores y notas de diseño",
+  },
+  {
+    title: "Auditoría Digital",
+    description:
+      "Revisamos a fondo tu stack, tu seguridad y tu performance para que sepas exactamente dónde estás parado y qué resolver antes de que se vuelva un problema.",
+    image: auditImage,
+    alt: "Pasillo de un centro de datos",
+  },
+];
+---
+
+<section class="wrapper py-16 lg:py-28">
+  <div class="flex flex-col gap-5 lg:gap-6">
+    <h2
+      data-text-reveal
+      data-reveal
+      class="max-w-[600px] font-display text-[32px] font-bold leading-[1.1] tracking-[-1px] sm:text-[44px] sm:tracking-[-1.4px] lg:max-w-[732px] lg:text-[66px] lg:tracking-[-1.98px]"
+    >
+      <span class="text-secondary">Desarrollamos, </span><span class="text-navy">código con propósito</span>
+    </h2>
+    <div class="lg:flex lg:justify-end">
+      <p
+        data-text-reveal
+        data-reveal
+        class="font-body text-[16px] leading-[1.5] tracking-[-0.3px] text-ink sm:text-[18px] sm:tracking-[-0.5px] lg:max-w-[600px] lg:text-[26px] lg:tracking-[-0.5px]"
+      >
+        TechGroup tenía un problema que nadie quería resolver: un sistema interno que frenaba a sus equipos. Lo
+        reinventamos desde cero. El resultado fue una plataforma que redujo tiempos operativos un 40% y devolvió la
+        agilidad que habían perdido.
+      </p>
+    </div>
+  </div>
+
+  <div class="mt-12 flex flex-col gap-12 lg:mt-16 lg:flex-row lg:items-center lg:gap-[92px]">
+    <div class="flex flex-col lg:w-[465px] lg:shrink-0">
+      <div class="flex flex-col" data-accordion="navy" data-reveal>
+        {
+          services.map((service, i) => (
+            <div class="border-t border-black/10 first:border-t-0" data-accordion-item data-active={i === 0 ? "true" : "false"}>
+              <button type="button" class="flex w-full items-center py-3 text-left" data-accordion-trigger>
+                <span
+                  data-accordion-trigger-text
+                  class:list={[
+                    "font-body text-[24px] tracking-[-0.5px] transition-colors duration-300 sm:text-[30px] sm:tracking-[-0.6px]",
+                    i === 0 ? "font-bold text-navy" : "font-medium text-ink",
+                  ]}
+                >
+                  {service.title}
+                </span>
+              </button>
+              <div
+                class:list={[
+                  "grid overflow-hidden transition-[grid-template-rows] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                  i === 0 ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+                ]}
+                data-accordion-panel
+              >
+                <div class="min-h-0">
+                  <p
+                    data-accordion-description
+                    class="pb-4 font-body text-[16px] leading-[1.5] tracking-[-0.3px] text-ink sm:text-[18px] sm:tracking-[-0.5px]"
+                  >
+                    {service.description}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <div
+      class="relative aspect-[933/685] w-full overflow-hidden rounded-tl-[48px] rounded-br-[48px] sm:rounded-tl-[70px] sm:rounded-br-[70px] lg:aspect-auto lg:h-[685px] lg:flex-1 lg:rounded-tl-[100px] lg:rounded-br-[100px]"
+      data-reveal-scale
+    >
+      {
+        services.map((service, i) => (
+          <div
+            class="absolute inset-0"
+            data-service-image-item
+            style={i === 0 ? "opacity: 1; z-index: 2;" : "opacity: 0; z-index: 1;"}
+          >
+            <Image src={service.image} alt={service.alt} width={933} height={685} class="h-full w-full object-cover" />
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
