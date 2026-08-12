@@ -9,24 +9,19 @@ import deskWriting from "../assets/img/hero/desk-writing.png";
 import serverRoom from "../assets/img/hero/server-room.png";
 
 // Columna izquierda flota hacia arriba, derecha hacia abajo (ver hero-gallery.js).
-// Los tiles ahora son horizontales (374x300 en Figma, no verticales como antes).
-// Corner "tl-br" = esquinas redondeadas arriba-izq/abajo-der, "tr-bl" = al revés
-// (en el Figma actualizado, la columna izquierda tiene la del medio invertida).
+// Solo 6 imágenes en total (3 por columna) — el Figma actualizado ya no
+// tiene el borde redondeado grande por esquina alterna, es un radio chico
+// (8px) parejo en las 4 esquinas.
 const columnLeft = [
-  { src: deskPalette, alt: "Laptop con paleta de colores y notas de diseño", corner: "tl-br" },
-  { src: handshake, alt: "Dos personas de negocios dándose la mano", corner: "tr-bl" },
-  { src: serverRoom, alt: "Pasillo de un centro de datos", corner: "tl-br" },
+  { src: deskPalette, alt: "Laptop con paleta de colores y notas de diseño" },
+  { src: handshake, alt: "Dos personas de negocios dándose la mano" },
+  { src: serverRoom, alt: "Pasillo de un centro de datos" },
 ];
 const columnRight = [
-  { src: phoneApp, alt: "Celular en un soporte mostrando un dashboard de métricas", corner: "tl-br" },
-  { src: digitalWave, alt: "Visualización de datos digitales en movimiento", corner: "tl-br" },
-  { src: deskWriting, alt: "Persona escribiendo un boceto en un escritorio", corner: "tl-br" },
+  { src: phoneApp, alt: "Celular en un soporte mostrando un dashboard de métricas" },
+  { src: digitalWave, alt: "Visualización de datos digitales en movimiento" },
+  { src: deskWriting, alt: "Persona escribiendo un boceto en un escritorio" },
 ];
-
-const cornerClass = {
-  "tl-br": "rounded-tl-[28px] rounded-br-[28px] sm:rounded-tl-[60px] sm:rounded-br-[60px]",
-  "tr-bl": "rounded-tr-[28px] rounded-bl-[28px] sm:rounded-tr-[60px] sm:rounded-bl-[60px]",
-};
 ---
 
 
@@ -37,13 +32,13 @@ const cornerClass = {
   flex-1: toma automáticamente "lo que sobra" de la pantalla después del
   header, sin números mágicos, a cualquier ancho.
 -->
-<section class="wrapper flex flex-col justify-center gap-8 py-8 lg:min-h-0 lg:flex-1 lg:flex-row lg:items-stretch lg:gap-[120px] lg:py-10">
+<section class="wrapper flex flex-col justify-center gap-8 py-8 lg:min-h-0 lg:flex-1 lg:flex-row lg:items-stretch lg:gap-[80px] lg:py-10">
   <div class="flex flex-col items-start justify-center gap-10 lg:w-[610px] lg:shrink-0 lg:gap-16">
     <div class="relative" data-hero-title>
       <h1
-        class="max-w-[560px] font-display text-[38px] font-bold leading-[1.12] tracking-[-1.2px] sm:text-[52px] sm:tracking-[-2px] lg:w-[610px] lg:max-w-none lg:text-[78px] lg:leading-[1.05] lg:tracking-[-4px]"
+        class="max-w-[560px] font-display text-[38px] leading-[1.12] tracking-[-1.2px] sm:text-[52px] sm:tracking-[-2px] lg:w-[610px] lg:max-w-none lg:text-[78px] lg:leading-[1.05] lg:tracking-[-4px]"
       >
-        <span class="text-slate">Tu próxima gran idea merece el </span><span class="text-navy">mejor trabajo</span>
+        <span class="text-slate">Tu próxima gran idea merece el </span><span class="font-bold text-navy">mejor trabajo</span>
       </h1>
       <img
         data-hero-underline
@@ -52,7 +47,7 @@ const cornerClass = {
         height={underline.height}
         alt=""
         aria-hidden="true"
-        class="mt-3 h-auto w-[220px] sm:w-[320px] lg:absolute lg:-bottom-3 lg:left-0 lg:mt-0 lg:w-[520px]"
+        class="mt-5 h-auto w-[220px] sm:w-[320px] lg:absolute lg:-bottom-6 lg:left-0 lg:mt-0 lg:w-[520px]"
       />
     </div>
 
@@ -81,36 +76,42 @@ const cornerClass = {
     >
     </div>
     <div class="aspect-[374/690] overflow-hidden lg:aspect-auto lg:h-full lg:min-h-0" data-hero-viewport>
-      <div class="flex flex-col gap-3" data-hero-track data-hero-col="up">
+      <div class="flex flex-col gap-3 lg:h-full lg:min-h-0" data-hero-track data-hero-col="up">
         {
-          [...columnLeft, ...columnLeft].map((img, i) => (
-            <div class="aspect-[374/300] overflow-hidden will-change-transform" data-hero-image>
-              <Image
-                src={img.src}
-                alt={i < columnLeft.length ? img.alt : ""}
-                aria-hidden={i < columnLeft.length ? undefined : "true"}
-                width={374}
-                height={300}
-                class={`h-full w-full object-cover ${cornerClass[img.corner]}`}
-              />
+          [false, true].map((duplicate) => (
+            <div class="flex flex-col gap-3 lg:h-full lg:min-h-0 lg:shrink-0" aria-hidden={duplicate ? "true" : undefined}>
+              {columnLeft.map((img) => (
+                <div class="aspect-[374/300] overflow-hidden will-change-transform lg:aspect-auto lg:min-h-0 lg:flex-1" data-hero-image>
+                  <Image
+                    src={img.src}
+                    alt={duplicate ? "" : img.alt}
+                    width={374}
+                    height={300}
+                    class="h-full w-full rounded-[8px] object-cover"
+                  />
+                </div>
+              ))}
             </div>
           ))
         }
       </div>
     </div>
     <div class="aspect-[374/690] overflow-hidden lg:aspect-auto lg:h-full lg:min-h-0" data-hero-viewport>
-      <div class="flex flex-col gap-3" data-hero-track data-hero-col="down">
+      <div class="flex flex-col gap-3 lg:h-full lg:min-h-0" data-hero-track data-hero-col="down">
         {
-          [...columnRight, ...columnRight].map((img, i) => (
-            <div class="aspect-[374/300] overflow-hidden will-change-transform" data-hero-image>
-              <Image
-                src={img.src}
-                alt={i < columnRight.length ? img.alt : ""}
-                aria-hidden={i < columnRight.length ? undefined : "true"}
-                width={374}
-                height={300}
-                class={`h-full w-full object-cover ${cornerClass[img.corner]}`}
-              />
+          [false, true].map((duplicate) => (
+            <div class="flex flex-col gap-3 lg:h-full lg:min-h-0 lg:shrink-0" aria-hidden={duplicate ? "true" : undefined}>
+              {columnRight.map((img) => (
+                <div class="aspect-[374/300] overflow-hidden will-change-transform lg:aspect-auto lg:min-h-0 lg:flex-1" data-hero-image>
+                  <Image
+                    src={img.src}
+                    alt={duplicate ? "" : img.alt}
+                    width={374}
+                    height={300}
+                    class="h-full w-full rounded-[8px] object-cover"
+                  />
+                </div>
+              ))}
             </div>
           ))
         }

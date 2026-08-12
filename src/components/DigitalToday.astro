@@ -63,7 +63,7 @@ const services = [
     <h2
       data-text-reveal
       data-reveal
-      class="max-w-[600px] font-display text-[32px] font-bold leading-[1.1] tracking-[-1px] sm:text-[44px] sm:tracking-[-1.4px] lg:max-w-[732px] lg:text-[66px] lg:tracking-[-1.98px]"
+      class="max-w-[600px] font-display text-[32px] leading-[1.1] tracking-[-1px] sm:text-[44px] sm:tracking-[-1.4px] lg:max-w-[732px] lg:text-[66px] lg:tracking-[-1.98px]"
     >
       <span class="text-secondary">Desarrollamos, </span><span class="text-navy">código con propósito</span>
     </h2>
@@ -86,27 +86,41 @@ const services = [
         {
           services.map((service, i) => (
             <div data-accordion-item data-active={i === 0 ? "true" : "false"}>
-              <button type="button" class="flex w-full items-center justify-between gap-4 py-4 text-left" data-accordion-trigger>
-                <span
-                  data-accordion-trigger-text
-                  class:list={[
-                    "font-body text-[24px] tracking-[-0.72px] sm:text-[32px] sm:tracking-[-0.96px]",
-                    i === 0 ? "text-navy" : "text-ink",
-                  ]}
-                >
-                  {service.title}
-                </span>
-                <span class="relative h-[24px] w-[24px] shrink-0" data-accordion-icon>
-                  <span class="absolute left-1/2 top-1/2 h-[2px] w-[14px] -translate-x-1/2 -translate-y-1/2 bg-current" />
+              <div class="flex w-full items-center justify-between gap-4 py-4">
+                <button type="button" class="flex-1 text-left" data-accordion-trigger>
                   <span
+                    data-accordion-trigger-text
                     class:list={[
-                      "absolute left-1/2 top-1/2 h-[14px] w-[2px] -translate-x-1/2 -translate-y-1/2 bg-current transition-transform duration-300 ease-[var(--ease-default)]",
-                      i === 0 ? "scale-y-0" : "scale-y-100",
+                      "font-body text-[24px] tracking-[-0.72px] sm:text-[32px] sm:tracking-[-0.96px]",
+                      i === 0 ? "text-navy" : "text-ink",
                     ]}
-                    data-accordion-icon-vertical
-                  />
-                </span>
-              </button>
+                  >
+                    {service.title}
+                  </span>
+                </button>
+                <a
+                  href={`/servicios/${service.slug}`}
+                  aria-label={`Ver más sobre ${service.title}`}
+                  class="relative h-[36px] w-[36px] shrink-0 transition-transform duration-300 ease-[var(--ease-default)] hover:-translate-y-0.5 hover:translate-x-0.5"
+                >
+                  <svg
+                    data-accordion-icon-outline
+                    viewBox="0 0 256 256"
+                    fill="currentColor"
+                    class:list={["absolute inset-0 h-full w-full text-[#737373] transition-opacity duration-300", i === 0 ? "opacity-0" : "opacity-100"]}
+                  >
+                    <path d="M168,96v48a8,8,0,0,1-16,0V115.31l-50.34,50.35a8,8,0,0,1-11.32-11.32L140.69,104H112a8,8,0,0,1,0-16h48A8,8,0,0,1,168,96Zm64,32A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z" />
+                  </svg>
+                  <svg
+                    data-accordion-icon-fill
+                    viewBox="0 0 256 256"
+                    fill="currentColor"
+                    class:list={["absolute inset-0 h-full w-full text-navy transition-opacity duration-300", i === 0 ? "opacity-100" : "opacity-0"]}
+                  >
+                    <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm40,120a8,8,0,0,1-16,0V115.31l-50.34,50.35a8,8,0,0,1-11.32-11.32L140.69,104H112a8,8,0,0,1,0-16h48a8,8,0,0,1,8,8Z" />
+                  </svg>
+                </a>
+              </div>
 
               <div
                 class:list={[
@@ -115,7 +129,7 @@ const services = [
                 ]}
                 data-accordion-panel
               >
-                <div class="flex min-h-0 flex-col gap-4 pb-6">
+                <div class="flex min-h-0 flex-col gap-4">
                   <p
                     data-accordion-description
                     class="font-body text-[16px] leading-[1.5] tracking-[-0.3px] text-ink sm:text-[18px] sm:tracking-[-0.5px]"
@@ -136,34 +150,25 @@ const services = [
                       ))
                     }
                   </div>
-
-                  <a
-                    href={`/servicios/${service.slug}`}
-                    class="group flex items-center justify-between gap-4 pt-1"
-                  >
-                    <span class="font-body text-[16px] font-bold tracking-[-0.3px] text-navy sm:text-[18px] sm:tracking-[-0.5px]">
-                      Ver mas información del servicio
-                    </span>
-                    <span class="flex h-[28px] w-[28px] shrink-0 items-center justify-center rounded-full bg-navy text-white transition-transform duration-300 ease-[var(--ease-default)] group-hover:-translate-y-0.5 group-hover:translate-x-0.5 sm:h-[32px] sm:w-[32px]">
-                      <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
-                        <path d="M6 14L14 6M14 6H7M14 6v7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
-                      </svg>
-                    </span>
-                  </a>
                 </div>
+              </div>
+
+              <!--
+                Esta línea separa un servicio del siguiente en reposo (gris,
+                estática) y cuando el item se activa se convierte en la
+                barra de progreso del auto-avance (se rellena de navy) — es
+                el mismo elemento, no dos. El espacio antes de la línea vive
+                acá (mt-5), no como padding dentro del panel colapsable —
+                si fuera padding del panel, el padding se renderiza aunque
+                el panel esté "cerrado" (grid-rows-[0fr] no le gana al
+                padding-box) y deja asomar unos px del texto de arriba.
+              -->
+              <div class="mt-5 h-[2px] w-full overflow-hidden bg-[#737373]/25" data-accordion-line>
+                <div class="h-full w-0 bg-navy" data-accordion-line-fill></div>
               </div>
             </div>
           ))
         }
-      </div>
-
-      <!--
-        Una sola barra de progreso compartida por todo el acordeón (no una
-        por item) — el JS la reubica dentro del item activo cada vez que
-        cambia, así nunca hay más de una visible al mismo tiempo.
-      -->
-      <div class="mt-1 h-[3px] w-full overflow-hidden rounded-full bg-black/10" data-accordion-progress>
-        <div class="h-full w-0 rounded-full bg-navy" data-accordion-progress-fill></div>
       </div>
     </div>
 

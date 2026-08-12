@@ -3,12 +3,15 @@ import { prefersReducedMotion } from "../utils/reduced-motion.js";
 import { splitWords, playWordReveal } from "./text-reveal.js";
 
 /*
-  Acordeón de servicios: un solo item expandido a la vez, por CLICK (no
-  hover) — click en el título o en el ícono +/- abre ese item y cierra el
-  resto. Si nadie toca nada, avanza solo al siguiente cada
-  AUTO_ADVANCE_MS, con UNA sola barra de progreso compartida por todo el
-  acordeón (no una por item) que el JS reubica dentro del item activo en
-  cada cambio — así nunca hay dos barras visibles a la vez.
+  Acordeón de servicios: un solo item expandido a la vez, por CLICK en el
+  título — el ícono circular de al lado es un link directo a la página
+  del servicio, no togglea el acordeón. Si nadie toca nada, avanza solo
+  al siguiente cada AUTO_ADVANCE_MS.
+
+  La línea que separa un item del siguiente ES la barra de progreso de
+  ese item: en reposo es gris estática (divisor), y cuando el item está
+  activo se rellena de color animando su ancho 0% → 100% — no hay un
+  elemento de progreso separado ni se reubica nada en el DOM.
 
   La imagen no usa un crossfade suave: la que entra aparece desde abajo
   del cuadro y se asienta en su lugar (yPercent 100 → 0), sin animar
@@ -33,8 +36,7 @@ export function initServicesAccordion() {
     const scope = accordion.closest("section") ?? document;
     const items = accordion.querySelectorAll("[data-accordion-item]");
     const images = scope.querySelectorAll("[data-service-image-item]");
-    const progressBar = accordion.parentElement.querySelector("[data-accordion-progress]");
-    const progressFill = progressBar?.querySelector("[data-accordion-progress-fill]");
+    const lineFills = [...items].map((item) => item.querySelector("[data-accordion-line-fill]"));
     // Color del item activo — configurable por instancia, ej. data-accordion="navy"
     const activeColor = `text-${accordion.dataset.accordion || "navy"}`;
 
@@ -56,22 +58,28 @@ export function initServicesAccordion() {
       });
     }
 
-    const moveProgressBar = (index) => {
-      if (!progressBar) return;
-      const panelContent = items[index]?.querySelector("[data-accordion-panel] > div");
-      panelContent?.appendChild(progressBar);
+    const resetLine = (index) => {
+      const fill = lineFills[index];
+      if (!fill) return;
+      fill.style.transition = "none";
+      fill.style.width = "0%";
     };
 
     const scheduleAdvance = () => {
       clearTimeout(advanceTimer);
-      if (reduced || !progressFill) return;
+      lineFills.forEach((fill, i) => {
+        if (i !== activeIndex) resetLine(i);
+      });
 
-      progressFill.style.transition = "none";
-      progressFill.style.width = "0%";
+      const fill = lineFills[activeIndex];
+      if (reduced || !fill) return;
+
+      fill.style.transition = "none";
+      fill.style.width = "0%";
       // Fuerza reflow para que el navegador registre el 0% antes de animar al 100%.
-      void progressFill.offsetWidth;
-      progressFill.style.transition = `width ${AUTO_ADVANCE_MS}ms linear`;
-      progressFill.style.width = "100%";
+      void fill.offsetWidth;
+      fill.style.transition = `width ${AUTO_ADVANCE_MS}ms linear`;
+      fill.style.width = "100%";
 
       advanceTimer = setTimeout(() => {
         setActive((activeIndex + 1) % items.length);
@@ -89,21 +97,25 @@ export function initServicesAccordion() {
 
         const trigger = item.querySelector("[data-accordion-trigger-text]");
         const panel = item.querySelector("[data-accordion-panel]");
-        const iconVertical = item.querySelector("[data-accordion-icon-vertical]");
+        const iconOutline = item.querySelector("[data-accordion-icon-outline]");
+        const iconFill = item.querySelector("[data-accordion-icon-fill]");
 
         trigger.classList.toggle(activeColor, isActive);
         trigger.classList.toggle("text-ink", !isActive);
         panel.classList.toggle("grid-rows-[1fr]", isActive);
         panel.classList.toggle("grid-rows-[0fr]", !isActive);
-        iconVertical?.classList.toggle("scale-y-0", isActive);
-        iconVertical?.classList.toggle("scale-y-100", !isActive);
+        // Cerrado: ícono solo con línea (outline), sin color de marca.
+        // Activo: ícono relleno, con el color de acento.
+        iconOutline?.classList.toggle("opacity-0", isActive);
+        iconOutline?.classList.toggle("opacity-100", !isActive);
+        iconFill?.classList.toggle("opacity-100", isActive);
+        iconFill?.classList.toggle("opacity-0", !isActive);
       });
 
       if (descriptionWords[index]) {
         playWordReveal(descriptionWords[index], { delay: reduced ? 0 : 0.15 });
       }
 
-      moveProgressBar(index);
       scheduleAdvance();
 
       if (!images.length) return;
@@ -134,9 +146,7 @@ export function initServicesAccordion() {
     });
 
     // Estado inicial: el item activo por default ya está expandido en el
-    // HTML — ubicamos la barra ahí, reproducimos su reveal y arrancamos
-    // el auto-avance.
-    moveProgressBar(activeIndex);
+    // HTML — reproducimos su reveal y arrancamos el auto-avance.
     if (descriptionWords[activeIndex]) playWordReveal(descriptionWords[activeIndex]);
     scheduleAdvance();
   });
