@@ -1,9 +1,10 @@
 ---
 /*
-  Los "logos" son wordmarks de texto — no tenemos logos reales de estas
-  empresas (son inventadas, ver client-stories.js). El JS se encarga de
-  rellenar cada casilla y rotarlas; acá solo armamos los 12 contenedores
-  vacíos + los controles de filtro.
+  Los "logos" son marcas abstractas generadas por JS (forma + color según
+  el nombre de la empresa) — no tenemos logos reales de estas 36 empresas
+  inventadas ni herramienta de generación de imágenes (ver el generador en
+  client-stories.js). El JS se encarga de rellenar cada casilla y
+  rotarlas; acá solo armamos los 12 contenedores vacíos + los filtros.
 */
 const rubros = ["Restaurantes", "Agencias de turismo", "Hotelera"];
 const servicios = ["Digitalización", "Consultoría"];
@@ -18,7 +19,7 @@ const servicios = ["Digitalización", "Consultoría"];
     Historias que <span class="text-navy">nos enorgullecen</span>
   </h2>
 
-  <div class="mt-8 flex flex-wrap items-center justify-center gap-3 lg:mt-10" data-reveal>
+  <div class="relative z-30 mt-8 flex flex-wrap items-center justify-center gap-3 lg:mt-10" data-reveal>
     <button
       type="button"
       data-filter-reset
@@ -72,8 +73,9 @@ const servicios = ["Digitalización", "Consultoría"];
           data-client-slot
           data-slot-index={i}
         >
-          <div class="absolute inset-0 flex items-center justify-center px-4" data-slot-logo-wrap>
-            <span data-slot-logo class="text-center font-body text-[15px] font-bold uppercase tracking-[0.08em] text-ink sm:text-[18px]" />
+          <div class="absolute inset-0 flex flex-col items-center justify-center gap-2 px-4" data-slot-logo-wrap>
+            <span data-slot-icon class="h-[36px] w-[36px] sm:h-[44px] sm:w-[44px]" />
+            <span data-slot-logo class="text-center font-body text-[13px] font-bold uppercase tracking-[0.06em] text-ink sm:text-[15px]" />
           </div>
           <div class="absolute inset-0 flex flex-col justify-center gap-3 p-5 opacity-0 sm:p-6" data-slot-desc>
             <p data-slot-desc-text class="font-body text-[12px] leading-[1.5] text-ink sm:text-[13px]" />
