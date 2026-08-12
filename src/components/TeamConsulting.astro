@@ -5,41 +5,51 @@ import advisoryImage from "../assets/img/hero/handshake.png";
 import consultingImage from "../assets/img/hero/desk-writing.png";
 
 /*
-  Las descripciones de "Asesoría" y "Consultoría" son copy modelo — en
-  Figma solo está escrita la de "Capacitaciones" (el item expandido por
-  default). Reemplazar por el copy real del cliente cuando esté.
+  Todo el copy de sub-servicios (bullets) y el botón acá es modelo — en
+  Figma esta sección todavía no tiene la estructura de 3 sub-items +
+  botón que sí tiene "Sitios Web" en la sección de Desarrollo. Replicamos
+  el mismo patrón visual para mantener consistencia entre ambas secciones.
+  Reemplazar por el copy real del cliente cuando esté.
 
-  Las imágenes de Asesoría / Consultoría reutilizan fotos del hero (mismo
+  Las fotos de Asesoría / Consultoría reutilizan imágenes del hero (mismo
   criterio que en la sección anterior, no hay herramienta de generación
-  de imágenes disponible) — encajan temáticamente pero ya se vieron antes
-  en la página.
+  de imágenes disponible) — encajan temáticamente pero ya se vieron antes.
+
+  Los links "Ver mas información del servicio" apuntan a /servicios/<slug>
+  — esas páginas todavía no existen, van a dar 404 hasta que se armen.
 */
 const items = [
   {
     title: "Capacitaciones",
+    slug: "capacitaciones",
     description:
       "Acompañamos a equipos que quieren dejar de improvisar y empezar a tomar decisiones con datos, método y visión de largo plazo.",
+    bullets: ["Talleres a medida", "Certificación de equipos", "Seguimiento post-taller"],
     image: strategyImage,
     alt: "Consultora presentando una estrategia de crecimiento a un equipo directivo",
   },
   {
     title: "Asesoría",
+    slug: "asesoria",
     description:
       "Te acompañamos en las decisiones difíciles — desde elegir la arquitectura correcta hasta priorizar qué construir primero, con la experiencia de haberlo hecho antes en decenas de proyectos.",
+    bullets: ["Diagnóstico inicial", "Plan de acción", "Acompañamiento continuo"],
     image: advisoryImage,
     alt: "Dos personas de negocios dándose la mano",
   },
   {
     title: "Consultoría",
+    slug: "consultoria",
     description:
       "Diagnosticamos el estado real de tu operación digital y armamos un plan concreto, con prioridades claras y pasos accionables — no un informe que junta polvo.",
+    bullets: ["Relevamiento de procesos", "Plan de mejora", "Implementación guiada"],
     image: consultingImage,
     alt: "Persona escribiendo un boceto de estrategia en un escritorio",
   },
 ];
 ---
 
-<section class="wrapper py-16 lg:py-28">
+<section class="wrapper section-y">
   <div class="flex flex-col gap-5 lg:gap-6">
     <h2
       data-text-reveal
@@ -61,39 +71,43 @@ const items = [
   </div>
 
   <div class="mt-12 flex flex-col gap-12 lg:mt-16 lg:flex-row lg:items-center lg:gap-[92px]">
-    <div
-      class="relative aspect-[933/685] w-full overflow-hidden rounded-tl-[48px] rounded-br-[48px] sm:rounded-tl-[70px] sm:rounded-br-[70px] lg:aspect-auto lg:h-[685px] lg:flex-1 lg:rounded-tl-[100px] lg:rounded-br-[100px]"
-      data-reveal-scale
-    >
+    <div class="relative aspect-[771/592] w-full overflow-hidden rounded-[12px] lg:aspect-auto lg:h-[592px] lg:flex-1" data-reveal-scale>
       {
         items.map((item, i) => (
-          <div
-            class="absolute inset-0"
-            data-service-image-item
-            style={i === 0 ? "opacity: 1; z-index: 2;" : "opacity: 0; z-index: 1;"}
-          >
-            <Image src={item.image} alt={item.alt} width={933} height={685} class="h-full w-full object-cover" />
+          <div class="absolute inset-0" data-service-image-item>
+            <Image src={item.image} alt={item.alt} width={771} height={592} class="h-full w-full object-cover" />
           </div>
         ))
       }
     </div>
 
-    <div class="flex flex-col lg:w-[465px] lg:shrink-0">
+    <div class="flex flex-col lg:w-[477px] lg:shrink-0">
       <div class="flex flex-col" data-accordion="teal" data-reveal>
         {
           items.map((item, i) => (
-            <div class="border-t border-black/10 first:border-t-0" data-accordion-item data-active={i === 0 ? "true" : "false"}>
-              <button type="button" class="flex w-full items-center py-3 text-left" data-accordion-trigger>
+            <div data-accordion-item data-active={i === 0 ? "true" : "false"}>
+              <button type="button" class="flex w-full items-center justify-between gap-4 py-4 text-left" data-accordion-trigger>
                 <span
                   data-accordion-trigger-text
                   class:list={[
-                    "font-body text-[24px] tracking-[-0.5px] transition-colors duration-300 sm:text-[30px] sm:tracking-[-0.6px]",
-                    i === 0 ? "font-bold text-teal" : "font-medium text-ink",
+                    "font-body text-[24px] tracking-[-0.72px] sm:text-[32px] sm:tracking-[-0.96px]",
+                    i === 0 ? "text-teal" : "text-ink",
                   ]}
                 >
                   {item.title}
                 </span>
+                <span class="relative h-[24px] w-[24px] shrink-0" data-accordion-icon>
+                  <span class="absolute left-1/2 top-1/2 h-[2px] w-[14px] -translate-x-1/2 -translate-y-1/2 bg-current" />
+                  <span
+                    class:list={[
+                      "absolute left-1/2 top-1/2 h-[14px] w-[2px] -translate-x-1/2 -translate-y-1/2 bg-current transition-transform duration-300 ease-[var(--ease-default)]",
+                      i === 0 ? "scale-y-0" : "scale-y-100",
+                    ]}
+                    data-accordion-icon-vertical
+                  />
+                </span>
               </button>
+
               <div
                 class:list={[
                   "grid overflow-hidden transition-[grid-template-rows] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]",
@@ -101,18 +115,55 @@ const items = [
                 ]}
                 data-accordion-panel
               >
-                <div class="min-h-0">
+                <div class="flex min-h-0 flex-col gap-4 pb-6">
                   <p
                     data-accordion-description
-                    class="pb-4 font-body text-[16px] leading-[1.5] tracking-[-0.3px] text-ink sm:text-[18px] sm:tracking-[-0.5px]"
+                    class="font-body text-[16px] leading-[1.5] tracking-[-0.3px] text-ink sm:text-[18px] sm:tracking-[-0.5px]"
                   >
                     {item.description}
                   </p>
+
+                  <div class="flex flex-col gap-2">
+                    {
+                      item.bullets.map((bullet) => (
+                        <div class="flex items-center gap-4">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="shrink-0 text-teal">
+                            <path d="M12 3l8 4v6c0 4.5-3.2 7.4-8 8.8C7.2 20.4 4 17.5 4 13V7l8-4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+                            <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                          </svg>
+                          <p class="font-body text-[16px] tracking-[-0.3px] text-ink sm:text-[18px] sm:tracking-[-0.5px]">{bullet}</p>
+                        </div>
+                      ))
+                    }
+                  </div>
+
+                  <a
+                    href={`/servicios/${item.slug}`}
+                    class="group flex items-center justify-between gap-4 pt-1"
+                  >
+                    <span class="font-body text-[16px] font-bold tracking-[-0.3px] text-teal sm:text-[18px] sm:tracking-[-0.5px]">
+                      Ver mas información del servicio
+                    </span>
+                    <span class="flex h-[28px] w-[28px] shrink-0 items-center justify-center rounded-full bg-teal text-white transition-transform duration-300 ease-[var(--ease-default)] group-hover:-translate-y-0.5 group-hover:translate-x-0.5 sm:h-[32px] sm:w-[32px]">
+                      <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+                        <path d="M6 14L14 6M14 6H7M14 6v7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+                      </svg>
+                    </span>
+                  </a>
                 </div>
               </div>
             </div>
           ))
         }
+      </div>
+
+      <!--
+        Una sola barra de progreso compartida por todo el acordeón (no una
+        por item) — el JS la reubica dentro del item activo cada vez que
+        cambia, así nunca hay más de una visible al mismo tiempo.
+      -->
+      <div class="mt-1 h-[3px] w-full overflow-hidden rounded-full bg-black/10" data-accordion-progress>
+        <div class="h-full w-0 rounded-full bg-teal" data-accordion-progress-fill></div>
       </div>
     </div>
   </div>

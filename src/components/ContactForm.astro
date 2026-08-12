@@ -1,0 +1,97 @@
+---
+import { Image } from "astro:assets";
+import contactImage from "../assets/img/contact/contact.png";
+
+/*
+  El mockup de Figma muestra el primer campo con el estilo "enfocado"
+  (subrayado y texto navy) solo para mostrar cómo se ve ese estado — acá
+  ese mismo estilo se aplica a los 3 campos vía :focus, no hardcodeado en
+  uno solo, para que el formulario se comporte igual en todos.
+
+  El formulario no tiene backend todavía — el submit está prevenido y no
+  manda nada a ningún lado. Cuando haya un endpoint/servicio de mail real,
+  conectar en contact-form.js.
+*/
+---
+
+<section class="wrapper section-y">
+  <div class="flex flex-col overflow-hidden rounded-[12px] lg:flex-row lg:items-stretch" data-reveal>
+    <form
+      class="flex w-full flex-col gap-8 bg-[#fafafa] p-8 sm:p-10 lg:w-[642px] lg:shrink-0 lg:gap-[54px] lg:p-[54px]"
+      data-contact-form
+    >
+      <h2
+        data-text-reveal
+        class="font-body text-[32px] font-bold leading-[1.1] tracking-[-1px] text-ink sm:text-[44px] lg:text-[54px] lg:tracking-[-1.62px]"
+      >
+        Cuéntanos qué <span class="text-teal">tienes en mente</span>
+      </h2>
+
+      <div class="flex flex-col gap-6 lg:gap-[35px]">
+        <label class="flex flex-col gap-3">
+          <span class="font-body text-[18px] tracking-[-0.5px] text-ink">Nombre y apellidos</span>
+          <input
+            type="text"
+            name="nombre"
+            required
+            placeholder="Nombre y apellido del representante"
+            class="border-b border-[#8c8c8c] bg-transparent py-4 font-body text-[18px] tracking-[-0.5px] text-ink placeholder:text-[#7f7f7f] focus:border-navy focus:border-b-2 focus:text-navy focus:outline-none"
+          />
+        </label>
+
+        <div class="flex flex-col gap-6 sm:flex-row sm:gap-5">
+          <label class="flex flex-1 flex-col gap-3">
+            <span class="font-body text-[18px] tracking-[-0.5px] text-ink">Teléfono</span>
+            <input
+              type="tel"
+              name="telefono"
+              placeholder="987654321"
+              class="border-b border-[#8c8c8c] bg-transparent py-4 font-body text-[18px] tracking-[-0.5px] text-ink placeholder:text-[#7f7f7f] focus:border-navy focus:border-b-2 focus:text-navy focus:outline-none"
+            />
+          </label>
+          <label class="flex flex-1 flex-col gap-3">
+            <span class="font-body text-[18px] tracking-[-0.5px] text-ink">Correo Electrónico</span>
+            <input
+              type="email"
+              name="email"
+              required
+              placeholder="correoejemplo@ejemplo.com"
+              class="border-b border-[#8c8c8c] bg-transparent py-4 font-body text-[18px] tracking-[-0.5px] text-ink placeholder:text-[#7f7f7f] focus:border-navy focus:border-b-2 focus:text-navy focus:outline-none"
+            />
+          </label>
+        </div>
+
+        <label class="flex flex-col gap-3">
+          <span class="font-body text-[18px] tracking-[-0.5px] text-ink">Detalles a tener en cuenta</span>
+          <textarea
+            name="detalles"
+            rows="2"
+            placeholder="Cuéntanos qué desafío enfrenta tu empresa, qué plazos manejas y cualquier detalle que nos ayude a entender tu visión."
+            class="resize-none border-b border-[#8c8c8c] bg-transparent py-4 font-body text-[18px] tracking-[-0.5px] text-ink placeholder:text-[#7f7f7f] focus:border-navy focus:border-b-2 focus:text-navy focus:outline-none"
+          ></textarea>
+        </label>
+      </div>
+
+      <button
+        type="submit"
+        class="w-full rounded-xl bg-teal p-4 text-center font-body text-[18px] tracking-[-0.5px] text-white transition-transform duration-300 ease-[var(--ease-default)] hover:-translate-y-0.5"
+      >
+        Dar el primer paso
+      </button>
+
+      <p class="hidden font-body text-[16px] text-teal" data-contact-form-success>
+        ¡Gracias! Te vamos a contactar a la brevedad.
+      </p>
+    </form>
+
+    <div class="relative min-h-[300px] w-full flex-1 sm:min-h-[400px] lg:min-h-0">
+      <Image
+        src={contactImage}
+        alt="Persona trabajando en una laptop con paneles de datos digitales superpuestos"
+        width={670}
+        height={772}
+        class="h-full w-full object-cover"
+      />
+    </div>
+  </div>
+</section>

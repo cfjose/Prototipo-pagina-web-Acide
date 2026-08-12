@@ -1,0 +1,97 @@
+---
+import logoWhite from "../assets/img/footer/logo-white.svg";
+import decoration from "../assets/img/footer/decoration.svg";
+
+/*
+  Los 4 íconos sociales eran cuadrados blancos vacíos en Figma (sin red
+  definida) — puse Instagram/LinkedIn/Facebook/X como set razonable para
+  un sitio corporativo, todos apuntando a "#" por ahora. Reemplazar por
+  las redes reales del cliente cuando las tengan.
+
+  Los links de las 3 columnas ("Servicios", "Nuestro trabajo", "Adicional")
+  tampoco tienen rutas reales todavía — quedan en "#" hasta que existan
+  esas páginas.
+*/
+const footerColumns = [
+  { title: "Servicios", links: ["Digitalización", "Mejora de calidad"] },
+  { title: "Nuestro trabajo", links: ["Digitales", "Calidad"] },
+  { title: "Adicional", links: ["Blog", "Sobre nosotros"] },
+];
+---
+
+<footer class="relative overflow-hidden bg-navy py-16 lg:py-20">
+  <img
+    src={decoration.src}
+    alt=""
+    aria-hidden="true"
+    class="pointer-events-none absolute right-0 top-1/2 hidden w-[45%] max-w-[716px] -translate-y-1/2 opacity-80 lg:block"
+  />
+
+  <div class="wrapper flex flex-col gap-12 lg:gap-[46px]">
+    <div class="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between lg:gap-6" data-reveal>
+      <h2 class="max-w-[900px] font-display text-[32px] font-bold leading-[1.1] tracking-[-1px] text-[#ebf2fa] sm:text-[44px] lg:text-[66px] lg:tracking-[-1.98px]">
+        ¿Y si el siguiente <span class="text-white">caso de éxito</span> fuera el tuyo?
+      </h2>
+      <a
+        href="#contacto"
+        class="inline-flex shrink-0 items-center justify-center rounded-xl bg-teal p-4 font-body text-[18px] tracking-[-0.5px] text-white transition-transform duration-300 ease-[var(--ease-default)] hover:-translate-y-0.5"
+      >
+        Empecemos a hablar
+      </a>
+    </div>
+
+    <div class="h-px w-full bg-white/20"></div>
+
+    <div class="relative flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between" data-reveal>
+      <div class="flex flex-col items-start gap-6 lg:w-[335px] lg:shrink-0">
+        <img src={logoWhite.src} width="122" height="36" alt="Acide" class="h-[30px] w-auto" />
+        <p class="max-w-[280px] font-body text-[18px] tracking-[-0.5px] text-white">
+          No importa en qué etapa estés. Conversemos y encontremos juntos el camino.
+        </p>
+        <div class="flex items-center gap-3">
+          {
+            [
+              { label: "Instagram", d: "M12 2.5c2.7 0 3 0 4.1.06 1.1.05 1.8.22 2.4.46.6.24 1.1.56 1.6 1.06.5.5.82 1 1.06 1.6.24.6.4 1.3.46 2.4.06 1.1.06 1.4.06 4.1s0 3-.06 4.1c-.05 1.1-.22 1.8-.46 2.4a4.3 4.3 0 0 1-1.06 1.6c-.5.5-1 .82-1.6 1.06-.6.24-1.3.4-2.4.46-1.1.06-1.4.06-4.1.06s-3 0-4.1-.06c-1.1-.05-1.8-.22-2.4-.46a4.3 4.3 0 0 1-1.6-1.06 4.3 4.3 0 0 1-1.06-1.6c-.24-.6-.4-1.3-.46-2.4C2.5 15 2.5 14.7 2.5 12s0-3 .06-4.1c.05-1.1.22-1.8.46-2.4.24-.6.56-1.1 1.06-1.6.5-.5 1-.82 1.6-1.06.6-.24 1.3-.4 2.4-.46C9 2.5 9.3 2.5 12 2.5Zm0 2.9a6.6 6.6 0 1 0 0 13.2 6.6 6.6 0 0 0 0-13.2Zm0 10.9a4.3 4.3 0 1 1 0-8.6 4.3 4.3 0 0 1 0 8.6Zm6.9-11.15a1.54 1.54 0 1 1-3.08 0 1.54 1.54 0 0 1 3.08 0Z" },
+              { label: "LinkedIn", d: "M4.98 3.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5ZM3 9.98h4v10.52H3V9.98Zm7 0h3.84v1.44h.05c.53-1 1.85-2.06 3.8-2.06 4.07 0 4.81 2.68 4.81 6.16v6.98h-4v-6.19c0-1.48-.03-3.37-2.06-3.37-2.07 0-2.38 1.62-2.38 3.28v6.28h-4V9.98Z" },
+              { label: "Facebook", d: "M13.5 21.5v-8h2.7l.4-3.1h-3.1V8.4c0-.9.25-1.5 1.55-1.5h1.65V4.13C15.9 4.06 15 4 13.95 4c-2.2 0-3.7 1.34-3.7 3.8v2.1H7.5v3.1h2.75v8h3.25Z" },
+              { label: "X", d: "M4 4h4.6l4 5.4L17.2 4H20l-6.2 7.1L20.3 21h-4.6l-4.3-5.8L6.2 21H3.5l6.6-7.6L4 4Z" },
+            ].map((social) => (
+              <a
+                href="#"
+                aria-label={social.label}
+                class="flex h-[36px] w-[36px] items-center justify-center rounded-[8px] bg-white text-navy transition-transform duration-300 ease-[var(--ease-default)] hover:-translate-y-0.5"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path d={social.d} />
+                </svg>
+              </a>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:w-[636px] lg:shrink-0">
+        {
+          footerColumns.map((col) => (
+            <div class="flex flex-col gap-4">
+              <p class="font-body text-[18px] tracking-[-0.5px] text-white/60">{col.title}</p>
+              {col.links.map((link) => (
+                <a href="#" class="font-body text-[18px] tracking-[-0.5px] text-white transition-colors hover:text-teal">
+                  {link}
+                </a>
+              ))}
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-3 border-t border-white/20 pt-6 font-body text-[16px] tracking-[-0.5px] text-white sm:flex-row sm:items-center sm:justify-between sm:text-[18px]">
+      <div class="flex flex-col gap-2 sm:flex-row sm:gap-16">
+        <p>Correo de contacto: <span class="font-bold">acide@correo.com</span></p>
+        <p>Teléfono de contacto: <span class="font-bold">+51 987 654 321</span></p>
+      </div>
+      <p class="text-white/70">Acide 2025. Todos los derechos reservados</p>
+    </div>
+  </div>
+</footer>

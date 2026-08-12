@@ -9,6 +9,7 @@ import { initTextReveal } from "./animations/text-reveal.js";
 import { initServicesAccordion } from "./animations/services-accordion.js";
 import { initTestimonialCarousel } from "./animations/testimonial-carousel.js";
 import { initClientStories } from "./animations/client-stories.js";
+import { initContactForm } from "./animations/contact-form.js";
 import { initLazyMedia } from "./utils/lazy-load.js";
 
 document.documentElement.classList.remove("no-js");
@@ -24,4 +25,5 @@ initTextReveal();
 initServicesAccordion();
 initTestimonialCarousel();
 initClientStories();
+initContactForm();
 initLazyMedia();

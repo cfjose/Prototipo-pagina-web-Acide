@@ -29,8 +29,16 @@ const cornerClass = {
 };
 ---
 
-<section class="wrapper flex flex-col gap-14 pb-16 pt-4 lg:flex-row lg:items-center lg:gap-[120px] lg:pt-10">
-  <div class="flex flex-col items-start gap-10 lg:w-[610px] lg:shrink-0 lg:gap-16">
+
+<!--
+  El Header no es fijo — así que en vez de restarle un alto fijo en px
+  (frágil: el header mide distinto según el ancho de pantalla), este
+  section vive en un flex-col junto al Header (ver index.astro) con
+  flex-1: toma automáticamente "lo que sobra" de la pantalla después del
+  header, sin números mágicos, a cualquier ancho.
+-->
+<section class="wrapper flex flex-col justify-center gap-8 py-8 lg:min-h-0 lg:flex-1 lg:flex-row lg:items-stretch lg:gap-[120px] lg:py-10">
+  <div class="flex flex-col items-start justify-center gap-10 lg:w-[610px] lg:shrink-0 lg:gap-16">
     <div class="relative" data-hero-title>
       <h1
         class="max-w-[560px] font-display text-[38px] font-bold leading-[1.12] tracking-[-1.2px] sm:text-[52px] sm:tracking-[-2px] lg:w-[610px] lg:max-w-none lg:text-[78px] lg:leading-[1.05] lg:tracking-[-4px]"
@@ -61,7 +69,7 @@ const cornerClass = {
     </div>
   </div>
 
-  <div class="relative grid w-full grid-cols-2 gap-3 lg:flex-1" data-hero-gallery>
+  <div class="relative grid w-full grid-cols-2 gap-3 overflow-hidden lg:h-full lg:min-h-0 lg:flex-1" data-hero-gallery>
     <div
       aria-hidden="true"
       class="pointer-events-none absolute inset-x-0 top-0 z-10 h-[13.41%] bg-gradient-to-b from-white to-white/0"
@@ -72,7 +80,7 @@ const cornerClass = {
       class="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-[13.41%] bg-gradient-to-t from-white to-white/0"
     >
     </div>
-    <div class="aspect-[374/690] overflow-hidden" data-hero-viewport>
+    <div class="aspect-[374/690] overflow-hidden lg:aspect-auto lg:h-full lg:min-h-0" data-hero-viewport>
       <div class="flex flex-col gap-3" data-hero-track data-hero-col="up">
         {
           [...columnLeft, ...columnLeft].map((img, i) => (
@@ -90,7 +98,7 @@ const cornerClass = {
         }
       </div>
     </div>
-    <div class="aspect-[374/690] overflow-hidden" data-hero-viewport>
+    <div class="aspect-[374/690] overflow-hidden lg:aspect-auto lg:h-full lg:min-h-0" data-hero-viewport>
       <div class="flex flex-col gap-3" data-hero-track data-hero-col="down">
         {
           [...columnRight, ...columnRight].map((img, i) => (

@@ -4,32 +4,47 @@ import { prefersReducedMotion } from "../utils/reduced-motion.js";
 import { splitWords, playWordReveal } from "./text-reveal.js";
 
 /*
-  Carrusel de testimonios: en vez de un timer (1.5s), avanza atado al
-  scroll. En desktop centramos la tarjeta en el viewport y la fijamos ahí
-  mientras el usuario scrollea — recién se libera y pasa a la siguiente
-  sección después de recorrer todos los testimonios. En mobile no fijamos
-  nada (el scroll-jacking se siente mal con touch) — ahí solo queda la
-  navegación manual con los puntos, que también sirven para saltar
-  directo a un testimonio en cualquier tamaño de pantalla.
+  Carrusel de testimonios atado al scroll, sin timer. En desktop la
+  tarjeta se centra en el viewport y se fija ahí mientras el usuario
+  scrollea — recién se libera hacia la siguiente sección después de
+  recorrer los 4 testimonios. Las barras de progreso (una por testimonio,
+  estilo Instagram Stories) se llenan en tiempo real según el scroll:
+  la barra activa va llenándose a medida que avanza el scroll dentro de
+  su tramo, las anteriores quedan completas, las siguientes en cero.
+
+  En mobile no fijamos nada (el scroll-jacking se siente mal con touch)
+  — ahí las barras solo sirven para saltar de testimonio con un click.
 
   El quote usa el mismo reveal palabra por palabra que el resto del sitio
-  (text-reveal.js), disparado a mano en cada cambio — no solo al cargar.
-  La imagen se cruza con fade + scale, igual que en las secciones de
-  servicios.
+  (text-reveal.js), disparado a mano en cada cambio. La imagen se cruza
+  con fade + scale, igual que en las secciones de servicios.
 */
 export function initTestimonialCarousel() {
   const pinTarget = document.querySelector("[data-testimonial-pin]");
   const images = document.querySelectorAll("[data-testimonial-image]");
   const quotes = document.querySelectorAll("[data-testimonial-quote]");
   const authors = document.querySelectorAll("[data-testimonial-author]");
-  const dots = document.querySelectorAll("[data-testimonial-dot]");
+  const bars = document.querySelectorAll("[data-testimonial-bar]");
+  const barFills = document.querySelectorAll("[data-testimonial-bar-fill]");
   if (!pinTarget || !images.length) return;
 
   const count = images.length;
   const reduced = prefersReducedMotion();
   let current = 0;
+  let scrollTrigger = null;
 
   const quoteWords = [...quotes].map((el) => splitWords(el));
+
+  const updateBars = (progress) => {
+    barFills.forEach((fill, i) => {
+      const segStart = i / count;
+      const segEnd = (i + 1) / count;
+      let local = 0;
+      if (progress >= segEnd) local = 1;
+      else if (progress > segStart) local = (progress - segStart) / (segEnd - segStart);
+      fill.style.width = `${local * 100}%`;
+    });
+  };
 
   const crossfadeAuthor = (index) => {
     authors.forEach((el, i) => {
@@ -75,18 +90,24 @@ export function initTestimonialCarousel() {
     });
 
     crossfadeAuthor(index);
-
-    dots.forEach((dot, i) => {
-      const active = i === index;
-      dot.style.width = active ? "28px" : "14px";
-      dot.style.backgroundColor = active ? "var(--color-teal)" : "#d9d9d9";
-    });
   };
 
-  dots.forEach((dot, i) => dot.addEventListener("click", () => goTo(i)));
+  bars.forEach((bar, i) => {
+    bar.addEventListener("click", () => {
+      if (scrollTrigger) {
+        const target = i / count + 0.5 / count;
+        const y = scrollTrigger.start + target * (scrollTrigger.end - scrollTrigger.start);
+        window.scrollTo({ top: y, behavior: reduced ? "auto" : "smooth" });
+      } else {
+        goTo(i);
+        updateBars((i + 0.5) / count);
+      }
+    });
+  });
 
   // Reveal inicial del primer quote, igual que el resto del texto del sitio.
   playWordReveal(quoteWords[0]);
+  updateBars(0);
 
   if (reduced) return;
 
@@ -94,7 +115,7 @@ export function initTestimonialCarousel() {
 
   const mm = gsap.matchMedia();
   mm.add("(min-width: 1024px)", () => {
-    const trigger = ScrollTrigger.create({
+    scrollTrigger = ScrollTrigger.create({
       trigger: pinTarget,
       start: "center center",
       end: () => `+=${(count - 1) * 480}`,
@@ -104,9 +125,12 @@ export function initTestimonialCarousel() {
       onUpdate: (self) => {
         const index = Math.min(count - 1, Math.floor(self.progress * count));
         goTo(index);
+        updateBars(self.progress);
       },
     });
 
-    return () => trigger.kill();
+    return () => {
+      scrollTrigger = null;
+    };
   });
 }

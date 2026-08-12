@@ -198,6 +198,8 @@ export function initClientStories() {
     startRotation();
   };
 
+  // El texto vive DENTRO del cuadro del logo (overlay) — al hacer hover
+  // el logo se desvanece y la descripción ocupa su lugar, mismo cuadro.
   slots.forEach((slot, i) => {
     const logoWrap = slot.querySelector("[data-slot-logo-wrap]");
     const descLayer = slot.querySelector("[data-slot-desc]");
@@ -236,22 +238,36 @@ export function initClientStories() {
     document.querySelectorAll("[data-dropdown-panel]").forEach((p) => p.classList.add("hidden"));
   });
 
+  // El botón "Destacados" solo se ve activo (navy) cuando no hay ningún
+  // filtro aplicado — apenas se elige rubro o servicio, pasa a inactivo.
+  const resetBtn = document.querySelector("[data-filter-reset]");
+  const updateResetButtonState = () => {
+    if (!resetBtn) return;
+    const noFilters = !filters.rubro && !filters.servicio;
+    resetBtn.classList.toggle("bg-navy", noFilters);
+    resetBtn.classList.toggle("text-white", noFilters);
+    resetBtn.classList.toggle("bg-[#e5e5e5]", !noFilters);
+    resetBtn.classList.toggle("text-ink", !noFilters);
+  };
+
   document.querySelectorAll("[data-filter-option]").forEach((opt) => {
     opt.addEventListener("click", () => {
       const { filterType, filterValue } = opt.dataset;
       filters[filterType] = filterValue;
       const label = document.querySelector(`[data-dropdown-label="${filterType}"]`);
       if (label) label.textContent = filterValue;
+      updateResetButtonState();
       refresh();
     });
   });
 
-  document.querySelector("[data-filter-reset]")?.addEventListener("click", () => {
+  resetBtn?.addEventListener("click", () => {
     filters.rubro = null;
     filters.servicio = null;
     document.querySelectorAll("[data-dropdown-label]").forEach((el) => {
       el.textContent = el.dataset.defaultLabel;
     });
+    updateResetButtonState();
     refresh();
   });
 

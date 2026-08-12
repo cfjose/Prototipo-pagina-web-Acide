@@ -53,7 +53,7 @@ const testimonials = [
 ];
 ---
 
-<section class="wrapper py-16 lg:py-28">
+<section class="wrapper section-y">
   <div class="rounded-[24px] bg-[#f5f5f6] px-6 py-12 sm:px-10 lg:p-16" data-testimonial-pin>
     <h2 data-text-reveal data-reveal class="text-center font-display text-[32px] font-bold leading-[1.1] tracking-[-1px] sm:text-[44px] sm:tracking-[-1.4px] lg:text-[66px] lg:tracking-[-1.98px]">
       Ya confiaron <span class="text-navy">en nosotros</span>
@@ -100,16 +100,20 @@ const testimonials = [
       </div>
     </div>
 
-    <div class="mt-12 flex items-center justify-center gap-2 lg:mt-16" data-testimonial-dots>
+    <div class="mt-12 flex items-center gap-3 lg:mt-16" data-testimonial-bars>
       {
         testimonials.map((t, i) => (
           <button
             type="button"
-            data-testimonial-dot
+            data-testimonial-bar
             aria-label={`Ver testimonio de ${t.name}`}
-            class="h-[14px] rounded-full transition-[width,background-color] duration-300 ease-[var(--ease-default)]"
-            style={i === 0 ? "width: 28px; background-color: var(--color-teal);" : "width: 14px; background-color: #d9d9d9;"}
-          />
+            class="h-[8px] flex-1 overflow-hidden rounded-full bg-[#6a8d92]"
+          >
+            <div
+              data-testimonial-bar-fill
+              class="h-full w-0 rounded-full bg-[#f43159]"
+            />
+          </button>
         ))
       }
     </div>

@@ -6,15 +6,28 @@ import DigitalToday from "../components/DigitalToday.astro";
 import TeamConsulting from "../components/TeamConsulting.astro";
 import Testimonials from "../components/Testimonials.astro";
 import ClientStories from "../components/ClientStories.astro";
+import ContactForm from "../components/ContactForm.astro";
+import Footer from "../components/Footer.astro";
 ---
 
 <BaseLayout>
-  <Header />
-  <main>
+  <!--
+    "100vh" solo tiene sentido en desktop: en mobile/tablet el hero se
+    apila (texto arriba, galería abajo) y necesita más de una pantalla
+    para verse bien, forzarlo a 100svh ahí recortaría contenido. Por eso
+    el alto fijo (no min-height — flex-grow necesita un alto DEFINIDO
+    para poder repartir "lo que sobra" entre Header y Hero) es lg: only.
+  -->
+  <div class="flex flex-col lg:h-[100svh]">
+    <Header />
     <Hero />
+  </div>
+  <main>
     <DigitalToday />
     <TeamConsulting />
     <Testimonials />
     <ClientStories />
+    <ContactForm />
   </main>
+  <Footer />
 </BaseLayout>

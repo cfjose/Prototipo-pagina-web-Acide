@@ -37,12 +37,22 @@
     utility incorporada con ese nombre (max-width hasta 1536px en 2xl) y,
     por el orden de @layer (utilities > components), la pisa en silencio
     aunque esta regla aparezca después en el archivo. Todo el sitio tiene
-    como ancho máximo real 1490px (así está en Figma, lienzo 1920 con
-    215px de margen a cada lado) — no more que eso, para que las
+    como ancho máximo real 1312px (así está en Figma, lienzo 1920 con
+    304px de margen a cada lado) — no more que eso, para que las
     animaciones y el texto no se deformen en pantallas anchas.
   */
   .wrapper {
-    @apply mx-auto max-w-[1490px] px-5 sm:px-8;
+    @apply mx-auto max-w-[1312px] px-5 sm:px-8;
+  }
+
+  /*
+    Ritmo vertical entre secciones: en Figma cada sección deja exactamente
+    200px de aire hasta la siguiente (100px de cada lado). El Hero es la
+    excepción — mide 100svh justo, así que la sección de abajo se come
+    los 200px enteros como padding-top (ver Hero.astro / DigitalToday.astro).
+  */
+  .section-y {
+    @apply py-16 lg:pt-[100px] lg:pb-[100px];
   }
 
   .btn {
