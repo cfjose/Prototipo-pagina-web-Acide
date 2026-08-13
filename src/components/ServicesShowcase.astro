@@ -1,0 +1,69 @@
+---
+import { Image } from "astro:assets";
+import img1 from "../assets/img/servicios/img-1-banking-app.png";
+import img2 from "../assets/img/servicios/img-2-design-desk.png";
+import img3 from "../assets/img/servicios/img-3-dashboard-monitor.png";
+import img4 from "../assets/img/servicios/img-4-shopping-app.png";
+import img5 from "../assets/img/servicios/img-5-control-room.png";
+import img6 from "../assets/img/servicios/img-6-dashboard-laptop.png";
+import img7 from "../assets/img/servicios/img-7-tablet-hand.png";
+import img8 from "../assets/img/servicios/img-8-multi-device.png";
+
+/*
+  Collage disperso de 8 capturas, posiciones absolutas tomadas 1:1 del
+  Figma (expresadas en % vía custom properties sobre un wrapper con
+  aspect-ratio 1444/867) — pero eso solo tiene sentido en desktop: en
+  mobile/tablet los tiles quedarían de ~35px, ilegibles. Ahí es una
+  grilla 2 columnas normal, con el título arriba en vez de superpuesto.
+
+  No son video real — no tenemos herramienta de generación de video, así
+  que cada imagen tiene un loop lento de zoom/pan (Ken Burns, ver
+  services-showcase.js) para simular movimiento, y al hacer hover esa
+  imagen se agranda un poco mientras el resto del collage pierde
+  opacidad (referencia: heyclicky.com). Ese hover es un plus de escritorio;
+  en mobile no pasa nada raro porque no hay hover real.
+*/
+const tiles = [
+  { src: img1, alt: "App bancaria en un celular", left: 0, top: 31.49, width: 16.07, height: 26.53 },
+  { src: img2, alt: "Laptop con paleta de colores en un escritorio de diseño", left: 16, top: 0, width: 15.93, height: 17.65 },
+  { src: img3, alt: "Monitor mostrando un dashboard de métricas", left: 42.45, top: 13.84, width: 10.66, height: 17.65 },
+  { src: img4, alt: "Celular con una app de compras", left: 63.78, top: 0, width: 14.13, height: 23.53 },
+  { src: img5, alt: "Sala de control con pantallas de datos", left: 86.7, top: 21.8, width: 13.3, height: 14.65 },
+  { src: img6, alt: "Laptop con un dashboard de reportes", left: 24.86, top: 73.47, width: 15.93, height: 26.53 },
+  { src: img7, alt: "Mano usando una tablet", left: 58.38, top: 74.39, width: 10.66, height: 11.76 },
+  { src: img8, alt: "Laptop, tablet y celular mostrando la misma plataforma", left: 84, top: 68.86, width: 16, height: 26.64 },
+];
+---
+
+<section class="wrapper section-y">
+  <div class="relative mx-auto w-full lg:aspect-[1444/867]" data-showcase>
+    <p
+      data-text-reveal
+      data-reveal
+      class="static mb-10 text-center font-display text-[32px] leading-[1.05] tracking-[-1px] sm:text-[44px] sm:tracking-[-1.4px] lg:absolute lg:inset-x-0 lg:top-[38.06%] lg:z-10 lg:mx-auto lg:mb-0 lg:w-[772px] lg:text-[78px] lg:tracking-[-3.12px]"
+    >
+      <span class="text-slate">De una idea a un gran </span><span class="text-navy">producto digital</span>
+    </p>
+
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:contents">
+      {
+        tiles.map((tile) => (
+          <div
+            class="relative aspect-square overflow-hidden lg:absolute lg:aspect-auto lg:left-[var(--l)] lg:top-[var(--t)] lg:h-[var(--h)] lg:w-[var(--w)]"
+            style={`--l:${tile.left}%; --t:${tile.top}%; --w:${tile.width}%; --h:${tile.height}%;`}
+            data-showcase-tile
+          >
+            <Image
+              src={tile.src}
+              alt={tile.alt}
+              width={462}
+              height={462}
+              class="h-full w-full object-cover will-change-transform"
+              data-showcase-media
+            />
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

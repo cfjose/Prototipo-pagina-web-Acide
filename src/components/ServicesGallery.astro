@@ -1,0 +1,147 @@
+---
+import { Image } from "astro:assets";
+import webImage from "../assets/img/servicios/web-image.png";
+import appImage from "../assets/img/servicios/app-image.png";
+import marketingImage from "../assets/img/servicios/marketing-image.png";
+import auditImage from "../assets/img/servicios/audit-image.png";
+
+/*
+  Animación de scroll estilo fantasy.co/work/kohler: en desktop la
+  sección entera se queda fija (pin) en el viewport — el scroll no baja
+  la página, avanza entre los 4 servicios en el mismo espacio, cruzando
+  texto e imagen juntos. Recién se libera hacia la siguiente sección
+  después de pasar por los 4 (mismo mecanismo que Testimonials, ver
+  services-gallery.js).
+
+  Por eso hay DOS árboles de markup: uno para el "stage" fijo de
+  desktop (los 4 bloques de texto e imagen apilados unos sobre otros,
+  ocupando el mismo lugar) y otro para mobile (lista normal, cada
+  bloque con su imagen, sin pin — el scroll-jacking se siente mal en
+  touch, mismo criterio que ya usamos en Testimonials).
+
+  El número "01/02/03/04" no está en el Figma — lo sumamos porque es
+  parte del lenguaje visual de la referencia (fantasy.co).
+*/
+const items = [
+  {
+    eyebrow: "01",
+    title: "Sitios",
+    titleRest: " Web",
+    description:
+      "Tu sitio web es la primera impresión que das — y muchas veces, la única oportunidad. Diseñamos experiencias que no solo se ven bien, sino que convierten visitantes en clientes desde el primer scroll.",
+    image: webImage,
+    alt: "Laptop y tablet mostrando un sitio web",
+  },
+  {
+    eyebrow: "02",
+    title: "Aplicaciones",
+    titleRest: " Web",
+    description:
+      "Más de una década transformando ideas en productos digitales que no solo funcionan — generan resultados medibles para empresas de toda la región.",
+    image: appImage,
+    alt: "Pantallas mostrando una aplicación web",
+  },
+  {
+    eyebrow: "03",
+    title: "Marketing",
+    titleRest: " Digital",
+    description:
+      "El marketing sin estrategia es ruido. Construimos campañas que conectan con las personas correctas, en el momento justo, con el mensaje que necesitan escuchar — y medimos cada resultado para que sepas exactamente qué funciona.",
+    image: marketingImage,
+    alt: "Panel de métricas de una campaña de marketing",
+  },
+  {
+    eyebrow: "04",
+    title: "Auditoría",
+    titleRest: " Digital",
+    description:
+      "No puedes mejorar lo que no conoces. Analizamos cada rincón de tu presencia digital — rendimiento, seguridad, SEO, accesibilidad — y te entregamos un plan claro para dejar de adivinar y empezar a optimizar.",
+    image: auditImage,
+    alt: "Reporte de auditoría digital en pantalla",
+  },
+];
+---
+
+<section class="wrapper section-y">
+  <!-- Desktop: stage fijo, los 4 servicios se cruzan en el mismo lugar -->
+  <div class="relative hidden lg:block" data-gallery-pin>
+    <div data-gallery-pin-content>
+      <div class="grid w-full grid-cols-2 items-center gap-[92px]">
+        <div class="grid" data-gallery-text-stack>
+          {
+            items.map((item, i) => (
+              <div class="col-start-1 row-start-1 flex flex-col justify-center gap-16" data-gallery-text-item data-index={i}>
+                <div class="flex flex-col gap-8">
+                  <span data-gallery-eyebrow class="font-body text-[16px] tracking-[-0.3px] text-secondary opacity-60">
+                    {item.eyebrow}
+                  </span>
+                  <h3
+                    data-gallery-title
+                    class="font-display text-[66px] leading-[1.05] tracking-[-1.98px] text-navy"
+                  >
+                    <span class="text-teal">{item.title}</span>
+                    {item.titleRest}
+                  </h3>
+                  <p data-gallery-description class="max-w-[422px] font-body text-[26px] leading-[1.5] tracking-[-0.5px] text-ink">
+                    {item.description}
+                  </p>
+                </div>
+                <a href="#contacto" class="btn btn--primary w-fit bg-navy shadow-navy/25">
+                  Ver cómo lo logramos
+                </a>
+              </div>
+            ))
+          }
+        </div>
+
+        <div class="relative mx-auto aspect-[755/1024] h-[75vh] w-auto max-w-full overflow-hidden" data-gallery-media-stack>
+          {
+            items.map((item) => (
+              <div class="absolute inset-0" data-gallery-media-item>
+                <Image src={item.image} alt={item.alt} width={755} height={1024} class="h-full w-full object-cover" />
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+
+    <!--
+      80px de separación pedidos por el usuario, pero solo si entra: si
+      sumarla hace que el stage completo (arriba) supere el alto del
+      viewport, se rompe el pin (algo queda cortado arriba o abajo), así
+      que el JS mide y la esconde entera en vez de recortarla.
+    -->
+    <div class="mt-[80px] flex items-center gap-3" data-gallery-bars>
+      {
+        items.map(() => (
+          <div class="h-[3px] flex-1 overflow-hidden rounded-full bg-black/10">
+            <div class="h-full w-0 rounded-full bg-navy" data-gallery-bar-fill />
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- Mobile/tablet: lista normal, sin pin -->
+  <div class="flex flex-col gap-16 lg:hidden" data-gallery-mobile-list>
+    {
+      items.map((item) => (
+        <div class="flex flex-col gap-6">
+          <div class="relative aspect-[755/500] w-full overflow-hidden">
+            <Image src={item.image} alt={item.alt} width={755} height={500} class="h-full w-full object-cover" />
+          </div>
+          <span class="font-body text-[16px] tracking-[-0.3px] text-secondary opacity-60">{item.eyebrow}</span>
+          <h3 class="font-display text-[38px] leading-[1.05] tracking-[-1.2px] text-navy sm:text-[52px] sm:tracking-[-1.6px]">
+            <span class="text-teal">{item.title}</span>
+            {item.titleRest}
+          </h3>
+          <p class="font-body text-[18px] leading-[1.5] tracking-[-0.5px] text-ink">{item.description}</p>
+          <a href="#contacto" class="btn btn--primary w-fit bg-navy shadow-navy/25">
+            Ver cómo lo logramos
+          </a>
+        </div>
+      ))
+    }
+  </div>
+</section>

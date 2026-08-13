@@ -1,0 +1,155 @@
+---
+import { Image } from "astro:assets";
+import phoneImage from "../assets/img/results/card-phone.png";
+import techgroupImage from "../assets/img/results/image-techgroup.png";
+import retailImage from "../assets/img/results/card-retail.png";
+
+/*
+  Carrusel de resultados: 3 proyectos, uno "grande" en el centro y dos
+  chicos asomando por los bordes (full-bleed, se sale del wrapper). En
+  desktop la sección se fija (mismo pin que Servicios) y el scroll hace
+  que el activo pase a ser otro — el que entra crece con un zoom suave,
+  el que sale se achica (ver results-carousel.js). Al pasar el mouse
+  por cualquiera de los 3, la imagen se oscurece y el puntero se
+  reemplaza por "Ver proyecto" + el mismo ícono de flecha circular que
+  usamos en Servicios.
+
+  Solo TechGroup tiene nombre real en el Figma — Aurora y Nexus son
+  nombres y etiquetas de servicio ficticios (reusamos los mismos
+  clientes y sub-servicios ya inventados en Testimonios/DigitalToday/
+  TeamConsulting, no son datos nuevos de la nada).
+
+  En mobile no hay pin, zoom ni cursor a medida (todo eso asume mouse) —
+  franja horizontal con scroll-snap nativo, cada imagen a tamaño fijo.
+*/
+const projects = [
+  {
+    image: phoneImage,
+    alt: "Celular mostrando la app bancaria de Aurora",
+    name: "Aurora",
+    tags: ["Arquitectura de producto", "Desarrollo a medida", "Soporte y mantenimiento"],
+  },
+  {
+    image: techgroupImage,
+    alt: "Monitor mostrando el dashboard de analítica de TechGroup",
+    name: "TechGroup",
+    tags: ["Diseño UX/UI", "Desarrollo", "Despliegue"],
+  },
+  {
+    image: retailImage,
+    alt: "Persona de Nexus presentando frente a un equipo en una tienda",
+    name: "Nexus",
+    tags: ["Talleres a medida", "Certificación de equipos", "Seguimiento post-taller"],
+  },
+];
+---
+
+<section class="section-y overflow-hidden">
+  <!-- Mobile/tablet: el título vive afuera del pin, en flujo normal -->
+  <div class="wrapper lg:hidden">
+    <h2
+      data-text-reveal
+      data-reveal
+      class="text-center font-display text-[32px] leading-[1.1] tracking-[-1px] text-secondary sm:text-[44px] sm:tracking-[-1.4px]"
+    >
+      Resultados que <span class="text-navy">hablan</span><br />por sí solos
+    </h2>
+  </div>
+
+  <!--
+    Desktop: stage fijo con zoom + cursor a medida. El título va ACÁ
+    ADENTRO (no afuera, en flujo normal) porque el pin fija esta caja
+    entera en el viewport — si el título quedara afuera, para cuando el
+    scroll llega a "pinear" la caja el título ya se scrolleó fuera de
+    pantalla y desaparece mientras dura la animación de los proyectos.
+  -->
+  <div class="relative mt-16 hidden lg:block" data-results-pin>
+    <div class="wrapper">
+      <h2
+        data-text-reveal
+        data-reveal
+        class="text-center font-display text-[66px] leading-[1.1] tracking-[-1.98px] text-secondary"
+      >
+        Resultados que <span class="text-navy">hablan</span><br />por sí solos
+      </h2>
+    </div>
+
+    <div class="relative left-1/2 mt-16 w-screen -translate-x-1/2" data-results-stage>
+      {
+        projects.map((project, i) => (
+          <a
+            href="#contacto"
+            aria-label={`Ver proyecto de ${project.name}`}
+            class="absolute top-1/2 overflow-hidden"
+            data-results-card
+            data-index={i}
+          >
+            <Image src={project.image} alt={project.alt} width={1184} height={664} class="h-full w-full object-cover" />
+            <span class="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-300" data-results-overlay />
+          </a>
+        ))
+      }
+    </div>
+
+    <div class="relative mt-10 grid justify-items-center">
+      {
+        projects.map((project, i) => (
+          <div class="col-start-1 row-start-1 flex flex-col items-center gap-1 opacity-0" data-results-caption data-index={i}>
+            {project.name && (
+              <>
+                <p class="font-body text-[32px] font-medium tracking-[-0.96px] text-ink">{project.name}</p>
+                <div class="flex items-center font-body text-[14px] text-ink">
+                  {project.tags.map((tag, j) => (
+                    <span class:list={["px-3 py-1", j > 0 && "border-l border-[#e1e0e0]"]}>{tag}</span>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- Mobile/tablet: franja horizontal con scroll-snap, sin pin ni cursor -->
+  <div class="mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2 lg:hidden">
+    {
+      projects.map((project) => (
+        <div class="flex w-[85%] shrink-0 snap-center flex-col items-center gap-4 sm:w-[60%]">
+          <div class="aspect-[1184/664] w-full overflow-hidden">
+            <Image src={project.image} alt={project.alt} width={1184} height={664} class="h-full w-full object-cover" />
+          </div>
+          {project.name && (
+            <div class="flex flex-col items-center gap-1">
+              <p class="font-body text-[24px] font-medium tracking-[-0.96px] text-ink">{project.name}</p>
+              <div class="flex items-center font-body text-[14px] text-ink">
+                {project.tags.map((tag, j) => (
+                  <span class:list={["px-3 py-1", j > 0 && "border-l border-[#e1e0e0]"]}>{tag}</span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      ))
+    }
+  </div>
+
+  <!--
+    Cursor a medida: mientras el mouse está sobre cualquiera de las 3
+    tarjetas, la imagen se oscurece (ver [data-results-overlay] arriba)
+    y el puntero nativo se reemplaza por este texto — no es un botón
+    (sin fondo ni relleno), solo texto blanco + el mismo ícono de
+    flecha circular outline que usamos en Servicios. Solo tiene sentido
+    con mouse (ver results-carousel.js).
+  -->
+  <div
+    class="pointer-events-none fixed top-0 left-0 z-50 hidden -translate-x-1/2 -translate-y-1/2 scale-75 items-center gap-3 font-body text-[26px] tracking-[-0.5px] text-white opacity-0 lg:flex"
+    data-results-cursor
+    aria-hidden="true"
+  >
+    <span>Ver proyecto</span>
+    <svg width="28" height="28" viewBox="0 0 256 256" fill="currentColor">
+      <path d="M168,96v48a8,8,0,0,1-16,0V115.31l-50.34,50.35a8,8,0,0,1-11.32-11.32L140.69,104H112a8,8,0,0,1,0-16h48A8,8,0,0,1,168,96Zm64,32A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z" />
+    </svg>
+  </div>
+</section>
