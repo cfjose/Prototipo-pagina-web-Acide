@@ -1,0 +1,103 @@
+---
+import { Image } from "astro:assets";
+import corporateSiteImage from "../assets/img/sitios-web/portfolio/corporate-site.png";
+import onePageImage from "../assets/img/sitios-web/portfolio/one-page.png";
+import ecommerceImage from "../assets/img/sitios-web/portfolio/ecommerce.png";
+import landingPageImage from "../assets/img/sitios-web/portfolio/landing-page.png";
+
+/*
+  "Lo que desarrollamos" — grilla masonry de 2 columnas, del Figma. Solo
+  la primera tarjeta ("Sitio web corporativo") trae descripción real en
+  el Figma; las otras 3 (One page, E-Commerce, Landing page) solo
+  traían título — la descripción de esas 3 es copy modelo mío, mismo
+  tono que el resto del sitio, para que las 4 tengan algo que mostrar
+  en el hover. Reemplazar cuando haya contenido real.
+
+  Reveal: cada imagen usa el mismo [data-reveal] del resto del sitio
+  (fade + sube desde abajo) — como la columna izquierda va más alta,
+  sus imágenes entran al viewport primero de forma natural, y
+  ScrollTrigger.batch (scroll-reveal.js) agrupa por cercanía y anima en
+  orden del DOM, así que quedan izquierda-luego-derecha sin necesitar
+  nada a medida.
+
+  Hover: la imagen crece un poco (scale) y, debajo del título (no
+  encima de la imagen), aparece la descripción con un fade de
+  opacidad puro (0→100%, sin animar alto — mismo criterio que se pidió
+  para /proyectos) — CSS puro (group-hover), sin JS. El hover funciona
+  tanto sobre la imagen como sobre el texto porque los dos viven
+  dentro del mismo .group.
+*/
+const items = [
+  {
+    title: "Sitio web corporativo",
+    description: "Sitios web completos con múltiples secciones, blog integrado y panel de administración a medida.",
+    image: corporateSiteImage,
+    alt: "Sitio web corporativo mostrado en un iMac",
+    aspect: "632/356",
+  },
+  {
+    title: "One page",
+    description: "Una sola página que cuenta toda la historia de tu marca, optimizada para conversión de principio a fin.",
+    image: onePageImage,
+    alt: "One page mostrada en la pantalla de una laptop",
+    aspect: "624/632",
+  },
+  {
+    title: "E-Commerce",
+    description: "Tiendas online completas con carrito, pagos integrados y gestión de inventario en tiempo real.",
+    image: ecommerceImage,
+    alt: "Tienda online mostrada en una tablet",
+    aspect: "624/632",
+  },
+  {
+    title: "Landing page",
+    description: "Páginas enfocadas en un solo objetivo, diseñadas para maximizar conversiones de campañas específicas.",
+    image: landingPageImage,
+    alt: "Landing page mostrada en la pantalla de una laptop",
+    aspect: "632/356",
+  },
+];
+
+const leftColumn = [items[0], items[1]];
+const rightColumn = [items[2], items[3]];
+---
+
+<section class="wrapper section-y">
+  <h2
+    data-text-reveal
+    data-reveal
+    class="text-center font-display text-[32px] leading-[1.1] tracking-[-1px] text-secondary sm:text-[44px] sm:tracking-[-1.4px] lg:text-[66px] lg:tracking-[-1.98px]"
+  >
+    Lo que <span class="text-navy">desarrollamos</span>
+  </h2>
+
+  <div class="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:gap-16">
+    {
+      [leftColumn, rightColumn].map((column) => (
+        <div class="flex flex-col gap-16 sm:gap-32">
+          {column.map((item) => (
+            <div class="group flex flex-col items-start gap-6">
+              <div class="relative w-full overflow-hidden" style={`aspect-ratio: ${item.aspect};`} data-reveal>
+                <Image
+                  src={item.image}
+                  alt={item.alt}
+                  width={632}
+                  height={632}
+                  class="h-full w-full object-cover transition-transform duration-500 ease-[var(--ease-default)] group-hover:scale-105"
+                />
+              </div>
+              <div class="flex flex-col gap-2">
+                <p class="font-body text-[24px] font-medium tracking-[-0.72px] text-ink sm:text-[32px] sm:tracking-[-0.96px]">
+                  {item.title}
+                </p>
+                <p class="pt-1 font-body text-[16px] leading-[1.5] tracking-[-0.3px] text-secondary opacity-0 transition-opacity duration-500 ease-[var(--ease-default)] group-hover:opacity-100">
+                  {item.description}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      ))
+    }
+  </div>
+</section>

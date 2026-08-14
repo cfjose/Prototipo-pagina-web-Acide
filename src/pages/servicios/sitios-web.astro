@@ -1,0 +1,27 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Header from "../../components/Header.astro";
+import ServiceSitiosWebIntro from "../../components/ServiceSitiosWebIntro.astro";
+import ServiceProcess from "../../components/ServiceProcess.astro";
+import ServiceResultsCarousel from "../../components/ServiceResultsCarousel.astro";
+import ServicePortfolio from "../../components/ServicePortfolio.astro";
+import Footer from "../../components/Footer.astro";
+---
+
+<!--
+  Página de detalle del servicio "Sitios Web" — cabecera + qué
+  hacemos/cómo/qué problema resolvemos (del Figma), proceso (mazo de
+  tarjetas, no está en el Figma — ver ServiceProcess.astro), resultados
+  y portafolio (ambos del Figma). El resto (casos de estudio, CTA)
+  todavía no está construido.
+-->
+<BaseLayout>
+  <Header />
+  <main>
+    <ServiceSitiosWebIntro />
+    <ServiceProcess />
+    <ServiceResultsCarousel />
+    <ServicePortfolio />
+  </main>
+  <Footer />
+</BaseLayout>

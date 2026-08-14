@@ -31,6 +31,7 @@ const items = [
       "Tu sitio web es la primera impresión que das — y muchas veces, la única oportunidad. Diseñamos experiencias que no solo se ven bien, sino que convierten visitantes en clientes desde el primer scroll.",
     image: webImage,
     alt: "Laptop y tablet mostrando un sitio web",
+    href: "/servicios/sitios-web",
   },
   {
     eyebrow: "02",
@@ -86,7 +87,7 @@ const items = [
                     {item.description}
                   </p>
                 </div>
-                <a href="#contacto" class="btn btn--primary w-fit bg-navy shadow-navy/25">
+                <a href={item.href || "#contacto"} class="btn btn--primary w-fit bg-navy shadow-navy/25">
                   Ver cómo lo logramos
                 </a>
               </div>

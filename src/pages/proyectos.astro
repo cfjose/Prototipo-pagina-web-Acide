@@ -1,0 +1,21 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import ProjectsHero from "../components/ProjectsHero.astro";
+import ProjectsList from "../components/ProjectsList.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<!--
+  Página de Proyectos — cabecera (título + imagen que crece con el
+  scroll) y la lista de proyectos con filtros + vista Stack/Grid, del
+  Figma. El CTA final todavía no está construido.
+-->
+<BaseLayout>
+  <Header />
+  <main>
+    <ProjectsHero />
+    <ProjectsList />
+  </main>
+  <Footer />
+</BaseLayout>

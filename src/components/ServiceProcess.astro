@@ -1,0 +1,114 @@
+---
+import { Image } from "astro:assets";
+import researchImage from "../assets/img/servicios/img-7-tablet-hand.png";
+import designImage from "../assets/img/servicios/img-2-design-desk.png";
+import devImage from "../assets/img/sitios-web/hero-small-laptop.png";
+import deployImage from "../assets/img/hero/server-room.png";
+
+/*
+  Sección "proceso de trabajo" — no está en el Figma de esta página (lo
+  más cercano ahí son Casos de estudio / Resultados / Portafolio, nada
+  de esto), así que el copy de los 4 pasos es inventado por completo,
+  mismo tono que el resto del sitio. Reemplazar cuando haya contenido
+  real.
+
+  Las imágenes SÍ son las que ya teníamos en el prototipo (no se
+  generó ni descargó nada nuevo).
+
+  Fondo #0B2238 a pantalla completa, sin título — la sección ocupa el
+  viewport entero y se fija (pin). El texto (464px de ancho) cruza con
+  blur/fade/slide, igual que Servicios. Las imágenes (606x828) NO están
+  todas desde el arranque: solo la primera se ve al llegar; con cada
+  paso de scroll entra la siguiente desde abajo y se apila sobre las
+  anteriores, en su propio ángulo — se van acumulando, no se reemplazan
+  (ver service-process.js). Gap entre texto e imágenes: 124px.
+
+  En mobile sigue sin pin (el scroll-jacking se siente mal en touch) —
+  lista vertical simple, fondo claro como el resto del sitio.
+*/
+const steps = [
+  {
+    eyebrow: "01",
+    title: "Investigación",
+    description:
+      "Analizamos tu mercado, tu competencia y a tus usuarios antes de tocar una sola pantalla — cada decisión de diseño parte de datos reales, no de suposiciones.",
+    image: researchImage,
+    alt: "Mano dibujando un boceto de investigación en una tablet",
+  },
+  {
+    eyebrow: "02",
+    title: "Diseño UX/UI",
+    description:
+      "Diseñamos wireframes y prototipos interactivos que priorizan la experiencia del usuario, iterando con tu feedback antes de escribir una sola línea de código.",
+    image: designImage,
+    alt: "Escritorio con laptop y paleta de colores de diseño",
+  },
+  {
+    eyebrow: "03",
+    title: "Desarrollo",
+    description:
+      "Construimos con código limpio y escalable, siguiendo las mejores prácticas de la industria para que tu sitio sea rápido, seguro y fácil de mantener.",
+    image: devImage,
+    alt: "Laptop con un editor de código",
+  },
+  {
+    eyebrow: "04",
+    title: "Despliegue",
+    description:
+      "Publicamos tu sitio en infraestructura en la nube con monitoreo activo, listo para crecer con tu negocio desde el primer día.",
+    image: deployImage,
+    alt: "Pasillo de un centro de datos",
+  },
+];
+---
+
+<!-- Desktop: fondo azul, viewport completo, sin título, sección fija (pin) -->
+<section class="hidden lg:block lg:h-screen lg:bg-[#0B2238]" data-process-pin>
+  <div class="wrapper flex h-full items-center gap-[124px]">
+    <div class="grid w-[464px] shrink-0" data-process-text-stack>
+      {
+        steps.map((step, i) => (
+          <div class="col-start-1 row-start-1 flex flex-col gap-4" data-process-text-item data-index={i}>
+            <span class="font-body text-[16px] tracking-[-0.3px] text-white/60">{step.eyebrow}</span>
+            <h3 class="font-display text-[66px] leading-[1.05] tracking-[-1.98px] text-white" data-process-title>
+              {step.title}
+            </h3>
+            <p class="font-body text-[26px] leading-[1.5] tracking-[-0.5px] text-white/80" data-process-description>
+              {step.description}
+            </p>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="relative h-[828px] w-[606px]" data-process-media-stack>
+      {
+        steps.map((step, i) => (
+          <div class="absolute inset-0 overflow-hidden border border-white/10 bg-[#0B2238]" data-process-media-item data-index={i}>
+            <Image src={step.image} alt={step.alt} width={606} height={828} class="h-full w-full object-cover" />
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Mobile/tablet: lista vertical simple, sin pin -->
+<section class="wrapper section-y lg:hidden">
+  <div class="flex flex-col gap-8">
+    {
+      steps.map((step) => (
+        <div class="flex flex-col overflow-hidden border border-black/10 bg-white" data-reveal>
+          <div class="aspect-[600/337] w-full overflow-hidden">
+            <Image src={step.image} alt={step.alt} width={600} height={337} class="h-full w-full object-cover" />
+          </div>
+          <div class="flex flex-col gap-2 p-6">
+            <span class="font-body text-[14px] tracking-[-0.3px] text-secondary opacity-60">{step.eyebrow}</span>
+            <h3 class="font-body text-[22px] font-medium tracking-[-0.66px] text-ink">{step.title}</h3>
+            <p class="font-body text-[16px] leading-[1.5] tracking-[-0.3px] text-ink">{step.description}</p>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</section>

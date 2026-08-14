@@ -11,8 +11,8 @@ import { prefersReducedMotion } from "../utils/reduced-motion.js";
   se ve porque las dos posiciones están fuera de pantalla) para volver
   a entrar por la derecha (4→3) — así nunca cruza por detrás de los
   otros dos, que solo se corren un lugar (2→1, 3→2). Retroceder hace lo
-  mismo espejado. Tamaños: centro 1184x664, costados 683x384, gap 24px
-  fijo (se escala parejo si no entra en pantalla, ver computeScale).
+  mismo espejado. Tamaños: centro 996x553, costados 683x384, gap 24px
+  fijo (igual criterio de escalado que antes si no entra en pantalla).
 
   Los costados (1 y 3) no entran completos: se recortan contra el
   borde de la pantalla, mostrando 3/4 de la imagen y dejando 1/4 fuera
@@ -21,24 +21,25 @@ import { prefersReducedMotion } from "../utils/reduced-motion.js";
   (3/4 de cada costado, no el costado completo), lo que además permite
   una escala más grande que antes sin que dejen de entrar en pantalla.
 
-  Mismo pin+scroll que el resto — ver ServiceResultsCarousel.astro para
-  la versión de /servicios/sitios-web (misma lógica, tamaños propios).
+  Mismo pin+scroll que el resto — ver ResultsCarousel.astro para la
+  versión genérica de /servicios (misma lógica, mismos tamaños de acá
+  no aplican ahí, tiene los suyos propios).
 */
 const SIDE_VISIBLE_FRACTION = 0.75;
 const GAP = 24;
-const CENTER_W = 1184;
-const CENTER_H = 664;
+const CENTER_W = 996;
+const CENTER_H = 553;
 const SIDE_W = 683;
 const SIDE_H = 384;
 
-export function initResultsCarousel() {
-  const pinTarget = document.querySelector("[data-results-pin]");
-  const stage = document.querySelector("[data-results-stage]");
+export function initServiceResultsCarousel() {
+  const pinTarget = document.querySelector("[data-sresults-pin]");
+  const stage = document.querySelector("[data-sresults-stage]");
   const titleBlock = pinTarget?.querySelector("h2");
-  const captionsBlock = document.querySelector("[data-results-caption]")?.parentElement;
-  const cards = document.querySelectorAll("[data-results-card]");
-  const captions = document.querySelectorAll("[data-results-caption]");
-  const cursor = document.querySelector("[data-results-cursor]");
+  const captionsBlock = document.querySelector("[data-sresults-caption]")?.parentElement;
+  const cards = document.querySelectorAll("[data-sresults-card]");
+  const captions = document.querySelectorAll("[data-sresults-caption]");
+  const cursor = document.querySelector("[data-sresults-cursor]");
   if (!pinTarget || !stage || !cards.length) return;
 
   const count = cards.length;
@@ -163,7 +164,7 @@ export function initResultsCarousel() {
     });
 
     cards.forEach((card) => {
-      const overlay = card.querySelector("[data-results-overlay]");
+      const overlay = card.querySelector("[data-sresults-overlay]");
       card.addEventListener("mouseenter", () => {
         card.classList.add("cursor-none");
         gsap.to(cursor, { opacity: 1, scale: 1, duration: 0.3, ease: "power2.out" });

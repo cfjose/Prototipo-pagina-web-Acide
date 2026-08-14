@@ -1,0 +1,217 @@
+---
+import { Image } from "astro:assets";
+import grupoAlimentarioImg from "../assets/img/proyectos/grupo-alimentario.png";
+import clinicaSanRafaelImg from "../assets/img/proyectos/clinica-san-rafael.png";
+import logisticaDelNorteImg from "../assets/img/proyectos/logistica-del-norte.png";
+import estudioLegalVegaImg from "../assets/img/proyectos/estudio-legal-vega.png";
+import andinaConstruccionImg from "../assets/img/proyectos/andina-construccion.png";
+import cafeOrganicoLimaImg from "../assets/img/proyectos/cafe-organico-lima.png";
+
+/*
+  Los 6 proyectos, tamaños de imagen y copy (cliente, título, tags) son
+  los reales del Figma. Solo "Grupo Alimentario" traía la descripción
+  larga (la de abajo del todo) — las otras 5 son copy modelo mío, mismo
+  tono, para que el hover funcione parejo en las 6. Reemplazar cuando
+  haya contenido real.
+
+  "rubro" y "servicio" son categorías para los filtros — no vienen del
+  Figma (los dropdowns estaban vacíos ahí), las armé a partir del
+  rubro real de cada cliente y del primer tag de servicio de cada uno.
+
+  Vista Stack: réplica exacta del Figma — pares alternados chica/grande.
+  Vista Grid: mismos 6 proyectos en cuadrados, 3 por fila.
+  En ambas vistas el cliente/título/tags quedan siempre visibles (Grid
+  además los tapa con la imagen hasta el hover, ver abajo) y la
+  DESCRIPCIÓN arranca oculta — aparece con hover, fade de opacidad
+  puro 0→100% (sin animar alto), ver projects-list.js.
+*/
+const projects = [
+  {
+    client: "Grupo Alimentario",
+    title: "Tienda online con gestión de inventario",
+    tags: ["Diseño UX", "E-Commerce", "Despliegue"],
+    description: "Plataforma e-commerce con catálogo de productos, pasarela de pago y panel de gestión de pedidos.",
+    image: grupoAlimentarioImg,
+    alt: "Tablet mostrando la tienda online de Grupo Alimentario",
+    size: "small",
+    rubro: "Alimentos",
+    servicio: "E-Commerce",
+  },
+  {
+    client: "Clínica San Rafael",
+    title: "Rediseño web y sistema de citas médicas en línea",
+    tags: ["Sitio Web", "Diseño UI", "SEO Técnico"],
+    description: "Sistema de citas médicas con recordatorios automáticos y panel para que el equipo administre la agenda de cada doctor.",
+    image: clinicaSanRafaelImg,
+    alt: "Laptop mostrando el sistema de citas de Clínica San Rafael",
+    size: "large",
+    rubro: "Salud",
+    servicio: "Sitios Web",
+  },
+  {
+    client: "Logística del Norte",
+    title: "Portal logístico con rastreo en tiempo real",
+    tags: ["Aplicación", "Dashboard", "API Rest"],
+    description: "Portal con rastreo de envíos en tiempo real y un dashboard operativo para gestionar rutas y flotas desde un solo lugar.",
+    image: logisticaDelNorteImg,
+    alt: "Pantallas mostrando el portal de Logística del Norte",
+    size: "large",
+    rubro: "Logística",
+    servicio: "Aplicaciones",
+  },
+  {
+    client: "Estudio Legal Vega",
+    title: "Landing page y formulario de consultas legales",
+    tags: ["Landing", "Branding", "Formulario"],
+    description: "Landing page con formulario de consultas legales que filtra y deriva cada caso al abogado correspondiente automáticamente.",
+    image: estudioLegalVegaImg,
+    alt: "Landing page de Estudio Legal Vega",
+    size: "small",
+    rubro: "Legal",
+    servicio: "Landing Pages",
+  },
+  {
+    client: "Andina Construcción",
+    title: "Sitio corporativo con portafolio de obras",
+    tags: ["Sitio Web", "Portafolio", "Hosting"],
+    description: "Sitio corporativo con portafolio de obras filtrable por tipo de proyecto, pensado para captar nuevos clientes constructores.",
+    image: andinaConstruccionImg,
+    alt: "Sitio corporativo de Andina Construcción",
+    size: "small",
+    rubro: "Construcción",
+    servicio: "Sitios Web",
+  },
+  {
+    client: "Café Orgánico Lima",
+    title: "Página web y estrategia de contenido para café",
+    tags: ["One Page", "Diseño UX", "Contenido"],
+    description: "Página con estrategia de contenido enfocada en storytelling de marca, para conectar con un público que valora el origen del producto.",
+    image: cafeOrganicoLimaImg,
+    alt: "Página web de Café Orgánico Lima",
+    size: "large",
+    rubro: "Alimentos",
+    servicio: "Landing Pages",
+  },
+];
+
+const rubros = [...new Set(projects.map((p) => p.rubro))];
+const servicios = [...new Set(projects.map((p) => p.servicio))];
+---
+
+<section class="wrapper section-y">
+  <div class="relative z-30 flex flex-wrap items-center justify-between gap-4" data-projects-filters>
+    <div class="flex flex-wrap items-center gap-4">
+      <span class="font-body text-[18px] tracking-[-0.5px] text-ink">Filtros:</span>
+      <div class="flex flex-wrap items-center gap-3">
+        <button type="button" data-pfilter-reset class="rounded-lg bg-navy px-4 py-2 font-body text-[18px] tracking-[-0.5px] text-white">
+          Todos
+        </button>
+
+        <div class="relative" data-pdropdown>
+          <button type="button" data-pdropdown-trigger class="flex items-center gap-2 rounded-lg bg-[#f0f0f0] px-4 py-2 font-body text-[18px] tracking-[-0.5px] text-ink">
+            <span data-pdropdown-label="rubro" data-default-label="Por rubro">Por rubro</span>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7.5l5 5 5-5" /></svg>
+          </button>
+          <div data-pdropdown-panel class="absolute left-0 top-[calc(100%+8px)] z-20 hidden w-full min-w-[200px] overflow-hidden rounded-xl bg-white py-2 shadow-lg">
+            {
+              rubros.map((r) => (
+                <button type="button" data-pfilter-option data-filter-type="rubro" data-filter-value={r} class="block w-full px-5 py-3 text-left font-body text-[16px] text-ink hover:bg-[#f5f5f6]">
+                  {r}
+                </button>
+              ))
+            }
+          </div>
+        </div>
+
+        <div class="relative" data-pdropdown>
+          <button type="button" data-pdropdown-trigger class="flex items-center gap-2 rounded-lg bg-[#f0f0f0] px-4 py-2 font-body text-[18px] tracking-[-0.5px] text-ink">
+            <span data-pdropdown-label="servicio" data-default-label="Por servicio">Por servicio</span>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7.5l5 5 5-5" /></svg>
+          </button>
+          <div data-pdropdown-panel class="absolute left-0 top-[calc(100%+8px)] z-20 hidden w-full min-w-[200px] overflow-hidden rounded-xl bg-white py-2 shadow-lg">
+            {
+              servicios.map((s) => (
+                <button type="button" data-pfilter-option data-filter-type="servicio" data-filter-value={s} class="block w-full px-5 py-3 text-left font-body text-[16px] text-ink hover:bg-[#f5f5f6]">
+                  {s}
+                </button>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <span class="font-body text-[18px] tracking-[-0.5px] text-ink">Vista:</span>
+      <div class="flex items-center gap-3">
+        <button type="button" data-pview-btn="stack" class="rounded-lg px-4 py-2 font-body text-[18px] tracking-[-0.5px] transition-colors duration-200 bg-navy text-white" aria-pressed="true">
+          Stack
+        </button>
+        <button type="button" data-pview-btn="grid" class="rounded-lg px-4 py-2 font-body text-[18px] tracking-[-0.5px] transition-colors duration-200 bg-[#f0f0f0] text-ink" aria-pressed="false">
+          Grid
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vista Stack: pares alternados chica/grande, igual que el Figma -->
+  <div class="mt-16 flex flex-col gap-16" data-pview-stack>
+    {
+      [
+        [projects[0], projects[1]],
+        [projects[2], projects[3]],
+        [projects[4], projects[5]],
+      ].map((pair) => (
+        <div class="flex flex-col items-start gap-16 lg:flex-row">
+          {pair.map((project) => (
+            <div
+              class:list={["group flex flex-col items-start gap-6", project.size === "large" ? "lg:flex-[802]" : "lg:flex-[446]"]}
+              data-reveal-fade
+              data-pproject-card
+              data-rubro={project.rubro}
+              data-servicio={project.servicio}
+            >
+              <div class:list={["relative w-full overflow-hidden", project.size === "large" ? "aspect-[802/451]" : "aspect-[446/285]"]}>
+                <Image src={project.image} alt={project.alt} width={802} height={451} class="h-full w-full object-cover" />
+              </div>
+              <div class="flex flex-col items-start gap-2">
+                <p class="font-body text-[26px] tracking-[-0.5px] text-secondary">{project.client}</p>
+                <p class="font-body text-[32px] font-medium tracking-[-0.96px] text-ink">{project.title}</p>
+                <div class="flex items-center font-body text-[14px] text-secondary">
+                  {project.tags.map((tag, j) => (
+                    <span class:list={["py-1", j === 0 ? "pr-3" : "px-3", j > 0 && "border-l border-[#e1e0e0]"]}>{tag}</span>
+                  ))}
+                </div>
+                <p class="max-w-[560px] font-body text-[18px] leading-[1.5] tracking-[-0.5px] text-ink opacity-0 transition-opacity duration-500 ease-[var(--ease-default)] group-hover:opacity-100">
+                  {project.description}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      ))
+    }
+  </div>
+
+  <!-- Vista Grid: mismos 6, cuadrados de a 3 por fila, texto oculto hasta el hover -->
+  <div class="mt-16 hidden grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3" data-pview-grid>
+    {
+      projects.map((project) => (
+        <div
+          class="group relative aspect-square overflow-hidden"
+          data-reveal-fade
+          data-pproject-card
+          data-rubro={project.rubro}
+          data-servicio={project.servicio}
+        >
+          <Image src={project.image} alt={project.alt} width={600} height={600} class="h-full w-full object-cover" />
+          <div class="absolute inset-0 flex flex-col justify-end gap-2 bg-black/0 p-6 opacity-0 transition-all duration-500 ease-[var(--ease-default)] group-hover:bg-black/55 group-hover:opacity-100">
+            <p class="font-body text-[16px] tracking-[-0.3px] text-white/70">{project.client}</p>
+            <p class="font-body text-[20px] font-medium tracking-[-0.6px] text-white">{project.title}</p>
+            <p class="font-body text-[14px] leading-[1.5] tracking-[-0.3px] text-white/90">{project.description}</p>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</section>
