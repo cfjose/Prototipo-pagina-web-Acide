@@ -16,6 +16,7 @@
   --color-ink: #272727; /* Dark / Primary Text — cuerpo de texto */
   --color-teal: #119da4; /* Teal / Primary Teal — CTAs */
   --color-red: #f43159; /* Red / Accent Pink — acentos gráficos */
+  --color-mist: #ebf2fa; /* Light Background — texto base en títulos de CTA sobre fondo oscuro */
 
   --font-display: "Inter Variable", "Inter", sans-serif;
   --font-body: "Satoshi", sans-serif;
@@ -28,6 +29,19 @@
     font-family: var(--font-body);
     color: var(--color-ink);
     background: var(--color-canvas);
+  }
+
+  /*
+    El header pasa a xl:fixed (ver Header.astro, para que el cambio
+    entre estado "default" y "floating" no mueva contenido) — este
+    padding compensa el espacio que dejaba de ocupar en el flujo
+    normal. Valor = alto real del header renderizado (medido en
+    navegador), no un número inventado.
+  */
+  @media (min-width: 1280px) {
+    main {
+      padding-top: 107px;
+    }
   }
 }
 
@@ -56,7 +70,7 @@
   }
 
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-6 py-4 font-body text-[18px] font-bold tracking-[-0.5px] transition-transform duration-300 ease-[var(--ease-default)];
+    @apply inline-flex items-center justify-center gap-2 px-6 py-4 font-body text-[18px] font-bold tracking-[-0.5px] transition-transform duration-300 ease-[var(--ease-default)];
   }
   .btn--primary {
     @apply bg-teal text-white;

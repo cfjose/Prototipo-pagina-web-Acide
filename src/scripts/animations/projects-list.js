@@ -27,7 +27,7 @@ export function initProjectsList() {
   const updateResetButtonState = () => {
     if (!resetBtn) return;
     const noFilters = !filters.rubro && !filters.servicio;
-    resetBtn.classList.toggle("bg-navy", noFilters);
+    resetBtn.classList.toggle("bg-teal", noFilters);
     resetBtn.classList.toggle("text-white", noFilters);
     resetBtn.classList.toggle("bg-[#f0f0f0]", !noFilters);
     resetBtn.classList.toggle("text-ink", !noFilters);
@@ -81,11 +81,10 @@ export function initProjectsList() {
       stackView.classList.toggle("hidden", !isStack);
       stackView.classList.toggle("flex", isStack);
       gridView.classList.toggle("hidden", isStack);
-      gridView.classList.toggle("grid", !isStack);
 
       viewBtns.forEach((b) => {
         const active = b === btn;
-        b.classList.toggle("bg-navy", active);
+        b.classList.toggle("bg-teal", active);
         b.classList.toggle("text-white", active);
         b.classList.toggle("bg-[#f0f0f0]", !active);
         b.classList.toggle("text-ink", !active);

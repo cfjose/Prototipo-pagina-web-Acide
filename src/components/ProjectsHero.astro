@@ -3,19 +3,25 @@ import { Image } from "astro:assets";
 import heroImage from "../assets/img/proyectos/hero.png";
 
 /*
-  Cabecera de /proyectos — el Figma acá solo trae título, sin
-  descripción corta (a diferencia de otras páginas), así que no
-  inventamos una — se confirmó explícitamente dejarlo así.
+  Cabecera de /proyectos. H1 en su posición normal (como el resto de
+  los heroes del sitio, sin efecto de pantalla completa) y la imagen
+  inmediatamente 54px debajo (margin-top real, no un padding de otra
+  sección) — ambos visibles juntos desde que carga la página, sin
+  ninguna animación de entrada.
 
-  La imagen debajo arranca al 75% de su ancho (1/4 más angosta) y
-  llega a su ancho completo (el mismo de todas las secciones, el
-  wrapper) a medida que el usuario la scrollea — no es un reveal de
-  aparecer/desaparecer, es un crecimiento de ancho atado al scroll
-  (scrub), ver projects-hero.js.
+  La imagen arranca en 912px de ancho (69.51% del wrapper de 1312px)
+  y crece a su ancho completo (1312px / 100%) a medida que el usuario
+  la scrollea — scroll normal, sin fijar la pantalla. Alto fijo en
+  829px (nunca anima, ver projects-hero.js).
+
+  Nota: esta sección NO usa la clase ".wrapper" para el ancho de la
+  imagen porque esa clase suma padding horizontal (px-8) por dentro
+  del max-w-[1312px], y eso le restaría los últimos px al 100% —
+  achicándolo a 1248px en vez de los 1312px reales del Figma.
 */
 ---
 
-<section class="wrapper section-y flex flex-col items-center gap-14">
+<section class="mx-auto flex w-full max-w-[1312px] flex-col items-center px-5 py-16 sm:px-8 lg:px-0 lg:py-[100px]">
   <h1
     data-text-reveal
     data-reveal
@@ -24,9 +30,9 @@ import heroImage from "../assets/img/proyectos/hero.png";
     <span class="text-slate">Proyectos que hablan </span><span class="text-navy">por nuestro trabajo</span>
   </h1>
 
-  <div class="mx-auto w-[75%]" data-projects-hero-image>
-    <div class="aspect-[1312/616] w-full overflow-hidden">
-      <Image src={heroImage} alt="Collage de proyectos desarrollados por Acide" width={1312} height={616} class="h-full w-full object-cover" />
+  <div class="mt-[54px] w-[69.51%]" data-projects-hero-image>
+    <div class="aspect-[1312/829] w-full overflow-hidden lg:aspect-auto lg:h-[829px]">
+      <Image src={heroImage} alt="Collage de proyectos desarrollados por Acide" width={1312} height={829} class="h-full w-full object-cover" />
     </div>
   </div>
 </section>

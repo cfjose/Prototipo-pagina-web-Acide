@@ -11,12 +11,15 @@ import laptopImage from "../assets/img/sitios-web/hero-small-laptop.png";
   portafolio, CTA) todavía no está construido.
 
   Desktop: la sección se fija (pin) en el viewport. Al llegar, se ve
-  SOLO el texto centrado verticalmente en la pantalla — nada de
-  imágenes todavía. El scroll hace que el texto suba a su lugar final
+  SOLO el título centrado verticalmente en la pantalla — nada de
+  imágenes todavía. El scroll hace que el título suba a su lugar final
   y, en pasos siguientes, cada imagen entra desde abajo (grande,
   mediana, chica, en ese orden) hasta completar el layout — recién ahí
   se libera el scroll hacia la siguiente sección (ver
-  service-intro-reveal.js).
+  service-intro-reveal.js). Sin descripción (se sacó a pedido) — el
+  collage de imágenes ocupa como alto todo lo que sobra de pantalla
+  después del título (flex-1 dentro del stage de 100vh), con el ancho
+  siempre topeado en los 1312px del wrapper.
 
   Mobile: sin pin (el scroll-jacking se siente mal en touch, mismo
   criterio que el resto del sitio) — reveal simple de abajo hacia
@@ -26,19 +29,14 @@ import laptopImage from "../assets/img/sitios-web/hero-small-laptop.png";
 
 <!-- Desktop: stage fijo con el reveal en pasos -->
 <section class="hidden lg:block lg:h-screen lg:overflow-hidden" data-intro-pin>
-  <div class="wrapper section-y" data-intro-content>
-    <div class="mx-auto flex max-w-[928px] flex-col items-center gap-6 text-center" data-intro-text>
+  <div class="wrapper section-y flex h-full flex-col" data-intro-content>
+    <div class="mx-auto flex max-w-[928px] shrink-0 flex-col items-center gap-6 text-center" data-intro-text>
       <h1 data-intro-title class="font-display text-[78px] leading-[1.05] tracking-[-3.12px]">
         <span class="text-slate">Desarrollo de páginas web </span><span class="text-navy">a tu medida.</span>
       </h1>
-      <p data-intro-description class="max-w-[781px] font-body text-[18px] leading-[1.5] tracking-[-0.5px] text-ink">
-        Antes de diseñar o escribir una sola línea de código, analizamos tu mercado, competencia y usuarios.
-        Definimos la arquitectura de información y los flujos clave para garantizar que cada decisión de diseño esté
-        respaldada por datos reales.
-      </p>
     </div>
 
-    <div class="relative mt-16 w-full" style="aspect-ratio: 1312/700.97;" data-intro-images>
+    <div class="relative mt-16 w-full flex-1" data-intro-images>
       <div class="absolute left-[14.61%] top-0 h-[91.42%] w-[70.86%] overflow-hidden" data-intro-image data-index="0">
         <Image src={deskImage} alt="Escritorio con un monitor mostrando un panel de diseño" width={930} height={640} class="h-full w-full object-cover" />
       </div>
@@ -62,15 +60,6 @@ import laptopImage from "../assets/img/sitios-web/hero-small-laptop.png";
     >
       <span class="text-slate">Desarrollo de páginas web </span><span class="text-navy">a tu medida.</span>
     </h1>
-    <p
-      data-text-reveal
-      data-reveal
-      class="font-body text-[16px] leading-[1.5] tracking-[-0.3px] text-ink sm:text-[18px] sm:tracking-[-0.5px]"
-    >
-      Antes de diseñar o escribir una sola línea de código, analizamos tu mercado, competencia y usuarios. Definimos
-      la arquitectura de información y los flujos clave para garantizar que cada decisión de diseño esté respaldada
-      por datos reales.
-    </p>
   </div>
 
   <div class="flex w-full flex-col gap-4">

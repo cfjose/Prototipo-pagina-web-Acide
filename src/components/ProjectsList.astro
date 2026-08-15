@@ -1,5 +1,6 @@
 ---
 import { Image } from "astro:assets";
+import ProjectGridCard from "./ProjectGridCard.astro";
 import grupoAlimentarioImg from "../assets/img/proyectos/grupo-alimentario.png";
 import clinicaSanRafaelImg from "../assets/img/proyectos/clinica-san-rafael.png";
 import logisticaDelNorteImg from "../assets/img/proyectos/logistica-del-norte.png";
@@ -96,23 +97,37 @@ const projects = [
 
 const rubros = [...new Set(projects.map((p) => p.rubro))];
 const servicios = [...new Set(projects.map((p) => p.servicio))];
+
+// Vista Grid en desktop: 3 columnas INDEPENDIENTES (flex, no CSS grid) para
+// que el hover en una tarjeta empuje solo lo que está debajo en su misma
+// columna — con CSS grid, las 3 columnas comparten alto de fila y el hover
+// termina bajando toda la fila entera, que es justo lo que no queremos.
+const gridColumns = [[], [], []];
+projects.forEach((project, i) => gridColumns[i % 3].push(project));
 ---
 
+<!--
+  Espaciado: de la imagen del hero (ProjectsHero) a los filtros son
+  200px (el ritmo estándar del sitio, 100 de cada sección — ver
+  .section-y en main.css), de los filtros al heading "Lo que hemos
+  construido juntos" son 84px, y de ahí a la primera fila de
+  proyectos (y entre filas) 64px.
+-->
 <section class="wrapper section-y">
   <div class="relative z-30 flex flex-wrap items-center justify-between gap-4" data-projects-filters>
     <div class="flex flex-wrap items-center gap-4">
       <span class="font-body text-[18px] tracking-[-0.5px] text-ink">Filtros:</span>
       <div class="flex flex-wrap items-center gap-3">
-        <button type="button" data-pfilter-reset class="rounded-lg bg-navy px-4 py-2 font-body text-[18px] tracking-[-0.5px] text-white">
+        <button type="button" data-pfilter-reset class="bg-teal px-4 py-2 text-center font-body text-[18px] tracking-[-0.5px] text-white">
           Todos
         </button>
 
         <div class="relative" data-pdropdown>
-          <button type="button" data-pdropdown-trigger class="flex items-center gap-2 rounded-lg bg-[#f0f0f0] px-4 py-2 font-body text-[18px] tracking-[-0.5px] text-ink">
+          <button type="button" data-pdropdown-trigger class="flex items-center gap-2 bg-[#f0f0f0] px-4 py-2 font-body text-[18px] tracking-[-0.5px] text-ink">
             <span data-pdropdown-label="rubro" data-default-label="Por rubro">Por rubro</span>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7.5l5 5 5-5" /></svg>
           </button>
-          <div data-pdropdown-panel class="absolute left-0 top-[calc(100%+8px)] z-20 hidden w-full min-w-[200px] overflow-hidden rounded-xl bg-white py-2 shadow-lg">
+          <div data-pdropdown-panel class="absolute left-0 top-[calc(100%+8px)] z-20 hidden w-full min-w-[200px] overflow-hidden bg-white py-2 shadow-lg">
             {
               rubros.map((r) => (
                 <button type="button" data-pfilter-option data-filter-type="rubro" data-filter-value={r} class="block w-full px-5 py-3 text-left font-body text-[16px] text-ink hover:bg-[#f5f5f6]">
@@ -124,11 +139,11 @@ const servicios = [...new Set(projects.map((p) => p.servicio))];
         </div>
 
         <div class="relative" data-pdropdown>
-          <button type="button" data-pdropdown-trigger class="flex items-center gap-2 rounded-lg bg-[#f0f0f0] px-4 py-2 font-body text-[18px] tracking-[-0.5px] text-ink">
+          <button type="button" data-pdropdown-trigger class="flex items-center gap-2 bg-[#f0f0f0] px-4 py-2 font-body text-[18px] tracking-[-0.5px] text-ink">
             <span data-pdropdown-label="servicio" data-default-label="Por servicio">Por servicio</span>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7.5l5 5 5-5" /></svg>
           </button>
-          <div data-pdropdown-panel class="absolute left-0 top-[calc(100%+8px)] z-20 hidden w-full min-w-[200px] overflow-hidden rounded-xl bg-white py-2 shadow-lg">
+          <div data-pdropdown-panel class="absolute left-0 top-[calc(100%+8px)] z-20 hidden w-full min-w-[200px] overflow-hidden bg-white py-2 shadow-lg">
             {
               servicios.map((s) => (
                 <button type="button" data-pfilter-option data-filter-type="servicio" data-filter-value={s} class="block w-full px-5 py-3 text-left font-body text-[16px] text-ink hover:bg-[#f5f5f6]">
@@ -144,15 +159,19 @@ const servicios = [...new Set(projects.map((p) => p.servicio))];
     <div class="flex items-center gap-4">
       <span class="font-body text-[18px] tracking-[-0.5px] text-ink">Vista:</span>
       <div class="flex items-center gap-3">
-        <button type="button" data-pview-btn="stack" class="rounded-lg px-4 py-2 font-body text-[18px] tracking-[-0.5px] transition-colors duration-200 bg-navy text-white" aria-pressed="true">
+        <button type="button" data-pview-btn="stack" class="w-[80px] px-4 py-2 text-center font-body text-[18px] tracking-[-0.5px] transition-colors duration-200 bg-teal text-white" aria-pressed="true">
           Stack
         </button>
-        <button type="button" data-pview-btn="grid" class="rounded-lg px-4 py-2 font-body text-[18px] tracking-[-0.5px] transition-colors duration-200 bg-[#f0f0f0] text-ink" aria-pressed="false">
+        <button type="button" data-pview-btn="grid" class="w-[80px] px-4 py-2 text-center font-body text-[18px] tracking-[-0.5px] transition-colors duration-200 bg-[#f0f0f0] text-ink" aria-pressed="false">
           Grid
         </button>
       </div>
     </div>
   </div>
+
+  <h2 data-reveal-fade class="mt-12 max-w-[1312px] font-display text-[32px] leading-[1.05] tracking-[-0.96px] sm:text-[44px] sm:tracking-[-1.3px] lg:mt-[84px] lg:text-[66px] lg:tracking-[-1.98px]">
+    <span class="text-ink">Lo que hemos </span><span class="text-navy">construido juntos</span>
+  </h2>
 
   <!-- Vista Stack: pares alternados chica/grande, igual que el Figma -->
   <div class="mt-16 flex flex-col gap-16" data-pview-stack>
@@ -176,7 +195,7 @@ const servicios = [...new Set(projects.map((p) => p.servicio))];
               </div>
               <div class="flex flex-col items-start gap-2">
                 <p class="font-body text-[26px] tracking-[-0.5px] text-secondary">{project.client}</p>
-                <p class="font-body text-[32px] font-medium tracking-[-0.96px] text-ink">{project.title}</p>
+                <p class="font-body text-[32px] leading-[34px] font-medium tracking-[-0.96px] text-ink">{project.title}</p>
                 <div class="flex items-center font-body text-[14px] text-secondary">
                   {project.tags.map((tag, j) => (
                     <span class:list={["py-1", j === 0 ? "pr-3" : "px-3", j > 0 && "border-l border-[#e1e0e0]"]}>{tag}</span>
@@ -193,25 +212,29 @@ const servicios = [...new Set(projects.map((p) => p.servicio))];
     }
   </div>
 
-  <!-- Vista Grid: mismos 6, cuadrados de a 3 por fila, texto oculto hasta el hover -->
-  <div class="mt-16 hidden grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3" data-pview-grid>
-    {
-      projects.map((project) => (
-        <div
-          class="group relative aspect-square overflow-hidden"
-          data-reveal-fade
-          data-pproject-card
-          data-rubro={project.rubro}
-          data-servicio={project.servicio}
-        >
-          <Image src={project.image} alt={project.alt} width={600} height={600} class="h-full w-full object-cover" />
-          <div class="absolute inset-0 flex flex-col justify-end gap-2 bg-black/0 p-6 opacity-0 transition-all duration-500 ease-[var(--ease-default)] group-hover:bg-black/55 group-hover:opacity-100">
-            <p class="font-body text-[16px] tracking-[-0.3px] text-white/70">{project.client}</p>
-            <p class="font-body text-[20px] font-medium tracking-[-0.6px] text-white">{project.title}</p>
-            <p class="font-body text-[14px] leading-[1.5] tracking-[-0.3px] text-white/90">{project.description}</p>
+  <!-- Vista Grid: mismos 6, cuadrados de a 3 por fila. El texto usa
+       exactamente los mismos estilos que la vista Stack (cliente/título/
+       tags siempre visibles debajo de la imagen, no superpuestos) — ver
+       ProjectGridCard.astro. En mobile/tablet no importa la independencia
+       de columnas (no hay hover táctil), así que va un grid simple. En
+       desktop son 3 columnas flex INDEPENDIENTES — el hover en una
+       tarjeta empuja hacia abajo solo lo que está en su misma columna;
+       las otras dos quedan donde están. -->
+  <div class="mt-16 hidden" data-pview-grid>
+    <div class="grid grid-cols-1 gap-[64px] sm:grid-cols-2 lg:hidden">
+      {projects.map((project) => <ProjectGridCard project={project} />)}
+    </div>
+
+    <div class="hidden gap-[64px] lg:flex">
+      {
+        gridColumns.map((column) => (
+          <div class="flex flex-1 flex-col gap-[64px]">
+            {column.map((project) => (
+              <ProjectGridCard project={project} />
+            ))}
           </div>
-        </div>
-      ))
-    }
+        ))
+      }
+    </div>
   </div>
 </section>

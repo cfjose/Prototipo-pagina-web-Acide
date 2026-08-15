@@ -34,7 +34,7 @@ const LOGO_SHAPES = [
   (c) => `<path d="M15 40 L32 18 L49 40" fill="none" stroke="${c}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>`,
   (c) => `<path d="M12 34 Q 22 16 32 34 T 52 34" fill="none" stroke="${c}" stroke-width="5" stroke-linecap="round"/>`,
   (c) => `<path d="M32 14 V50 M14 32 H50" stroke="${c}" stroke-width="6" stroke-linecap="round"/>`,
-  (c) => `<rect x="16" y="16" width="32" height="32" rx="8" fill="none" stroke="${c}" stroke-width="5"/>`,
+  (c) => `<rect x="16" y="16" width="32" height="32" rx="0" fill="none" stroke="${c}" stroke-width="5"/>`,
   (c) => `<path d="M18 44 L18 24 L32 14 L46 24 L46 44 Z" fill="none" stroke="${c}" stroke-width="5" stroke-linejoin="round"/>`,
 ];
 

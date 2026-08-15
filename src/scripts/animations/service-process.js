@@ -3,25 +3,33 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { prefersReducedMotion } from "../utils/reduced-motion.js";
 
 /*
-  Sección de pantalla completa, fondo navy: al llegar solo se ve la
-  primera imagen (Investigación) con su texto. El scroll (dentro del
-  pin, la sección no se mueve) va revelando el resto de a una — cada
-  imagen nueva entra desde abajo y se apila arriba de las anteriores,
-  en su propio ángulo fijo. Si el usuario scrollea hacia atrás, la
-  última imagen revelada vuelve a bajar y desaparecer (reversible en
-  los dos sentidos, no solo se acumula hacia adelante). El texto se
-  reemplaza igual — solo el del paso actual está visible, con el mismo
-  blur/fade/slide que usamos en Servicios.
+  Sección de pantalla completa, fondo navy: las 4 imágenes están
+  SIEMPRE en opacidad 100% (nunca invisibles/con fundido, nunca con
+  fundido de entrada) — la que todavía no le toca su turno queda
+  completamente fuera de vista (nada asoma) y aparece recién cuando el
+  scroll la trae, subiendo desde abajo del stack hasta su lugar, atada
+  directamente al scroll (scrub continuo, no una animación de duración
+  fija) — igual que las cartas de referencia que pasó el cliente. Cada
+  imagen (incluida la primera) tiene su propio tramo de scroll para
+  subir; una vez arriba queda apilada sobre las anteriores, no se
+  reemplaza. Es reversible: si el usuario scrollea hacia atrás, vuelve
+  a bajar y esconderse en el mismo tramo en que subió.
+
+  El texto sí se reemplaza (no se apila): solo el del paso actual está
+  visible, con blur/fade/slide — eso incluye el primero, que ahora
+  también entra con esa animación en vez de aparecer de una.
 
   Solo en desktop — en mobile es una lista vertical normal sin pin (ver
   ServiceProcess.astro), el scroll-jacking se siente mal en touch.
 */
 const REST_TRANSFORMS = [
-  { rotate: -7, x: -18, y: 10 },
-  { rotate: 5, x: 14, y: -8 },
-  { rotate: -4, x: 10, y: 14 },
-  { rotate: 8, x: -12, y: -6 },
+  { rotate: -7, x: -14, y: 8 },
+  { rotate: 5, x: 11, y: -6 },
+  { rotate: -4, x: 8, y: 11 },
+  { rotate: 8, x: -9, y: -5 },
 ];
+
+const RISE_OFFSET = 700; // más que el alto del stack (620px) — arranca totalmente fuera de vista
 
 export function initServiceProcess() {
   const pinTarget = document.querySelector("[data-process-pin]");
@@ -31,44 +39,28 @@ export function initServiceProcess() {
 
   const count = mediaItems.length;
   const reduced = prefersReducedMotion();
-  let currentText = 0;
-  const revealed = mediaItems.length ? [true, ...Array(count - 1).fill(false)] : []; // la primera nace visible
+  let currentText = -1;
 
   const restFor = (i) => REST_TRANSFORMS[i % REST_TRANSFORMS.length];
 
-  // Estado inicial: solo la imagen 0 en su lugar (revelada), el resto
-  // esperando debajo, listas para entrar cuando les toque.
+  // Y de la imagen i según la fase global de scroll (0..count):
+  // - ya le tocó y terminó de subir (phase >= i+1): asentada en su lugar.
+  // - le toca ahora (i <= phase < i+1): sube desde fuera de vista a asentada.
+  // - todavía no le toca: completamente escondida, nada asoma.
+  const yFor = (i, phase) => {
+    const rest = restFor(i);
+    if (phase >= i + 1) return rest.y;
+    if (phase >= i) return rest.y + RISE_OFFSET * (1 - (phase - i));
+    return rest.y + RISE_OFFSET;
+  };
+
+  // Estado inicial: todas las imágenes visibles (opacidad 100%), cada
+  // una en su Y correspondiente a fase 0.
   mediaItems.forEach((media, i) => {
     const rest = restFor(i);
-    if (i === 0) {
-      gsap.set(media, { rotate: rest.rotate, x: rest.x, y: rest.y, opacity: 1, zIndex: i + 1 });
-    } else {
-      gsap.set(media, { rotate: rest.rotate, x: rest.x, y: rest.y + 120, opacity: 0, zIndex: i + 1 });
-    }
+    gsap.set(media, { rotate: rest.rotate, x: rest.x, y: yFor(i, 0), opacity: 1, zIndex: i + 1 });
   });
-  gsap.set(textItems, { opacity: (i) => (i === 0 ? 1 : 0), zIndex: (i) => (i === 0 ? 2 : 1) });
-
-  const revealImage = (i) => {
-    const media = mediaItems[i];
-    const rest = restFor(i);
-    gsap.killTweensOf(media);
-    if (reduced) {
-      gsap.set(media, { opacity: 1, x: rest.x, y: rest.y, rotate: rest.rotate });
-      return;
-    }
-    gsap.to(media, { opacity: 1, x: rest.x, y: rest.y, rotate: rest.rotate, duration: 0.7, ease: "power2.out" });
-  };
-
-  const hideImage = (i) => {
-    const media = mediaItems[i];
-    const rest = restFor(i);
-    gsap.killTweensOf(media);
-    if (reduced) {
-      gsap.set(media, { opacity: 0, y: rest.y + 120 });
-      return;
-    }
-    gsap.to(media, { opacity: 0, y: rest.y + 120, duration: 0.5, ease: "power2.in" });
-  };
+  gsap.set(textItems, { opacity: 0, zIndex: 1 });
 
   const goToText = (index) => {
     if (index === currentText) return;
@@ -94,7 +86,8 @@ export function initServiceProcess() {
   };
 
   if (reduced) {
-    mediaItems.forEach((_, i) => revealImage(i));
+    mediaItems.forEach((media, i) => gsap.set(media, { y: restFor(i).y }));
+    goToText(0);
     return;
   }
 
@@ -102,7 +95,7 @@ export function initServiceProcess() {
 
   const mm = gsap.matchMedia();
   mm.add("(min-width: 1024px)", () => {
-    const STEPS = count - 1;
+    const STEPS = count;
 
     const scrollTrigger = ScrollTrigger.create({
       trigger: pinTarget,
@@ -111,31 +104,17 @@ export function initServiceProcess() {
       pin: true,
       scrub: 0.4,
       anticipatePin: 1,
+      onEnter: () => goToText(0),
+      onEnterBack: () => goToText(0),
       onUpdate: (self) => {
         const phase = self.progress * STEPS;
 
-        // El texto avanza por paso (0..count-1) — mismo umbral que las
-        // imágenes (floor, no round) para que cambien juntos: antes el
-        // texto saltaba en la mitad del paso y la imagen recién al
-        // final, medio paso desincronizados.
         const textIndex = Math.min(count - 1, Math.floor(phase + 0.001));
         goToText(textIndex);
 
-        // Cada imagen 1..count-1 tiene su propio umbral de scroll — si
-        // el scroll ya lo pasó debe estar revelada, si no, oculta.
-        // Se recalcula siempre en los dos sentidos (no solo hacia
-        // adelante), así al volver hacia arriba las imágenes bajan de
-        // nuevo en el mismo orden en que aparecieron.
-        for (let i = 1; i < count; i++) {
-          const shouldBeRevealed = phase >= i - 0.001;
-          if (shouldBeRevealed && !revealed[i]) {
-            revealImage(i);
-            revealed[i] = true;
-          } else if (!shouldBeRevealed && revealed[i]) {
-            hideImage(i);
-            revealed[i] = false;
-          }
-        }
+        mediaItems.forEach((media, i) => {
+          gsap.set(media, { y: yFor(i, phase) });
+        });
       },
     });
 

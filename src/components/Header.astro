@@ -7,32 +7,71 @@ const navLinks = [
   { label: "Sobre nosotros", href: "#nosotros" },
   { label: "Blog", href: "#blog" },
 ];
+
+/*
+  Dos estados (Figma: Header Default / Variant2), solo en desktop
+  (xl+, donde vive el nav completo — en mobile/tablet el header se
+  queda estático como siempre, ver header-scroll.js):
+
+  - "default": el header de siempre — transparente, pegado arriba,
+    texto gris. Es el que se ve mientras estás dentro del hero (la
+    primera sección) de cualquier página.
+  - "floating": una vez que scrolleás más allá del hero, el header
+    pasa a fixed y dentro se ve la misma barra de 1312px que el
+    default, pero con fondo navy sólido + sombra, más padding
+    (px-36/py-24 en vez de px-5/8 y py-6), texto y logo blancos. Ahí
+    además se oculta al scrollear hacia abajo y reaparece flotando a
+    28px del borde superior al scrollear hacia arriba.
+
+  El fondo/sombra y el padding van en la barra interna (data-header-bar),
+  no en el <header> — el <header> solo fija posición/ancho completo
+  para poder centrar la barra adentro con mx-auto. El toggle de clases
+  de la barra lo hace header-scroll.js con classList, porque son
+  demasiadas clases en conflicto (wrapper+padding chico vs.
+  padding grande+fondo) para resolver solo con variantes data-[...] de
+  Tailwind.
+
+  El header es xl:fixed siempre (para que el cambio entre estados no
+  mueva contenido) — por eso <main> tiene un padding-top que lo
+  compensa, ver BaseLayout.astro.
+*/
 ---
 
-<header class="relative z-50 bg-canvas">
-  <div class="wrapper flex items-center justify-between py-6">
+<header
+  data-header
+  data-header-mode="default"
+  data-header-hidden="false"
+  class="group/header relative z-50 bg-canvas xl:fixed xl:inset-x-0 xl:top-0 xl:transition-all xl:duration-500 xl:ease-[var(--ease-default)] xl:data-[header-mode=floating]:top-[28px] xl:data-[header-mode=floating]:bg-transparent xl:data-[header-hidden=true]:-translate-y-[200px]"
+>
+  <div class="wrapper flex items-center justify-between py-6" data-header-bar>
     <a href="/" class="shrink-0">
-      <img src={logo.src} width={logo.width} height={logo.height} alt="Acide" class="h-[28px] w-auto lg:h-[34px]" />
+      <img
+        src={logo.src}
+        width={logo.width}
+        height={logo.height}
+        alt="Acide"
+        class="h-[28px] w-auto transition-[filter] duration-500 ease-[var(--ease-default)] group-data-[header-mode=floating]/header:xl:brightness-0 group-data-[header-mode=floating]/header:xl:invert lg:h-[34px]"
+      />
     </a>
 
-    <nav class="hidden items-center gap-8 font-body text-[18px] tracking-[-0.5px] text-secondary xl:flex xl:gap-[94px]">
+    <nav class="hidden items-center gap-8 font-body text-[18px] tracking-[-0.5px] text-secondary group-data-[header-mode=floating]/header:xl:text-white xl:flex xl:gap-[94px]">
       {
         navLinks.map((link) => (
-          <a href={link.href} class="nav-link hover:text-ink">
+          <a href={link.href} class="nav-link hover:text-ink group-data-[header-mode=floating]/header:xl:hover:text-white/70">
             {link.label}
           </a>
         ))
       }
     </nav>
 
-    <a href="#contacto" class="btn btn--primary hidden xl:inline-flex">Contáctanos</a>
+    <a href="#contacto" class="btn btn--primary hidden py-2 xl:inline-flex">Contáctanos</a>
 
     <button
       type="button"
       data-menu-toggle
       aria-expanded="false"
       aria-controls="mobile-nav"
-      class="-mr-2 flex items-center justify-center rounded-lg p-2 xl:hidden"
+      class="-mr-2 flex items-center justify-center p-2 xl:hidden"
     >
       <span class="sr-only">Abrir menú</span>
       <svg data-menu-icon-open width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">

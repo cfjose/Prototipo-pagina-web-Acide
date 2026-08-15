@@ -17,11 +17,13 @@ import deployImage from "../assets/img/hero/server-room.png";
 
   Fondo #0B2238 a pantalla completa, sin título — la sección ocupa el
   viewport entero y se fija (pin). El texto (464px de ancho) cruza con
-  blur/fade/slide, igual que Servicios. Las imágenes (606x828) NO están
-  todas desde el arranque: solo la primera se ve al llegar; con cada
-  paso de scroll entra la siguiente desde abajo y se apila sobre las
-  anteriores, en su propio ángulo — se van acumulando, no se reemplazan
-  (ver service-process.js). Gap entre texto e imágenes: 124px.
+  blur/fade/slide, igual que Servicios. Las imágenes (454x620, un 25%
+  más chicas que el original 606x828, proporcional) NO están todas
+  desde el arranque: cada una (incluida la primera) sube desde
+  fuera de vista, siempre en opacidad 100% (nada de fade), atada
+  directo al scroll — y se apila sobre las anteriores, en su propio
+  ángulo, con un borde blanco y sombra para que se vean como fotos
+  reales (ver service-process.js). Gap entre texto e imágenes: 124px.
 
   En mobile sigue sin pin (el scroll-jacking se siente mal en touch) —
   lista vertical simple, fondo claro como el resto del sitio.
@@ -81,14 +83,25 @@ const steps = [
       }
     </div>
 
-    <div class="relative h-[828px] w-[606px]" data-process-media-stack>
-      {
-        steps.map((step, i) => (
-          <div class="absolute inset-0 overflow-hidden border border-white/10 bg-[#0B2238]" data-process-media-item data-index={i}>
-            <Image src={step.image} alt={step.alt} width={606} height={828} class="h-full w-full object-cover" />
-          </div>
-        ))
-      }
+    <div class="relative h-full w-[454px]" data-process-media-stack>
+      <!--
+        El área de recorte (overflow-hidden) va en ESTE wrapper interno,
+        más ancha (640px) que las imágenes (454px) y centrada horizontal
+        con translate — no en el contenedor de arriba, que tiene que
+        mantenerse en 454px exactos para no romper el layout del flex
+        (texto + imágenes) de más arriba. Si el recorte fuera del mismo
+        ancho que la imagen, al rotarla las esquinas se salen de ese
+        ancho y quedan cortadas — por eso el margen extra a los costados.
+      -->
+      <div class="absolute top-0 left-1/2 h-full w-[640px] -translate-x-1/2 overflow-hidden">
+        {
+          steps.map((step, i) => (
+            <div class="absolute top-1/2 left-1/2 -mt-[310px] -ml-[227px] h-[620px] w-[454px] border-[10px] border-white bg-[#0B2238] shadow-2xl shadow-black/40" data-process-media-item data-index={i}>
+              <Image src={step.image} alt={step.alt} width={454} height={620} class="h-full w-full object-cover" />
+            </div>
+          ))
+        }
+      </div>
     </div>
   </div>
 </section>
