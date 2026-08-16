@@ -37,6 +37,7 @@ const projects = [
     size: "small",
     rubro: "Alimentos",
     servicio: "E-Commerce",
+    href: "/proyectos/grupo-alimentario",
   },
   {
     client: "Clínica San Rafael",
@@ -182,31 +183,35 @@ projects.forEach((project, i) => gridColumns[i % 3].push(project));
         [projects[4], projects[5]],
       ].map((pair) => (
         <div class="flex flex-col items-start gap-16 lg:flex-row">
-          {pair.map((project) => (
-            <div
-              class:list={["group flex flex-col items-start gap-6", project.size === "large" ? "lg:flex-[802]" : "lg:flex-[446]"]}
-              data-reveal-fade
-              data-pproject-card
-              data-rubro={project.rubro}
-              data-servicio={project.servicio}
-            >
-              <div class:list={["relative w-full overflow-hidden", project.size === "large" ? "aspect-[802/451]" : "aspect-[446/285]"]}>
-                <Image src={project.image} alt={project.alt} width={802} height={451} class="h-full w-full object-cover" />
-              </div>
-              <div class="flex flex-col items-start gap-2">
-                <p class="font-body text-[26px] tracking-[-0.5px] text-secondary">{project.client}</p>
-                <p class="font-body text-[32px] leading-[34px] font-medium tracking-[-0.96px] text-ink">{project.title}</p>
-                <div class="flex items-center font-body text-[14px] text-secondary">
-                  {project.tags.map((tag, j) => (
-                    <span class:list={["py-1", j === 0 ? "pr-3" : "px-3", j > 0 && "border-l border-[#e1e0e0]"]}>{tag}</span>
-                  ))}
+          {pair.map((project) => {
+            const CardTag = project.href ? "a" : "div";
+            return (
+              <CardTag
+                href={project.href}
+                class:list={["group flex flex-col items-start gap-6", project.size === "large" ? "lg:flex-[802]" : "lg:flex-[446]"]}
+                data-reveal-fade
+                data-pproject-card
+                data-rubro={project.rubro}
+                data-servicio={project.servicio}
+              >
+                <div class:list={["relative w-full overflow-hidden", project.size === "large" ? "aspect-[802/451]" : "aspect-[446/285]"]}>
+                  <Image src={project.image} alt={project.alt} width={802} height={451} class="h-full w-full object-cover" />
                 </div>
-                <p class="max-w-[560px] font-body text-[18px] leading-[1.5] tracking-[-0.5px] text-ink opacity-0 transition-opacity duration-500 ease-[var(--ease-default)] group-hover:opacity-100">
-                  {project.description}
-                </p>
-              </div>
-            </div>
-          ))}
+                <div class="flex flex-col items-start gap-2">
+                  <p class="font-body text-[26px] tracking-[-0.5px] text-secondary">{project.client}</p>
+                  <p class="font-body text-[32px] leading-[34px] font-medium tracking-[-0.96px] text-ink">{project.title}</p>
+                  <div class="flex items-center font-body text-[14px] text-secondary">
+                    {project.tags.map((tag, j) => (
+                      <span class:list={["py-1", j === 0 ? "pr-3" : "px-3", j > 0 && "border-l border-[#e1e0e0]"]}>{tag}</span>
+                    ))}
+                  </div>
+                  <p class="max-w-[560px] font-body text-[18px] leading-[1.5] tracking-[-0.5px] text-ink opacity-0 transition-opacity duration-500 ease-[var(--ease-default)] group-hover:opacity-100">
+                    {project.description}
+                  </p>
+                </div>
+              </CardTag>
+            );
+          })}
         </div>
       ))
     }

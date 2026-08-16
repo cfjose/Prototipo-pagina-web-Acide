@@ -3,37 +3,28 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { prefersReducedMotion } from "../utils/reduced-motion.js";
 
 /*
-  Sección de pantalla completa, fondo navy: las 4 imágenes están
-  SIEMPRE en opacidad 100% (nunca invisibles/con fundido, nunca con
-  fundido de entrada) — la que todavía no le toca su turno queda
-  completamente fuera de vista (nada asoma) y aparece recién cuando el
-  scroll la trae, subiendo desde abajo del stack hasta su lugar, atada
-  directamente al scroll (scrub continuo, no una animación de duración
-  fija) — igual que las cartas de referencia que pasó el cliente. Cada
-  imagen (incluida la primera) tiene su propio tramo de scroll para
-  subir; una vez arriba queda apilada sobre las anteriores, no se
-  reemplaza. Es reversible: si el usuario scrollea hacia atrás, vuelve
-  a bajar y esconderse en el mismo tramo en que subió.
+  Mismo patrón que Servicios (service-process.js): las imágenes están
+  SIEMPRE en opacidad 100% — la que todavía no le toca su turno queda
+  completamente fuera de vista y sube atada directo al scroll cuando
+  le toca, apilándose sobre las anteriores. El texto (título +
+  descripción) sí se reemplaza (crossfade), uno por imagen. El título
+  de la sección ("Así lo resolvimos") no participa de nada de esto,
+  queda fijo siempre.
 
-  El texto sí se reemplaza (no se apila): solo el del paso actual está
-  visible, con blur/fade/slide — eso incluye el primero, que ahora
-  también entra con esa animación en vez de aparecer de una.
-
-  Solo en desktop — en mobile es una lista vertical normal sin pin (ver
-  ServiceProcess.astro), el scroll-jacking se siente mal en touch.
+  Solo en desktop — en mobile es una lista vertical normal sin pin.
 */
 const REST_TRANSFORMS = [
-  { rotate: -7, x: -14, y: 8 },
-  { rotate: 5, x: 11, y: -6 },
-  { rotate: -4, x: 8, y: 11 },
-  { rotate: 8, x: -9, y: -5 },
+  { rotate: -3, x: -10, y: 6 },
+  { rotate: 3, x: 8, y: -6 },
+  { rotate: -2, x: 6, y: 8 },
+  { rotate: 4, x: -8, y: -4 },
 ];
 
-export function initServiceProcess() {
-  const pinTarget = document.querySelector("[data-process-pin]");
-  const mediaStack = document.querySelector("[data-process-media-stack]");
-  const textItems = document.querySelectorAll("[data-process-text-item]");
-  const mediaItems = document.querySelectorAll("[data-process-media-item]");
+export function initCaseStudySolution() {
+  const pinTarget = document.querySelector("[data-solution-pin]");
+  const mediaStack = document.querySelector("[data-solution-media-stack]");
+  const textItems = document.querySelectorAll("[data-solution-text-item]");
+  const mediaItems = document.querySelectorAll("[data-solution-media-item]");
   if (!pinTarget || !textItems.length || !mediaItems.length) return;
 
   const count = mediaItems.length;
@@ -42,24 +33,12 @@ export function initServiceProcess() {
 
   const restFor = (i) => REST_TRANSFORMS[i % REST_TRANSFORMS.length];
 
-  /*
-    Cuánto hay que bajar una imagen para que quede TOTALMENTE fuera del
-    área visible (el stack recorta con overflow-hidden a su propio alto,
-    que es el de toda la sección — h-screen). Un número fijo (ej. 700px)
-    se quedaba corto en pantallas más bajas y dejaba un piquito de la
-    imagen asomando — por eso se mide el alto real del stack en cada
-    momento y se le suma margen de sobra.
-  */
   let riseOffset = 900;
   const measureRiseOffset = () => {
     if (mediaStack) riseOffset = mediaStack.offsetHeight + 200;
   };
   measureRiseOffset();
 
-  // Y de la imagen i según la fase global de scroll (0..count):
-  // - ya le tocó y terminó de subir (phase >= i+1): asentada en su lugar.
-  // - le toca ahora (i <= phase < i+1): sube desde fuera de vista a asentada.
-  // - todavía no le toca: completamente escondida, nada asoma.
   const yFor = (i, phase) => {
     const rest = restFor(i);
     if (phase >= i + 1) return rest.y;
@@ -67,8 +46,6 @@ export function initServiceProcess() {
     return rest.y + riseOffset;
   };
 
-  // Estado inicial: todas las imágenes visibles (opacidad 100%), cada
-  // una en su Y correspondiente a fase 0.
   mediaItems.forEach((media, i) => {
     const rest = restFor(i);
     gsap.set(media, { rotate: rest.rotate, x: rest.x, y: yFor(i, 0), opacity: 1, zIndex: i + 1 });

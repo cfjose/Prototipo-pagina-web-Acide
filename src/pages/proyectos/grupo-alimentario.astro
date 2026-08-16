@@ -1,0 +1,30 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Header from "../../components/Header.astro";
+import CaseStudyHero from "../../components/CaseStudyHero.astro";
+import CaseStudySnapText from "../../components/CaseStudySnapText.astro";
+import CaseStudyChallenge from "../../components/CaseStudyChallenge.astro";
+import CaseStudySolution from "../../components/CaseStudySolution.astro";
+import CaseStudyResults from "../../components/CaseStudyResults.astro";
+import Footer from "../../components/Footer.astro";
+
+/*
+  Case study de "Grupo Alimentario S.A." (Figma: Case study,
+  node 222:1164) — el primer proyecto real de /proyectos, ahora con su
+  propia página de detalle. El CTA final + footer reusa el componente
+  compartido Footer.astro tal cual (mismo contenido que el resto del
+  sitio).
+*/
+---
+
+<BaseLayout title="Grupo Alimentario S.A. — Caso de éxito | Acide" description="Cómo ayudamos a Grupo Alimentario S.A. a digitalizar sus ventas con una tienda online y gestión de inventario en tiempo real.">
+  <Header />
+  <main>
+    <CaseStudyHero />
+    <CaseStudySnapText />
+    <CaseStudyChallenge />
+    <CaseStudySolution />
+    <CaseStudyResults />
+  </main>
+  <Footer />
+</BaseLayout>

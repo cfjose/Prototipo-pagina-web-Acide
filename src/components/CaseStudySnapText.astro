@@ -1,0 +1,72 @@
+---
+/*
+  Efecto "Vercel Snap Text" (referencia: ui.unlumen.com/components/
+  vercel-snap-text) recreado con GSAP en vez de instalarlo tal cual —
+  es un componente de pago (Motion/Framer Motion + registro con
+  licencia), y este proyecto es todo GSAP.
+
+  Spec real (de la doc del componente):
+  - Todos los ítems comparten el MISMO tamaño de fuente — no hay uno
+    grande y otros chicos. Lo único que cambia con la distancia al
+    activo es la opacidad: opacity = 1 - dist × 0.82 (mínimo 0.15).
+  - El prefijo ("Nosotros hicimos") NO anima, siempre está fijo, en el
+    azul del sistema (navy).
+  - El activo queda en la MISMA línea que el prefijo, mismo color navy
+    — el resto del texto, en el mismo tono, solo que más transparente
+    según qué tan lejos esté.
+  - Arranca en el PRIMER ítem ("el diseño UX/UI") — no hace falta que
+    haya nada arriba de él, como en el ejemplo real (empieza con el
+    primero, no con uno del medio).
+  - El avance es discreto: cada scroll "pasa" al siguiente ítem (como
+    scroll-snap nativo), no se va arrastrando en cámara lenta ítem por
+    ítem — la transición entre uno y el siguiente sí es una animación
+    suave (spring), pero el punto de partida/llegada es fijo por paso.
+    Ver case-study-snap-text.js.
+
+  ROW_HEIGHT tiene que coincidir en el JS y acá — cada ítem vive en una
+  fila de igual alto, con el texto centrado adentro.
+
+  A pantalla completa (h-screen, fijo/pin) — mismo criterio que
+  Servicios: en mobile no hay pin ni scroll-jacking, se ve la lista
+  estática con la primera línea ya destacada.
+*/
+const items = ["el diseño UX/UI", "el desarrollo web del e-commerce", "el despliegue", "las capacitaciones", "la integración de pagos"];
+const activeIndex = 0; // "el diseño UX/UI" — arranca en el primero, como en el ejemplo real
+---
+
+<!-- Desktop: pin a pantalla completa con el scroll-snap-text -->
+<section class="hidden lg:block lg:h-screen" data-snaptext-pin>
+  <div class="wrapper flex h-full items-center">
+    <p class="shrink-0 font-body text-[54px] font-bold tracking-[-1.62px] text-navy" data-snaptext-prefix>Nosotros hicimos</p>
+    <div class="relative ml-4 h-[350px] w-[873px] overflow-hidden">
+      <div data-snaptext-track>
+        {
+          items.map((item, i) => (
+            <div class="flex h-[70px] items-center" data-snaptext-item data-index={i}>
+              <p class="font-body text-[54px] leading-none font-bold tracking-[-1.62px] text-navy" data-snaptext-text>
+                {item}
+              </p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Mobile/tablet: lista estática, sin pin -->
+<section class="wrapper section-y flex flex-col gap-4 lg:hidden">
+  {
+    items.map((item, i) => (
+      <p
+        class:list={[
+          "font-body text-[22px] leading-[1.3] font-bold tracking-[-0.66px] text-navy",
+          i === activeIndex ? "opacity-100" : "opacity-40",
+        ]}
+      >
+        {i === activeIndex && <span>Nosotros hicimos </span>}
+        {item}
+      </p>
+    ))
+  }
+</section>

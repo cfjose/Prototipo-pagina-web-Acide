@@ -1,0 +1,124 @@
+---
+import { Image } from "astro:assets";
+import platformImage from "../assets/img/servicios/img-2-design-desk.png";
+import inventoryImage from "../assets/img/servicios/img-3-dashboard-monitor.png";
+import paymentsImage from "../assets/img/servicios/img-4-shopping-app.png";
+import teamImage from "../assets/img/servicios/img-6-dashboard-laptop.png";
+
+/*
+  "Así lo resolvimos" — mismo patrón de fotos apiladas que ya armamos
+  en Servicios (ServiceProcess.astro/service-process.js): las imágenes
+  suben desde fuera de vista siempre en opacidad 100%, con borde
+  blanco + sombra, y se apilan sobre las anteriores. La diferencia acá
+  es el título — "Así lo resolvimos" se queda FIJO arriba (no cruza
+  con el texto de cada paso) y el layout es de dos columnas (texto +
+  imágenes) en vez de full-bleed. El copy de los pasos 2, 3 y 4 es
+  inventado (el Figma solo trae el primero, "Una plataforma hecha a su
+  medida") — mismo tono, ligado a la historia real del caso.
+
+  En mobile, igual que Servicios: sin pin, lista vertical simple.
+*/
+const steps = [
+  {
+    title: "Una plataforma hecha a su medida",
+    description:
+      "No construimos un e-commerce genérico. Nos sentamos con su equipo, mapeamos cada paso del proceso de venta y diseñamos una plataforma que respetara su forma de trabajar. Catálogo en tiempo real sincronizado con inventario, carrito inteligente que evita errores de pedido y una pasarela de pago que les dio autonomía total. El resultado: un canal de ventas que funciona mientras ellos duermen.",
+    image: platformImage,
+    alt: "Escritorio con laptop mostrando el diseño de la plataforma",
+  },
+  {
+    title: "Inventario siempre sincronizado",
+    description:
+      "Conectamos el catálogo online directo con el sistema de inventario que ya usaban — cada venta descuenta stock al instante, sin planillas ni doble carga. Se acabaron los productos vendidos que en realidad no había.",
+    image: inventoryImage,
+    alt: "Monitor mostrando el dashboard de inventario en tiempo real",
+  },
+  {
+    title: "Pagos sin fricción",
+    description:
+      "Integramos una pasarela de pago propia, sin intermediarios que retengan el dinero ni depender de que alguien confirme la venta a mano. El equipo cobra y ve el estado de cada pedido al segundo.",
+    image: paymentsImage,
+    alt: "App de compras mostrando el proceso de pago",
+  },
+  {
+    title: "Un equipo listo desde el día uno",
+    description:
+      "Antes de lanzar, capacitamos al equipo comercial en la plataforma completa — desde cargar un producto hasta resolver un reclamo. Nadie tuvo que aprender solo, a los golpes, en plena operación.",
+    image: teamImage,
+    alt: "Laptop mostrando el panel de gestión de pedidos",
+  },
+];
+---
+
+<!-- Desktop: fondo azul, viewport completo, título fijo, sección fija (pin) -->
+<section class="hidden lg:flex lg:h-screen lg:flex-col lg:items-center lg:justify-center lg:bg-[#0B2238]" data-solution-pin>
+  <div class="wrapper flex w-full flex-col items-center gap-[84px]">
+    <h2 data-text-reveal data-reveal class="text-center font-display text-[66px] leading-none tracking-[-1.98px] text-white">Así lo resolvimos</h2>
+
+    <div class="flex w-full items-center gap-[111px]">
+      <div class="flex w-[529px] shrink-0 flex-col items-start gap-9">
+        <div class="grid w-full" data-solution-text-stack>
+          {
+            steps.map((step, i) => (
+              <div class="col-start-1 row-start-1 flex flex-col items-start gap-9 text-left" data-solution-text-item data-index={i}>
+                <h3 class="font-body text-[54px] leading-none font-medium tracking-[-1.62px] text-white" data-solution-title>
+                  {step.title}
+                </h3>
+                <p class="font-body text-[26px] leading-[1.5] tracking-[-0.5px] text-white/90" data-solution-description>
+                  {step.description}
+                </p>
+              </div>
+            ))
+          }
+        </div>
+        <svg class="size-9 text-white/70" viewBox="0 0 256 256" fill="currentColor">
+          <path d="M205.66,149.66l-72,72a8,8,0,0,1-11.32,0l-72-72a8,8,0,0,1,11.32-11.32L120,196.69V40a8,8,0,0,1,16,0V196.69l58.34-58.35a8,8,0,0,1,11.32,11.32Z" />
+        </svg>
+      </div>
+
+      <div class="relative h-[700px] w-full flex-1" data-solution-media-stack>
+        <!--
+          Recorte más ancho que las imágenes (145%, no 110%) — la caja
+          rotada mide ~697-705px de ancho (más que los 672px de la
+          imagen), así que con 110% el borde izquierdo quedaba cortado
+          ~24px. 145% deja margen de sobra para cualquier ángulo.
+        -->
+        <div class="absolute top-0 left-1/2 h-full w-[145%] -translate-x-1/2 overflow-hidden">
+          {
+            steps.map((step, i) => (
+              <div
+                class="absolute top-1/2 left-1/2 h-[494px] w-[672px] -mt-[247px] -ml-[336px] border-[10px] border-white bg-[#0B2238] shadow-2xl shadow-black/40"
+                data-solution-media-item
+                data-index={i}
+              >
+                <Image src={step.image} alt={step.alt} width={672} height={494} class="h-full w-full object-cover" />
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Mobile/tablet: lista vertical simple, sin pin -->
+<section class="wrapper section-y bg-[#0B2238] lg:hidden">
+  <h2 data-text-reveal data-reveal class="mb-10 text-center font-display text-[32px] leading-[1.1] tracking-[-1px] text-white sm:text-[44px] sm:tracking-[-1.4px]">
+    Así lo resolvimos
+  </h2>
+  <div class="flex flex-col gap-8">
+    {
+      steps.map((step) => (
+        <div class="flex flex-col overflow-hidden border border-white/10" data-reveal>
+          <div class="aspect-[672/494] w-full overflow-hidden">
+            <Image src={step.image} alt={step.alt} width={672} height={494} class="h-full w-full object-cover" />
+          </div>
+          <div class="flex flex-col gap-3 p-6">
+            <h3 class="font-body text-[22px] font-medium tracking-[-0.66px] text-white">{step.title}</h3>
+            <p class="font-body text-[16px] leading-[1.5] tracking-[-0.3px] text-white/80">{step.description}</p>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</section>

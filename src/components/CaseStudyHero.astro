@@ -1,0 +1,39 @@
+---
+import { Image } from "astro:assets";
+import heroImage from "../assets/img/proyectos/grupo-alimentario.png";
+
+/*
+  Cabecera del case study — poca animación a propósito (a diferencia
+  del resto de la página): solo un reveal simple del texto, igual que
+  el resto del sitio. La foto grande con degradado abajo (para que el
+  texto blanco tenga contraste) viene directo del Figma.
+*/
+---
+
+<section class="wrapper flex flex-col gap-[60px] pt-[32px] pb-16 lg:pb-[200px]">
+  <div class="relative flex h-[500px] w-full flex-col justify-end overflow-hidden p-8 sm:h-[600px] lg:h-[737px] lg:p-16">
+    <Image
+      src={heroImage}
+      alt="Tienda online de Grupo Alimentario S.A."
+      width={1312}
+      height={737}
+      class="absolute inset-0 h-full w-full object-cover"
+    />
+    <div class="absolute inset-0 bg-gradient-to-t from-black/80 from-[8%] to-transparent to-[65%]"></div>
+
+    <div class="relative flex flex-col gap-5 text-white" data-reveal>
+      <div class="flex items-end justify-between gap-4 border-b border-white pb-3">
+        <p class="font-body text-[20px] font-medium tracking-[-0.6px] sm:text-[32px] sm:tracking-[-0.96px]">Grupo Alimentario S.A.</p>
+        <p class="whitespace-nowrap font-body text-[14px] tracking-[-0.3px] sm:text-[18px] sm:tracking-[-0.5px]">
+          Industria: <span class="font-bold">Alimentos</span>
+        </p>
+      </div>
+      <h1
+        data-text-reveal
+        class="font-display text-[38px] leading-[1.05] tracking-[-1.2px] sm:text-[52px] sm:tracking-[-2px] lg:text-[78px] lg:tracking-[-3.12px]"
+      >
+        Tienda online con <strong class="font-bold">gestión de inventario</strong>
+      </h1>
+    </div>
+  </div>
+</section>

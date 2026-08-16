@@ -1,0 +1,112 @@
+---
+import { Image } from "astro:assets";
+import phoneImage from "../assets/img/results/card-phone.png";
+import retailImage from "../assets/img/results/card-retail.png";
+import techgroupImage from "../assets/img/results/image-techgroup.png";
+import bankingImage from "../assets/img/servicios/img-1-banking-app.png";
+
+/*
+  4 resultados del caso — misma animación que el carrusel de Resultados
+  de la Home (ResultsCarousel.astro): centro grande + dos costados
+  asomando por el borde de la pantalla (full-bleed), y al scrollear el
+  activo pasa a ser otro (el que entra crece con zoom suave, el que
+  sale se achica y "teletransporta" al otro lado — ver
+  case-study-results.js, mismo patrón de slots que results-carousel.js
+  pero generalizado a 4 tarjetas en vez de 3).
+
+  A diferencia de la Home, acá el título + descripción del resultado
+  van DENTRO de la imagen (no en una leyenda aparte debajo) — y solo se
+  ven en la tarjeta que está al centro (las de los costados son solo
+  foto, sin texto, igual que se ve en la referencia).
+
+  En mobile no hay pin ni zoom — franja horizontal con scroll-snap
+  nativo, mismo criterio que el resto del sitio.
+*/
+const results = [
+  {
+    title: "+60% en ventas online",
+    description: "En los primeros 6 meses, las ventas por el canal digital crecieron 60% frente al mismo período del año anterior.",
+    image: retailImage,
+    alt: "Gráfico de crecimiento de ventas",
+  },
+  {
+    title: "−80% en errores de pedido",
+    description: "El catálogo sincronizado con inventario en tiempo real eliminó casi por completo los pedidos mal registrados.",
+    image: techgroupImage,
+    alt: "Dashboard de analítica mostrando métricas de pedidos",
+  },
+  {
+    title: "−70% en tiempo de gestión",
+    description: "El equipo comercial dejó de corregir errores a mano y recuperó horas cada semana para dedicarse a vender.",
+    image: bankingImage,
+    alt: "App mostrando el panel de gestión de pedidos",
+  },
+  {
+    title: "100% de pagos autónomos",
+    description: "La pasarela integrada le dio al equipo control total sobre los cobros, sin depender de terceros para confirmar cada venta.",
+    image: phoneImage,
+    alt: "Celular mostrando la confirmación de un pago",
+  },
+];
+---
+
+<section class="section-y overflow-hidden">
+  <!-- Mobile/tablet: título en flujo normal, sin pin -->
+  <div class="wrapper lg:hidden">
+    <h2
+      data-text-reveal
+      data-reveal
+      class="text-center font-display text-[32px] leading-[1.1] tracking-[-1px] text-secondary sm:text-[44px] sm:tracking-[-1.4px]"
+    >
+      El resultado <span class="text-navy">que logramos</span>
+    </h2>
+  </div>
+
+  <!--
+    Desktop: stage fijo con zoom, centro grande + costados asomando.
+    Atributos con prefijo "case-" (data-case-results-*) a propósito —
+    ResultsCarousel.astro (Home) usa data-results-* y initResultsCarousel()
+    corre en TODAS las páginas vía main.js, así que si usáramos los
+    mismos nombres acá, los dos scripts agarrarían los mismos elementos
+    con document.querySelector y los pinearían por separado (duración de
+    scroll duplicada, tarjetas peleándose por posición/z-index).
+  -->
+  <div class="relative mt-16 hidden lg:block" data-case-results-pin>
+    <div class="wrapper">
+      <h2 data-text-reveal data-reveal class="text-center font-display text-[66px] leading-none tracking-[-1.98px] text-secondary">
+        El resultado <span class="text-navy">que logramos</span>
+      </h2>
+    </div>
+
+    <div class="relative left-1/2 mt-16 w-screen -translate-x-1/2" data-case-results-stage>
+      {
+        results.map((result, i) => (
+          <div class="absolute top-1/2 overflow-hidden" data-case-results-card data-index={i}>
+            <Image src={result.image} alt={result.alt} width={1184} height={664} class="h-full w-full object-cover" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/85 from-[5%] via-black/10 via-[45%] to-transparent opacity-0" data-case-results-gradient />
+            <div class="absolute inset-0 flex flex-col justify-end gap-2 p-10 opacity-0" data-case-results-caption>
+              <p class="font-body text-[32px] leading-[1.1] font-medium tracking-[-0.5px] text-white">{result.title}</p>
+              <p class="max-w-[460px] font-body text-[18px] leading-[1.5] tracking-[-0.3px] text-white/85">{result.description}</p>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- Mobile/tablet: franja horizontal con scroll-snap, sin pin -->
+  <div class="mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2 lg:hidden">
+    {
+      results.map((result) => (
+        <div class="group relative aspect-[3/4] w-[85%] shrink-0 snap-center overflow-hidden sm:w-[60%]">
+          <Image src={result.image} alt={result.alt} width={400} height={533} class="h-full w-full object-cover" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/85 from-[5%] via-black/10 via-[45%] to-transparent" />
+          <div class="absolute inset-0 flex flex-col justify-end gap-2 p-6">
+            <p class="font-body text-[26px] leading-[1.1] font-medium tracking-[-0.5px] text-white">{result.title}</p>
+            <p class="max-w-[280px] font-body text-[16px] leading-[1.5] tracking-[-0.3px] text-white/85">{result.description}</p>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</section>

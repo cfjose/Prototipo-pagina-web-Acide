@@ -11,13 +11,22 @@ interface Props {
     alt: string;
     rubro: string;
     servicio: string;
+    href?: string;
   };
 }
 
 const { project } = Astro.props;
+const CardTag = project.href ? "a" : "div";
 ---
 
-<div class="group flex flex-col items-start gap-6" data-reveal-fade data-pproject-card data-rubro={project.rubro} data-servicio={project.servicio}>
+<CardTag
+  href={project.href}
+  class="group flex flex-col items-start gap-6"
+  data-reveal-fade
+  data-pproject-card
+  data-rubro={project.rubro}
+  data-servicio={project.servicio}
+>
   <div class="relative aspect-square w-full overflow-hidden">
     <Image src={project.image} alt={project.alt} width={600} height={600} class="h-full w-full object-cover" />
   </div>
@@ -39,4 +48,4 @@ const { project } = Astro.props;
       </div>
     </div>
   </div>
-</div>
+</CardTag>

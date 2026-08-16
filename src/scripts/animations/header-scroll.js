@@ -7,8 +7,8 @@ import { gsap } from "gsap";
     cada página, detectada genéricamente como el primer hijo de
     <main>): header "default" — transparente, pegado arriba.
   - Pasado el hero: header "floating" — fondo navy sólido + sombra,
-    mismo ancho de 1312px que el default pero con más padding
-    (px-36/py-24), texto y logo blancos. Ahí se oculta scrolleando
+    mismo ancho de 1312px que el default pero con su propio padding
+    (12px parejo), texto y logo blancos. Ahí se oculta scrolleando
     hacia abajo y reaparece flotando a 28px del borde superior al
     scrollear hacia arriba.
 
@@ -25,7 +25,7 @@ import { gsap } from "gsap";
 */
 // Barra interna: en "default" ocupa los 1312px del wrapper (padding
 // estándar del sitio, px-5/sm:px-8, py-6, transparente); en "floating"
-// también son 1312px pero con su propio padding (px-36/py-24), fondo
+// también son 1312px pero con su propio padding (12px parejo), fondo
 // navy sólido, y sombra — por eso son dos sets de clases que se pisan
 // entre sí, no algo resoluble solo con variantes data-[...] de
 // Tailwind.
@@ -34,8 +34,7 @@ const BAR_FLOATING_CLASSES = [
   "mx-auto",
   "max-w-[1312px]",
   "w-full",
-  "px-[36px]",
-  "py-[24px]",
+  "p-[12px]",
   "bg-navy",
   "drop-shadow-[0px_1px_2px_rgba(0,0,0,0.39)]",
 ];
@@ -54,6 +53,17 @@ export function initHeaderScroll() {
   const measure = () => {
     heroHeight = heroEl ? heroEl.offsetHeight : window.innerHeight;
   };
+
+  /*
+    Medir una sola vez al cargar no alcanza: si en ese momento el
+    layout todavía no se había asentado (fuentes, imágenes, el pin de
+    GSAP insertando su spacer), heroHeight queda con un valor viejo
+    para siempre y el header nunca pasa a "floating". Con
+    ResizeObserver se recalcula automáticamente cada vez que el hero
+    cambia de tamaño de verdad, sin depender de que el usuario
+    resizee la ventana.
+  */
+  const resizeObserver = typeof ResizeObserver !== "undefined" && heroEl ? new ResizeObserver(measure) : null;
 
   const setMode = (mode) => {
     if (header.dataset.headerMode === mode) return;
@@ -104,6 +114,7 @@ export function initHeaderScroll() {
     lastScrollY = window.scrollY;
     gsap.ticker.add(tick);
     window.addEventListener("resize", measure);
+    resizeObserver?.observe(heroEl);
     tick();
   };
 
@@ -112,6 +123,7 @@ export function initHeaderScroll() {
     active = false;
     gsap.ticker.remove(tick);
     window.removeEventListener("resize", measure);
+    resizeObserver?.disconnect();
     reset();
   };
 
