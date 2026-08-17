@@ -1,55 +1,64 @@
 ---
 import { Image } from "astro:assets";
-import innovationImage from "../assets/img/servicios/img-7-tablet-hand.png";
-import adaptabilityImage from "../assets/img/hero/desk-writing.png";
-import qualityImage from "../assets/img/servicios/img-8-multi-device.png";
-import commitmentImage from "../assets/img/digital-today/team.png";
-import collaborationImage from "../assets/img/servicios/img-3-dashboard-monitor.png";
+import innovationImage from "../assets/img/about-unique/innovacion.png";
+import adaptabilityImage from "../assets/img/about-unique/adaptabilidad.png";
+import qualityImage from "../assets/img/about-unique/calidad.png";
+import commitmentImage from "../assets/img/about-unique/compromiso.png";
+import collaborationImage from "../assets/img/about-unique/colaboracion.png";
 
 /*
   "Lo que nos hace únicos" — idéntico al patrón de "Lo que
   desarrollamos" (ServicePortfolio.astro): grilla masonry de 2
-  columnas, mismo reveal (data-reveal) y mismo hover CSS puro (imagen
-  con scale, descripción con fade de opacidad debajo del título).
+  columnas y mismo hover CSS puro (imagen con scale, descripción con
+  fade de opacidad debajo del título). El reveal de la imagen usa
+  [data-reveal], el mismo de una sola vez que el resto del sitio (a
+  diferencia de ServicePortfolio.astro, que sigue usando la variante
+  reversible [data-reveal-toggle] — ver scroll-reveal.js).
 
-  El Figma solo trae la descripción real de "Innovación" — las otras 4
-  son copy modelo mío, mismo tono, mismo criterio que ya usamos en
-  ServicePortfolio.
+  La tipografía de la descripción usa el estilo "Descripciones - 26px"
+  del Figma (Satoshi Medium, 26px, tracking -0.5px) en desktop — mismo
+  valor que ya usa AboutCertifications.astro.
+
+  Las 5 fotos son las reales del Figma (node 239:1615, conceptuales —
+  tablet, camaleón, cuenco, brújula, rompecabezas — no fotos de
+  oficina). El Figma solo trae la descripción real de "Innovación" —
+  las otras 4 son copy modelo mío, mismo tono, mismo criterio que ya
+  usamos en ServicePortfolio.
 */
 const items = [
   {
     title: "Innovación",
     description: "Aplicamos tecnologías emergentes y metodologías ágiles para crear soluciones que anticipan las necesidades del mercado.",
     image: innovationImage,
-    alt: "Mano sosteniendo una tablet con datos de investigación",
+    alt: "Tablet mostrando una visualización de datos sobre un escritorio",
     aspect: "632/356",
   },
   {
     title: "Adaptabilidad",
     description: "Cada cliente opera distinto — ajustamos nuestro proceso a su realidad, no al revés, para que la solución encaje desde el primer día.",
     image: adaptabilityImage,
-    alt: "Persona escribiendo un boceto en un escritorio",
+    alt: "Escultura de un camaleón sobre materiales apilados, simbolizando adaptabilidad",
     aspect: "624/632",
   },
   {
     title: "Calidad",
     description: "Código revisado, procesos documentados y pruebas antes de cada entrega — la calidad no es un paso final, es parte de todo el camino.",
     image: qualityImage,
-    alt: "Múltiples dispositivos mostrando una misma plataforma",
+    alt: "Cuenco de cerámica cuidadosamente presentado sobre un pedestal",
     aspect: "632/356",
   },
   {
     title: "Compromiso",
     description: "No entregamos y desaparecemos — acompañamos cada proyecto después del lanzamiento, con el mismo nivel de atención del primer día.",
     image: commitmentImage,
-    alt: "Equipo trabajando en conjunto frente a pantallas",
+    alt: "Brújula sobre una superficie de mármol, simbolizando dirección constante",
     aspect: "624/632",
   },
   {
     title: "Colaboración",
     description: "Trabajamos codo a codo con el equipo del cliente, no en paralelo — las mejores decisiones salen cuando todos están en la misma mesa.",
     image: collaborationImage,
-    alt: "Monitor mostrando un dashboard de analítica",
+    alt: "Dos personas armando juntas un rompecabezas de madera",
     aspect: "632/356",
   },
 ];
@@ -82,7 +91,7 @@ const rightColumn = [items[3], items[4]];
                 <p class="font-body text-[24px] font-medium tracking-[-0.72px] text-ink sm:text-[32px] sm:tracking-[-0.96px]">
                   {item.title}
                 </p>
-                <p class="pt-1 font-body text-[16px] leading-[1.5] tracking-[-0.3px] text-secondary opacity-0 transition-opacity duration-500 ease-[var(--ease-default)] group-hover:opacity-100">
+                <p class="pt-1 font-body text-[16px] leading-[1.5] tracking-[-0.3px] text-secondary opacity-0 transition-opacity duration-500 ease-[var(--ease-default)] group-hover:opacity-100 lg:text-[26px] lg:tracking-[-0.5px]">
                   {item.description}
                 </p>
               </div>

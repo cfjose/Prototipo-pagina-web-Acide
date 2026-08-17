@@ -26,14 +26,45 @@ export function initTestimonialCarousel() {
   const authors = document.querySelectorAll("[data-testimonial-author]");
   const bars = document.querySelectorAll("[data-testimonial-bar]");
   const barFills = document.querySelectorAll("[data-testimonial-bar-fill]");
+  const videos = document.querySelectorAll("[data-testimonial-video]");
   if (!pinTarget || !images.length) return;
 
   const count = images.length;
   const reduced = prefersReducedMotion();
   let current = 0;
   let scrollTrigger = null;
+  let sectionInView = false;
 
   const quoteWords = [...quotes].map((el) => splitWords(el));
+
+  /*
+    Video: autoplay muteado solo mientras la sección de testimonios está
+    en pantalla (IntersectionObserver) y solo el video del testimonio
+    activo — el resto queda pausado en 0. El click sobre el video activo
+    alterna play/pausa a mano; como goTo() no se vuelve a llamar mientras
+    el índice no cambia, esa pausa manual se mantiene hasta que el
+    usuario avanza al siguiente testimonio (scroll o click en la barra).
+  */
+  const playActiveVideo = () => {
+    const video = videos[current];
+    if (!video || !sectionInView) return;
+    video.play().catch(() => {});
+  };
+
+  if (videos.length) {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        sectionInView = entry.isIntersecting;
+        if (sectionInView) {
+          playActiveVideo();
+        } else {
+          videos.forEach((v) => v.pause());
+        }
+      },
+      { threshold: 0.35 },
+    );
+    observer.observe(pinTarget);
+  }
 
   const updateBars = (progress) => {
     barFills.forEach((fill, i) => {
@@ -67,6 +98,7 @@ export function initTestimonialCarousel() {
 
     images.forEach((img, i) => {
       gsap.killTweensOf(img);
+      img.style.pointerEvents = i === index ? "auto" : "none";
       if (reduced) {
         gsap.set(img, { opacity: i === index ? 1 : 0, scale: 1 });
         return;
@@ -76,6 +108,15 @@ export function initTestimonialCarousel() {
         gsap.fromTo(img, { opacity: 0, scale: 1.08 }, { opacity: 1, scale: 1, duration: 1, ease: "power3.out" });
       } else {
         gsap.to(img, { opacity: 0, duration: 0.5, ease: "power2.out", zIndex: 1 });
+      }
+    });
+
+    videos.forEach((v, i) => {
+      if (i === index) {
+        v.currentTime = 0;
+        playActiveVideo();
+      } else {
+        v.pause();
       }
     });
 
@@ -102,6 +143,62 @@ export function initTestimonialCarousel() {
         goTo(i);
         updateBars((i + 0.5) / count);
       }
+    });
+  });
+
+  /*
+    Click sobre el video activo alterna play/pausa. Hover: se apaga el
+    cursor nativo (cursor-none en el wrapper, ver Testimonials.astro) y en
+    su lugar sigue al mouse una etiqueta "Play"/"Pausa" con su ícono, más
+    un overlay semitransparente que oscurece el video mientras está en
+    hover — un solo cursor/overlay reutilizado para los 4 videos porque
+    solo uno es interactivo (pointer-events) a la vez.
+  */
+  const cursor = document.querySelector("[data-testimonial-cursor]");
+  const cursorText = document.querySelector("[data-testimonial-cursor-text]");
+  const cursorPlayIcon = document.querySelector("[data-testimonial-cursor-icon-play]");
+  const cursorPauseIcon = document.querySelector("[data-testimonial-cursor-icon-pause]");
+  const wrappers = document.querySelectorAll("[data-testimonial-video-wrapper]");
+
+  const updateCursorState = (video) => {
+    if (!cursor) return;
+    const paused = video.paused;
+    cursorText.textContent = paused ? "Play" : "Pausa";
+    cursorPlayIcon.classList.toggle("hidden", !paused);
+    cursorPauseIcon.classList.toggle("hidden", paused);
+  };
+
+  wrappers.forEach((wrapper, i) => {
+    const video = videos[i];
+    const overlay = wrapper.querySelector("[data-testimonial-video-overlay]");
+    if (!video) return;
+
+    wrapper.addEventListener("click", () => {
+      if (video.paused) {
+        video.play().catch(() => {});
+      } else {
+        video.pause();
+      }
+      updateCursorState(video);
+    });
+
+    wrapper.addEventListener("mouseenter", () => {
+      if (cursor) cursor.classList.remove("hidden");
+      if (cursor) cursor.classList.add("flex");
+      if (overlay) overlay.classList.replace("bg-black/0", "bg-black/25");
+      updateCursorState(video);
+    });
+
+    wrapper.addEventListener("mousemove", (e) => {
+      if (!cursor) return;
+      cursor.style.left = `${e.clientX}px`;
+      cursor.style.top = `${e.clientY}px`;
+    });
+
+    wrapper.addEventListener("mouseleave", () => {
+      if (cursor) cursor.classList.add("hidden");
+      if (cursor) cursor.classList.remove("flex");
+      if (overlay) overlay.classList.replace("bg-black/25", "bg-black/0");
     });
   });
 

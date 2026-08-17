@@ -1,8 +1,8 @@
 ---
 import { Image } from "astro:assets";
-import phoneImage from "../assets/img/results/card-phone.png";
-import techgroupImage from "../assets/img/results/image-techgroup.png";
-import retailImage from "../assets/img/results/card-retail.png";
+import phoneImage from "../assets/img/servicios/img-1-banking-app.png";
+import techgroupImage from "../assets/img/servicios/img-3-dashboard-monitor.png";
+import retailImage from "../assets/img/servicios/img-5-control-room.png";
 
 /*
   Carrusel de resultados: 3 proyectos, uno "grande" en el centro y dos
@@ -37,7 +37,7 @@ const projects = [
   },
   {
     image: retailImage,
-    alt: "Persona de Nexus presentando frente a un equipo en una tienda",
+    alt: "Equipo de Nexus analizando datos en tiempo real frente a un panel de control",
     name: "Nexus",
     tags: ["Talleres a medida", "Certificación de equipos", "Seguimiento post-taller"],
   },
@@ -52,7 +52,7 @@ const projects = [
       data-reveal
       class="text-center font-display text-[32px] leading-[1.1] tracking-[-1px] text-secondary sm:text-[44px] sm:tracking-[-1.4px]"
     >
-      Resultados que <span class="text-navy">hablan</span><br />por sí solos
+      Resultados que <span class="text-navy">hablan por sí solos</span>
     </h2>
   </div>
 
@@ -70,7 +70,7 @@ const projects = [
         data-reveal
         class="text-center font-display text-[66px] leading-[1.1] tracking-[-1.98px] text-secondary"
       >
-        Resultados que <span class="text-navy">hablan</span><br />por sí solos
+        Resultados que <span class="text-navy">hablan por sí solos</span>
       </h2>
     </div>
 
@@ -98,7 +98,7 @@ const projects = [
             {project.name && (
               <>
                 <p class="font-body text-[32px] font-medium tracking-[-0.96px] text-ink">{project.name}</p>
-                <div class="flex items-center font-body text-[14px] text-ink">
+                <div class="flex items-center font-body text-[18px] text-ink">
                   {project.tags.map((tag, j) => (
                     <span class:list={["px-3 py-1", j > 0 && "border-l border-[#e1e0e0]"]}>{tag}</span>
                   ))}
@@ -122,7 +122,7 @@ const projects = [
           {project.name && (
             <div class="flex flex-col items-center gap-1">
               <p class="font-body text-[24px] font-medium tracking-[-0.96px] text-ink">{project.name}</p>
-              <div class="flex items-center font-body text-[14px] text-ink">
+              <div class="flex items-center font-body text-[18px] text-ink">
                 {project.tags.map((tag, j) => (
                   <span class:list={["px-3 py-1", j > 0 && "border-l border-[#e1e0e0]"]}>{tag}</span>
                 ))}

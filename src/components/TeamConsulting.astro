@@ -1,8 +1,8 @@
 ---
 import { Image } from "astro:assets";
-import strategyImage from "../assets/img/team-consulting/strategy-meeting.png";
-import advisoryImage from "../assets/img/hero/handshake.png";
-import consultingImage from "../assets/img/hero/desk-writing.png";
+import strategyImage from "../assets/img/team-consulting/capacitaciones.png";
+import advisoryImage from "../assets/img/team-consulting/asesoria.png";
+import consultingImage from "../assets/img/team-consulting/consultoria.png";
 
 /*
   Todo el copy de sub-servicios (bullets) y el botón acá es modelo — en
@@ -10,10 +10,6 @@ import consultingImage from "../assets/img/hero/desk-writing.png";
   botón que sí tiene "Sitios Web" en la sección de Desarrollo. Replicamos
   el mismo patrón visual para mantener consistencia entre ambas secciones.
   Reemplazar por el copy real del cliente cuando esté.
-
-  Las fotos de Asesoría / Consultoría reutilizan imágenes del hero (mismo
-  criterio que en la sección anterior, no hay herramienta de generación
-  de imágenes disponible) — encajan temáticamente pero ya se vieron antes.
 
   Los links "Ver mas información del servicio" apuntan a /servicios/<slug>
   — esas páginas todavía no existen, van a dar 404 hasta que se armen.
@@ -26,7 +22,7 @@ const items = [
       "Acompañamos a equipos que quieren dejar de improvisar y empezar a tomar decisiones con datos, método y visión de largo plazo.",
     bullets: ["Talleres a medida", "Certificación de equipos", "Seguimiento post-taller"],
     image: strategyImage,
-    alt: "Consultora presentando una estrategia de crecimiento a un equipo directivo",
+    alt: "Capacitación de equipo en Acide",
   },
   {
     title: "Asesoría",
@@ -35,7 +31,7 @@ const items = [
       "Te acompañamos en las decisiones difíciles — desde elegir la arquitectura correcta hasta priorizar qué construir primero, con la experiencia de haberlo hecho antes en decenas de proyectos.",
     bullets: ["Diagnóstico inicial", "Plan de acción", "Acompañamiento continuo"],
     image: advisoryImage,
-    alt: "Dos personas de negocios dándose la mano",
+    alt: "Sesión de asesoría con un cliente",
   },
   {
     title: "Consultoría",
@@ -44,7 +40,7 @@ const items = [
       "Diagnosticamos el estado real de tu operación digital y armamos un plan concreto, con prioridades claras y pasos accionables — no un informe que junta polvo.",
     bullets: ["Relevamiento de procesos", "Plan de mejora", "Implementación guiada"],
     image: consultingImage,
-    alt: "Persona escribiendo un boceto de estrategia en un escritorio",
+    alt: "Consultoría digital en proceso",
   },
 ];
 ---
@@ -58,16 +54,6 @@ const items = [
     >
       <span class="text-secondary">Hacemos consultoría que </span><span class="text-teal">transforma equipos</span>
     </h2>
-    <div class="lg:flex lg:justify-end">
-      <p
-        data-text-reveal
-        data-reveal
-        class="font-body text-[16px] leading-[1.5] tracking-[-0.3px] text-ink sm:text-[18px] sm:tracking-[-0.5px] lg:max-w-[600px] lg:text-[26px] lg:tracking-[-0.5px]"
-      >
-        No siempre la respuesta es más tecnología. A veces lo que tu empresa necesita es claridad: saber dónde estás,
-        hacia dónde ir y qué camino tomar. Ahí es donde entramos nosotros.
-      </p>
-    </div>
   </div>
 
   <div class="mt-12 flex flex-col gap-12 lg:mt-16 lg:flex-row lg:items-center lg:gap-[92px]">

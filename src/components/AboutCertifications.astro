@@ -1,44 +1,47 @@
 ---
 import { Image } from "astro:assets";
-import isoImage from "../assets/img/servicios/img-2-design-desk.png";
-import qualityImage from "../assets/img/hero/desk-palette.png";
-import securityImage from "../assets/img/servicios/img-5-control-room.png";
+import municipalidadImage from "../assets/img/certifications/municipalidad-arequipa.png";
+import congresoImage from "../assets/img/certifications/congreso-republica.png";
+import isoImage from "../assets/img/certifications/iso-9001.png";
 
 /*
   "Certificaciones" — idéntico al patrón de "Así lo resolvimos"
-  (CaseStudySolution.astro/case-study-solution.js): fotos apiladas que
-  suben desde fuera de vista siempre en opacidad 100%, con borde
+  (CaseStudySolution.astro/case-study-solution.js): tarjetas apiladas
+  que suben desde fuera de vista siempre en opacidad 100%, con borde
   blanco + sombra. Título fijo arriba, sin cruzar con el texto.
 
-  El Figma solo trae la ISO 9001:2015 — las otras 2 certificaciones
-  son modelo mío (mismo tono), y las 3 fotos reusan imágenes que ya
-  existen en el proyecto (limpias, de escritorio/oficina, pocos
-  colores) — no hay herramienta de generación de imágenes disponible.
+  Contenido real (mismo texto que los hitos de "Nuestra historia",
+  AboutHistory.astro, solo recortado a lo específico de cada
+  reconocimiento) con los 3 escudos/logos reales que mandó el cliente.
+  A diferencia del resto de fotos del sitio, estos son logos con fondo
+  blanco (no fotografías) — por eso la tarjeta usa fondo blanco +
+  object-contain en vez de object-cover, para que el escudo se vea
+  completo y sin recortar.
 
   Atributos con prefijo "about-cert-" para no chocar con el mismo
   patrón que ya usa CaseStudySolution (data-solution-*) en la otra página.
 */
 const certifications = [
   {
-    title: "ISO 9001:2015",
+    title: "Municipalidad de Arequipa",
     description:
-      "Desarrollo de sistemas de información geográfica y portales de transparencia para gobiernos regionales, facilitando el acceso a datos públicos y fortaleciendo la gobernanza digital en la región sur del país.",
+      "Reconocimiento a la Innovación y Excelencia Emprendedora (2024) — la Municipalidad Provincial de Arequipa distinguió a ACIDE por su impacto y contribución al desarrollo económico y social de la región.",
+    image: municipalidadImage,
+    alt: "Escudo de la Municipalidad Provincial de Arequipa",
+  },
+  {
+    title: "Congreso de la República",
+    description:
+      "Reconocimiento por Trayectoria y Desarrollo Sostenible (2023) — el Congreso de la República del Perú distinguió a ACIDE por su contribución al desarrollo sostenible del país y su práctica empresarial ética y responsable.",
+    image: congresoImage,
+    alt: "Logo del Congreso de la República del Perú",
+  },
+  {
+    title: "ISO 9001",
+    description:
+      "Certificación de calidad obtenida en 2016, que reconoce nuestra gestión en atención al cliente, proyectos, asesoría y capacitación en sectores públicos y privados.",
     image: isoImage,
-    alt: "Escritorio de diseño con paleta de colores y notas",
-  },
-  {
-    title: "ISO 27001:2013",
-    description:
-      "Certificación de nuestro sistema de gestión de seguridad de la información — protocolos de acceso, cifrado de datos y auditorías periódicas que garantizan la confidencialidad de cada proyecto que manejamos.",
-    image: securityImage,
-    alt: "Sala de control con monitores de seguridad",
-  },
-  {
-    title: "CMMI Nivel 3",
-    description:
-      "Reconocimiento a la madurez de nuestros procesos de desarrollo — desde la planificación hasta el despliegue, cada proyecto sigue estándares medibles y repetibles que reducen el riesgo y mejoran los tiempos de entrega.",
-    image: qualityImage,
-    alt: "Escritorio minimalista con laptop y paleta de colores",
+    alt: "Logo de la certificación ISO 9001",
   },
 ];
 ---
@@ -74,11 +77,11 @@ const certifications = [
           {
             certifications.map((cert, i) => (
               <div
-                class="absolute top-1/2 left-1/2 h-[494px] w-[672px] -mt-[247px] -ml-[336px] border-[10px] border-white bg-[#0B2238] shadow-2xl shadow-black/40"
+                class="absolute top-1/2 left-1/2 h-[494px] w-[672px] -mt-[247px] -ml-[336px] border-[10px] border-white bg-white p-16 shadow-2xl shadow-black/40"
                 data-about-cert-media-item
                 data-index={i}
               >
-                <Image src={cert.image} alt={cert.alt} width={672} height={494} class="h-full w-full object-cover" />
+                <Image src={cert.image} alt={cert.alt} width={672} height={494} class="h-full w-full object-contain" />
               </div>
             ))
           }
@@ -97,8 +100,8 @@ const certifications = [
     {
       certifications.map((cert) => (
         <div class="flex flex-col overflow-hidden border border-white/10" data-reveal>
-          <div class="aspect-[672/494] w-full overflow-hidden">
-            <Image src={cert.image} alt={cert.alt} width={672} height={494} class="h-full w-full object-cover" />
+          <div class="aspect-[672/494] w-full overflow-hidden bg-white p-10">
+            <Image src={cert.image} alt={cert.alt} width={672} height={494} class="h-full w-full object-contain" />
           </div>
           <div class="flex flex-col gap-3 p-6">
             <h3 class="font-body text-[22px] font-medium tracking-[-0.66px] text-white">{cert.title}</h3>

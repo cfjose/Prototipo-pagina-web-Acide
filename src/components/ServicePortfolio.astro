@@ -13,12 +13,13 @@ import landingPageImage from "../assets/img/sitios-web/portfolio/landing-page.pn
   tono que el resto del sitio, para que las 4 tengan algo que mostrar
   en el hover. Reemplazar cuando haya contenido real.
 
-  Reveal: cada imagen usa el mismo [data-reveal] del resto del sitio
-  (fade + sube desde abajo) — como la columna izquierda va más alta,
-  sus imágenes entran al viewport primero de forma natural, y
-  ScrollTrigger.batch (scroll-reveal.js) agrupa por cercanía y anima en
-  orden del DOM, así que quedan izquierda-luego-derecha sin necesitar
-  nada a medida.
+  Reveal: cada imagen usa [data-reveal-toggle] (no el [data-reveal] del
+  resto del sitio) — fade + sube desde abajo, pero a diferencia del
+  resto se re-anima cada vez que vuelve a entrar en viewport en
+  cualquier dirección de scroll, no solo una vez (ver scroll-reveal.js).
+
+  La descripción usa el estilo "Descripciones - 26px" del Figma
+  (Satoshi Medium, 26px, tracking -0.5px) en desktop.
 
   Hover: la imagen crece un poco (scale) y, debajo del título (no
   encima de la imagen), aparece la descripción con un fade de
@@ -77,7 +78,7 @@ const rightColumn = [items[2], items[3]];
         <div class="flex flex-col gap-16 sm:gap-32">
           {column.map((item) => (
             <div class="group flex flex-col items-start gap-6">
-              <div class="relative w-full overflow-hidden" style={`aspect-ratio: ${item.aspect};`} data-reveal>
+              <div class="relative w-full overflow-hidden" style={`aspect-ratio: ${item.aspect};`} data-reveal-toggle>
                 <Image
                   src={item.image}
                   alt={item.alt}
@@ -90,7 +91,7 @@ const rightColumn = [items[2], items[3]];
                 <p class="font-body text-[24px] font-medium tracking-[-0.72px] text-ink sm:text-[32px] sm:tracking-[-0.96px]">
                   {item.title}
                 </p>
-                <p class="pt-1 font-body text-[16px] leading-[1.5] tracking-[-0.3px] text-secondary opacity-0 transition-opacity duration-500 ease-[var(--ease-default)] group-hover:opacity-100">
+                <p class="pt-1 font-body text-[16px] leading-[1.5] tracking-[-0.3px] text-secondary opacity-0 transition-opacity duration-500 ease-[var(--ease-default)] group-hover:opacity-100 lg:text-[26px] lg:tracking-[-0.5px]">
                   {item.description}
                 </p>
               </div>

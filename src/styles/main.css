@@ -114,6 +114,16 @@
   opacity: 0;
   scale: 0.94;
 }
+/*
+  Igual que [data-reveal] pero se re-anima cada vez que vuelve a entrar
+  en viewport (toggleActions "play reverse play reverse" en vez de
+  once:true) — se usa en "Lo que nos hace únicos" / "Lo que
+  desarrollamos", ver scroll-reveal.js.
+*/
+[data-reveal-toggle] {
+  opacity: 0;
+  translate: 0 24px;
+}
 [data-hero-underline] {
   scale: 0 1;
   transform-origin: left;
@@ -126,6 +136,7 @@
 .no-js [data-reveal],
 .no-js [data-reveal-fade],
 .no-js [data-reveal-scale],
+.no-js [data-reveal-toggle],
 .no-js [data-hero-underline],
 .no-js [data-hero-description] {
   opacity: 1;
@@ -138,6 +149,7 @@
   [data-reveal],
   [data-reveal-fade],
   [data-reveal-scale],
+  [data-reveal-toggle],
   [data-hero-underline],
   [data-hero-description] {
     opacity: 1;

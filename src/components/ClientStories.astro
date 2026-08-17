@@ -1,8 +1,7 @@
 ---
 /*
-  Los "logos" son marcas abstractas generadas por JS (forma + color según
-  el nombre de la empresa) — no tenemos logos reales de estas 36 empresas
-  inventadas ni herramienta de generación de imágenes (ver el generador en
+  Los logos son reales (24, en src/assets/img/client-logos/) pero las 24
+  empresas y sus casos son ficticios — no hay clientes reales todavía (ver
   client-stories.js). El JS se encarga de rellenar cada casilla y
   rotarlas; acá solo armamos los 12 contenedores vacíos + los filtros.
 */
@@ -73,9 +72,8 @@ const servicios = ["Digitalización", "Consultoría"];
           data-client-slot
           data-slot-index={i}
         >
-          <div class="absolute inset-0 flex flex-col items-center justify-center gap-2 px-4" data-slot-logo-wrap>
-            <span data-slot-icon class="h-[36px] w-[36px] sm:h-[44px] sm:w-[44px]" />
-            <span data-slot-logo class="text-center font-body text-[14px] font-bold uppercase tracking-[0px] text-ink" />
+          <div class="absolute inset-0" data-slot-logo-wrap>
+            <img data-slot-logo class="h-full w-full object-cover" alt="" />
           </div>
           <div class="absolute inset-0 flex flex-col justify-center gap-3 p-5 opacity-0 sm:p-6" data-slot-desc>
             <p data-slot-desc-text class="font-body text-[14px] leading-[1.5] tracking-[0px] text-ink" />

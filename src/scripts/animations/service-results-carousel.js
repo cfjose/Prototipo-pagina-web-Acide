@@ -5,14 +5,9 @@ import { prefersReducedMotion } from "../utils/reduced-motion.js";
 /*
   Slider real, no un zoom in-place: 5 posiciones a lo largo de la
   pantalla (0=fuera por la izquierda, 1=costado izquierdo, 2=centro,
-  3=costado derecho, 4=fuera por la derecha). Al avanzar, el proyecto
-  del costado izquierdo (1) sale por el borde izquierdo (1→0) y
-  automáticamente "teletransporta" al otro lado (0→4, instantáneo, no
-  se ve porque las dos posiciones están fuera de pantalla) para volver
-  a entrar por la derecha (4→3) — así nunca cruza por detrás de los
-  otros dos, que solo se corren un lugar (2→1, 3→2). Retroceder hace lo
-  mismo espejado. Tamaños: centro 996x553, costados 683x384, gap 24px
-  fijo (igual criterio de escalado que antes si no entra en pantalla).
+  3=costado derecho, 4=fuera por la derecha). Tamaños: centro 996x553,
+  costados 683x384, gap 24px fijo (igual criterio de escalado que antes
+  si no entra en pantalla).
 
   Los costados (1 y 3) no entran completos: se recortan contra el
   borde de la pantalla, mostrando 3/4 de la imagen y dejando 1/4 fuera
@@ -20,6 +15,24 @@ import { prefersReducedMotion } from "../utils/reduced-motion.js";
   disponible para escalar se calcula contra el ancho VISIBLE de la fila
   (3/4 de cada costado, no el costado completo), lo que además permite
   una escala más grande que antes sin que dejen de entrar en pantalla.
+
+  La posición de cada tarjeta es continua, no un salto discreto: en vez
+  de un "bucket" entero que dispara una animación completa a la
+  siguiente posición fija, cada frame del scroll interpola directamente
+  entre las 5 posiciones según el progreso exacto del scroll (ver
+  applyContinuousPositions) — el usuario siente que arrastra las
+  tarjetas con el propio gesto de scroll, no que dispara una animación
+  aparte. Como solo hay 3 proyectos, el índice virtual nunca sale del
+  rango [0, 2], así que ninguna tarjeta necesita salir de las 5
+  posiciones para volver a entrar por el otro lado — no hace falta el
+  truco de teletransporte que tendría un carrusel infinito.
+
+  Al soltar el scroll a medio camino, el snap de ScrollTrigger (ver
+  scrollTrigger.snap más abajo) anima la posición de scroll al proyecto
+  más cercano — es la única sección del sitio que usa esa opción de
+  ScrollTrigger; el resto de los carruseles con pin (ServicesGallery,
+  testimonial-carousel, etc.) avanzan por "bucket" discreto y no
+  necesitan snap porque no hay posición intermedia que resolver.
 
   Mismo pin+scroll que el resto — ver ResultsCarousel.astro para la
   versión genérica de /servicios (misma lógica, mismos tamaños de acá
@@ -45,10 +58,11 @@ export function initServiceResultsCarousel() {
   const count = cards.length;
   const reduced = prefersReducedMotion();
 
-  // slotAssignment[slot] = índice del proyecto que ocupa ese costado/centro.
-  // Arranca [0,1,2]: proyecto0 a la izquierda, proyecto1 (TechGroup) al
-  // centro, proyecto2 a la derecha — igual que el Figma por default.
-  let slotAssignment = [0, 1, 2];
+  // Estado continuo: 0 = proyecto0 al centro, 1 = proyecto1 al centro, etc.
+  // (equivalente a "qué bucket" en el sistema viejo, pero acá es un float,
+  // no un entero — ver applyContinuousPositions).
+  let lastVirtualIndex = 0;
+  let lastNearestIndex = 0;
 
   const slotVars = (scale) => {
     const sideW = SIDE_W * scale;
@@ -86,69 +100,43 @@ export function initServiceResultsCarousel() {
     return Math.max(0.2, Math.min(1.4, widthScale, heightScale));
   };
 
-  const updateCaption = () => {
-    const activeProject = slotAssignment[1];
+  const updateCaption = (activeProject) => {
     captions.forEach((caption, i) => {
       gsap.to(caption, { opacity: i === activeProject ? 1 : 0, duration: 0.4, ease: "power2.out" });
     });
   };
 
-  // Pintado inicial sin animación: cada proyecto directo a su slot.
-  const paintInitial = () => {
+  // Posiciona las 3 tarjetas de forma continua según virtualIndex (float,
+  // 0..count-1): cada proyecto i tiene su propio "slot flotante" =
+  // (i - virtualIndex) + 2, interpolado entre los 2 slots enteros más
+  // cercanos de slotVars. gsap.set (no .to) porque el suavizado ya lo da
+  // el scrub del ScrollTrigger al interpolar el progreso cuadro a cuadro.
+  const applyContinuousPositions = (virtualIndex, vars) => {
+    for (let i = 0; i < count; i++) {
+      const slotFloat = Math.max(0, Math.min(4, i - virtualIndex + 2));
+      const lo = Math.floor(slotFloat);
+      const hi = Math.min(4, lo + 1);
+      const t = slotFloat - lo;
+
+      const left = vars[lo].left + (vars[hi].left - vars[lo].left) * t;
+      const width = vars[lo].width + (vars[hi].width - vars[lo].width) * t;
+      const height = vars[lo].height + (vars[hi].height - vars[lo].height) * t;
+      const zIndex = Math.abs(slotFloat - 2) < 0.5 ? 2 : 1;
+
+      gsap.set(cards[i], { left, width, height, top: "50%", yPercent: -50, zIndex });
+    }
+  };
+
+  // Pintado inicial (o tras un resize): sin animación, directo a la
+  // posición que corresponda a virtualIndex (por defecto la actual, no
+  // siempre 0 — si se pinta de nuevo a mitad de un scroll no hay que
+  // saltar al primer proyecto).
+  const paintInitial = (virtualIndex = lastVirtualIndex) => {
     const vars = slotVars(computeScale());
     stage.style.height = `${vars[2].height}px`;
-    slotAssignment.forEach((projectIndex, slot) => {
-      gsap.set(cards[projectIndex], { ...vars[slot + 1], top: "50%", yPercent: -50, zIndex: slot === 1 ? 2 : 1 });
-    });
-    captions.forEach((caption, i) => gsap.set(caption, { opacity: i === slotAssignment[1] ? 1 : 0 }));
-  };
-
-  const moveTo = (card, target, vars, duration = 0.7) => {
-    if (reduced) {
-      gsap.set(card, { ...vars[target], zIndex: target === 2 ? 2 : 1 });
-      return;
-    }
-    gsap.to(card, { ...vars[target], zIndex: target === 2 ? 2 : 1, duration, ease: "power2.inOut" });
-  };
-
-  const wrapAround = (card, exitSlot, enterSlot, vars) => {
-    if (reduced) {
-      gsap.set(card, { ...vars[enterSlot], zIndex: 1 });
-      return;
-    }
-    gsap
-      .timeline()
-      .to(card, { ...vars[exitSlot], zIndex: 1, duration: 0.4, ease: "power2.in" })
-      .set(card, { ...vars[exitSlot === 0 ? 4 : 0] })
-      .to(card, { ...vars[enterSlot], zIndex: 1, duration: 0.4, ease: "power2.out" });
-  };
-
-  const next = () => {
-    const scale = computeScale();
-    const vars = slotVars(scale);
-    stage.style.height = `${vars[2].height}px`;
-
-    const [leftProject, centerProject, rightProject] = slotAssignment;
-    moveTo(cards[centerProject], 1, vars);
-    moveTo(cards[rightProject], 2, vars);
-    wrapAround(cards[leftProject], 0, 3, vars);
-
-    slotAssignment = [centerProject, rightProject, leftProject];
-    updateCaption();
-  };
-
-  const prev = () => {
-    const scale = computeScale();
-    const vars = slotVars(scale);
-    stage.style.height = `${vars[2].height}px`;
-
-    const [leftProject, centerProject, rightProject] = slotAssignment;
-    moveTo(cards[centerProject], 3, vars);
-    moveTo(cards[leftProject], 2, vars);
-    wrapAround(cards[rightProject], 4, 1, vars);
-
-    slotAssignment = [rightProject, leftProject, centerProject];
-    updateCaption();
+    applyContinuousPositions(virtualIndex, vars);
+    const nearest = Math.round(virtualIndex);
+    captions.forEach((caption, i) => gsap.set(caption, { opacity: i === nearest ? 1 : 0 }));
   };
 
   paintInitial();
@@ -184,10 +172,15 @@ export function initServiceResultsCarousel() {
 
   const mm = gsap.matchMedia();
   mm.add("(min-width: 1024px)", () => {
-    const resizeHandler = () => paintInitial();
+    // vars se recalcula solo al iniciar y en cada resize (depende del
+    // ancho/alto de pantalla, no del scroll) — recalcularlo en cada
+    // frame de onUpdate sería trabajo de layout innecesario 60x/seg.
+    let vars = slotVars(computeScale());
+    const resizeHandler = () => {
+      vars = slotVars(computeScale());
+      paintInitial(lastVirtualIndex);
+    };
     window.addEventListener("resize", resizeHandler);
-
-    let currentBucket = 0;
 
     const scrollTrigger = ScrollTrigger.create({
       trigger: pinTarget,
@@ -196,15 +189,20 @@ export function initServiceResultsCarousel() {
       pin: true,
       scrub: 0.4,
       anticipatePin: 1,
+      snap: {
+        snapTo: 1 / (count - 1),
+        duration: { min: 0.2, max: 0.5 },
+        ease: "power1.inOut",
+      },
       onUpdate: (self) => {
-        const bucket = Math.min(count - 1, Math.floor(self.progress * count));
-        while (bucket > currentBucket) {
-          next();
-          currentBucket += 1;
-        }
-        while (bucket < currentBucket) {
-          prev();
-          currentBucket -= 1;
+        const virtualIndex = self.progress * (count - 1);
+        applyContinuousPositions(virtualIndex, vars);
+        lastVirtualIndex = virtualIndex;
+
+        const nearest = Math.round(virtualIndex);
+        if (nearest !== lastNearestIndex) {
+          lastNearestIndex = nearest;
+          updateCaption(nearest);
         }
       },
     });

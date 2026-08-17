@@ -1,26 +1,27 @@
 ---
 import { Image } from "astro:assets";
 import underline from "../assets/img/hero/underline.svg";
-import phoneApp from "../assets/img/hero/phone-app.png";
-import deskPalette from "../assets/img/hero/desk-palette.png";
-import digitalWave from "../assets/img/hero/digital-wave.png";
-import handshake from "../assets/img/hero/handshake.png";
-import deskWriting from "../assets/img/hero/desk-writing.png";
-import serverRoom from "../assets/img/hero/server-room.png";
+import dashboardMonitors from "../assets/img/hero/dashboard-monitors.png";
+import wireframeNotebook from "../assets/img/hero/wireframe-notebook.png";
+import codeBuildDesk from "../assets/img/hero/code-build-desk.png";
+import whiteboardProcess from "../assets/img/hero/whiteboard-process.png";
+import codeEditorLaptop from "../assets/img/hero/code-editor-laptop.png";
+import reportCalculator from "../assets/img/hero/report-calculator.png";
 
 // Columna izquierda flota hacia arriba, derecha hacia abajo (ver hero-gallery.js).
-// Solo 6 imágenes en total (3 por columna) — el Figma actualizado ya no
-// tiene el borde redondeado grande por esquina alterna, es un radio chico
-// (8px) parejo en las 4 esquinas.
+// Solo 6 imágenes en total (3 por columna), resincronizadas 1:1 con el
+// orden real del Figma (node 164:824, Image Gallery) — el Figma
+// actualizado ya no tiene el borde redondeado grande por esquina
+// alterna, es un radio chico (8px) parejo en las 4 esquinas.
 const columnLeft = [
-  { src: deskPalette, alt: "Laptop con paleta de colores y notas de diseño" },
-  { src: handshake, alt: "Dos personas de negocios dándose la mano" },
-  { src: serverRoom, alt: "Pasillo de un centro de datos" },
+  { src: dashboardMonitors, alt: "Dos monitores mostrando un dashboard y un diagrama de flujo" },
+  { src: wireframeNotebook, alt: "Cuaderno con bocetos de wireframes" },
+  { src: codeBuildDesk, alt: "Escritorio con lámpara y monitor mostrando un build exitoso en el editor de código" },
 ];
 const columnRight = [
-  { src: phoneApp, alt: "Celular en un soporte mostrando un dashboard de métricas" },
-  { src: digitalWave, alt: "Visualización de datos digitales en movimiento" },
-  { src: deskWriting, alt: "Persona escribiendo un boceto en un escritorio" },
+  { src: whiteboardProcess, alt: "Pizarra con el proceso Idea, Desarrollo, Lanzamiento y Crecimiento" },
+  { src: codeEditorLaptop, alt: "Laptop con un editor de código abierto" },
+  { src: reportCalculator, alt: "Reporte con gráficos de crecimiento junto a una calculadora" },
 ];
 ---
 

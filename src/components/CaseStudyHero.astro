@@ -1,12 +1,15 @@
 ---
 import { Image } from "astro:assets";
-import heroImage from "../assets/img/proyectos/grupo-alimentario.png";
+import heroImage from "../assets/img/proyectos/grupo-alimentario-case-hero.png";
 
 /*
-  Cabecera del case study — poca animación a propósito (a diferencia
-  del resto de la página): solo un reveal simple del texto, igual que
-  el resto del sitio. La foto grande con degradado abajo (para que el
-  texto blanco tenga contraste) viene directo del Figma.
+  Cabecera del case study — foto real del Figma (node 222:1296, versión
+  sin texto quemado) con el título y el degradado en HTML encima, igual
+  que el resto del sitio, para que el texto anime (data-text-reveal
+  palabra por palabra + data-reveal en el bloque) en vez de quedar fijo
+  en el píxel. Esta imagen es DISTINTA a la miniatura de la tarjeta en
+  /proyectos (esa sigue en assets/img/proyectos/grupo-alimentario.png,
+  sin tocar) — no compartir el mismo archivo entre ambas.
 */
 ---
 

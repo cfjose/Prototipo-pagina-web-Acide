@@ -1,9 +1,9 @@
 ---
 import { Image } from "astro:assets";
-import phoneImage from "../assets/img/results/card-phone.png";
-import retailImage from "../assets/img/results/card-retail.png";
-import techgroupImage from "../assets/img/results/image-techgroup.png";
-import bankingImage from "../assets/img/servicios/img-1-banking-app.png";
+import ventasImage from "../assets/img/results/grupo-alimentario-ventas.png";
+import erroresImage from "../assets/img/results/grupo-alimentario-errores.png";
+import gestionImage from "../assets/img/results/grupo-alimentario-gestion.png";
+import pagosImage from "../assets/img/results/grupo-alimentario-pagos.png";
 
 /*
   4 resultados del caso — mismo patrón que ServicesGallery.astro (Home:
@@ -31,26 +31,26 @@ const results = [
   {
     title: "+60% en ventas online",
     description: "En los primeros 6 meses, las ventas por el canal digital crecieron 60% frente al mismo período del año anterior.",
-    image: retailImage,
-    alt: "Gráfico de crecimiento de ventas",
+    image: ventasImage,
+    alt: "Empleada de Grupo Alimentario mostrando el crecimiento de ventas en una tablet",
   },
   {
     title: "−80% en errores de pedido",
     description: "El catálogo sincronizado con inventario en tiempo real eliminó casi por completo los pedidos mal registrados.",
-    image: techgroupImage,
-    alt: "Dashboard de analítica mostrando métricas de pedidos",
+    image: erroresImage,
+    alt: "Empleado revisando el inventario en los pasillos con una tablet",
   },
   {
     title: "−70% en tiempo de gestión",
     description: "El equipo comercial dejó de corregir errores a mano y recuperó horas cada semana para dedicarse a vender.",
-    image: bankingImage,
-    alt: "App mostrando el panel de gestión de pedidos",
+    image: gestionImage,
+    alt: "Equipo de Grupo Alimentario gestionando pedidos desde una laptop",
   },
   {
     title: "100% de pagos autónomos",
     description: "La pasarela integrada le dio al equipo control total sobre los cobros, sin depender de terceros para confirmar cada venta.",
-    image: phoneImage,
-    alt: "Celular mostrando la confirmación de un pago",
+    image: pagosImage,
+    alt: "Gerente confirmando un pago desde el celular junto a su laptop",
   },
 ];
 ---

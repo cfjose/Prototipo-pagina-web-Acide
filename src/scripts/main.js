@@ -3,7 +3,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { initMobileNav } from "./animations/mobile-nav.js";
 import { initHeaderScroll } from "./animations/header-scroll.js";
 import { initSmoothScroll } from "./animations/smooth-scroll.js";
-import { initScrollReveal } from "./animations/scroll-reveal.js";
+import { initScrollReveal, initScrollRevealToggle } from "./animations/scroll-reveal.js";
 import { initHeroIntro } from "./animations/hero-intro.js";
 import { initHeroGallery } from "./animations/hero-gallery.js";
 import { initTextReveal } from "./animations/text-reveal.js";
@@ -39,6 +39,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 initSmoothScroll();
 initScrollReveal();
+initScrollRevealToggle();
 initMobileNav();
 initHeaderScroll();
 initHeroIntro();

@@ -1,10 +1,5 @@
 ---
-import { Image } from "astro:assets";
-import client1 from "../assets/img/testimonials/client-1.png";
 import quotesIcon from "../assets/img/testimonials/quotes-vector.svg";
-import handshake from "../assets/img/hero/handshake.png";
-import strategyMeeting from "../assets/img/team-consulting/strategy-meeting.png";
-import teamImage from "../assets/img/digital-today/team.png";
 
 /*
   Solo el testimonio de Alejandra Martínez está escrito en Figma (el resto
@@ -14,8 +9,11 @@ import teamImage from "../assets/img/digital-today/team.png";
   reales que ya aparecen en la grilla de logos más abajo (Aurora, Cloudox,
   Nexus). Reemplazar por testimonios reales cuando estén.
 
-  Las fotos 2-4 reutilizan imágenes de otras secciones (mismo criterio que
-  antes, sin herramienta de generación de imágenes disponible).
+  Los 4 testimonios son video (no foto) — pesan demasiado para pasar por
+  el pipeline de imágenes de Astro/Vite, así que viven en public/ y se
+  referencian por ruta directa en vez de import. El comportamiento
+  (autoplay muteado al entrar en viewport, click para pausar/reanudar,
+  cursor custom + overlay en hover) vive en testimonial-carousel.js.
 */
 const testimonials = [
   {
@@ -23,32 +21,28 @@ const testimonials = [
       "Llegamos a Acide con una idea a medio armar y nos devolvieron un producto que superó lo que imaginábamos. Desde el día uno entendieron lo que necesitábamos y nos acompañaron sin soltar el timón. Profesionales de verdad.",
     name: "Alejandra Martínez",
     role: "Gerente en TechGroup",
-    image: client1,
-    alt: "Alejandra Martínez trabajando en una tablet en una oficina luminosa",
+    video: "/videos/testimonials/alejandra.mp4",
   },
   {
     quote:
       "Necesitábamos una app que no se sintiera como una app corporativa más. Acide entendió el producto casi mejor que nosotros y lo tradujo en algo que nuestros usuarios realmente disfrutan usar.",
     name: "Rodrigo Fernández",
     role: "CEO en Aurora",
-    image: handshake,
-    alt: "Rodrigo Fernández cerrando un acuerdo de negocios",
+    video: "/videos/testimonials/rodrigo.mp4",
   },
   {
     quote:
       "El equipo de Acide se metió de lleno en nuestra estrategia de marketing digital — no vinieron con una fórmula genérica, armaron algo a medida y los resultados se notaron en el primer trimestre.",
     name: "Camila Torres",
     role: "Directora de Marketing en Cloudox",
-    image: strategyMeeting,
-    alt: "Camila Torres presentando una estrategia a su equipo",
+    video: "/videos/testimonials/camila.mp4",
   },
   {
     quote:
       "La auditoría que nos hicieron encontró problemas que ni sabíamos que teníamos. Con ese diagnóstico pudimos priorizar en serio, en vez de seguir apagando incendios.",
     name: "Martín Silva",
     role: "Fundador de Nexus",
-    image: teamImage,
-    alt: "Equipo de Nexus trabajando frente a pantallas con código",
+    video: "/videos/testimonials/martin.mp4",
   },
 ];
 ---
@@ -60,14 +54,41 @@ const testimonials = [
     </h2>
 
     <div class="mt-12 flex flex-col gap-10 lg:mt-16 lg:flex-row lg:items-center lg:gap-16">
-      <div class="relative aspect-[527/297] w-full overflow-hidden lg:flex-1" data-reveal-scale>
+      <div class="relative aspect-[527/297] w-full overflow-hidden lg:flex-1" data-reveal-scale data-testimonial-video-group>
         {
           testimonials.map((t, i) => (
-            <div class="absolute inset-0" data-testimonial-image style={i === 0 ? "opacity: 1; z-index: 2;" : "opacity: 0; z-index: 1;"}>
-              <Image src={t.image} alt={t.alt} width={527} height={297} class="h-full w-full object-cover" />
+            <div
+              class="absolute inset-0 cursor-none"
+              data-testimonial-image
+              data-testimonial-video-wrapper
+              style={i === 0 ? "opacity: 1; z-index: 2;" : "opacity: 0; z-index: 1; pointer-events: none;"}
+            >
+              <video
+                src={t.video}
+                data-testimonial-video
+                class="h-full w-full object-cover"
+                muted
+                loop
+                playsinline
+                preload="metadata"
+                aria-label={`Testimonio en video de ${t.name}`}
+              />
+              <div
+                class="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-300 ease-[var(--ease-default)]"
+                data-testimonial-video-overlay
+              />
             </div>
           ))
         }
+
+        <div
+          class="pointer-events-none fixed z-50 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-2 bg-white px-4 py-2 font-body text-[14px] tracking-[-0.3px] text-ink"
+          data-testimonial-cursor
+        >
+          <svg data-testimonial-cursor-icon-play width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
+          <svg data-testimonial-cursor-icon-pause width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="hidden"><path d="M6 5h4v14H6zM14 5h4v14h-4z" /></svg>
+          <span data-testimonial-cursor-text>Pausa</span>
+        </div>
       </div>
 
       <div class="flex flex-col items-start gap-6 lg:w-[500px] lg:shrink-0">
@@ -107,7 +128,7 @@ const testimonials = [
             type="button"
             data-testimonial-bar
             aria-label={`Ver testimonio de ${t.name}`}
-            class="h-[8px] flex-1 overflow-hidden bg-[#6a8d92]"
+            class="h-[4px] flex-1 overflow-hidden bg-[#6a8d92]"
           >
             <div
               data-testimonial-bar-fill

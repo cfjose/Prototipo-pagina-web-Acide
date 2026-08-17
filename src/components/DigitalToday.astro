@@ -1,19 +1,15 @@
 ---
 import { Image } from "astro:assets";
-import teamImage from "../assets/img/digital-today/team.png";
-import appImage from "../assets/img/hero/phone-app.png";
-import marketingImage from "../assets/img/hero/desk-palette.png";
-import auditImage from "../assets/img/hero/server-room.png";
+import sitiosWebImage from "../assets/img/digital-today/sitios-web.png";
+import appImage from "../assets/img/digital-today/aplicaciones-web.png";
+import marketingImage from "../assets/img/digital-today/marketing-digital.png";
+import auditImage from "../assets/img/digital-today/auditoria-digital.png";
 
 /*
   Las descripciones y sub-servicios de "Aplicaciones Web", "Marketing
   Digital" y "Auditoría Digital" son copy modelo — en Figma solo está
   escrita la de "Sitios Web" (el item que aparece expandido por default).
   Reemplazar por el copy real del cliente cuando esté.
-
-  Las imágenes de Aplicaciones Web / Marketing Digital / Auditoría Digital
-  reutilizan fotos del hero (no hay herramienta de generación de imágenes
-  disponible) — encajan temáticamente pero se repiten en la página.
 
   Los links "Ver mas información del servicio" apuntan a /servicios/<slug>
   — esas páginas todavía no existen, van a dar 404 hasta que se armen.
@@ -25,7 +21,7 @@ const services = [
     description:
       "Más de una década transformando ideas en productos digitales que no solo funcionan — generan resultados medibles para empresas de toda la región.",
     bullets: ["Diseño UX/UI", "Desarrollo web", "Despliegue del sitio"],
-    image: teamImage,
+    image: sitiosWebImage,
     alt: "Equipo trabajando frente a pantallas con código y dashboards",
   },
   {
@@ -35,7 +31,7 @@ const services = [
       "Diseñamos y desarrollamos aplicaciones a medida que resuelven problemas reales, desde el primer sketch hasta el deploy en producción, con foco en performance y experiencia de uso.",
     bullets: ["Arquitectura de producto", "Desarrollo a medida", "Soporte y mantenimiento"],
     image: appImage,
-    alt: "Celular en un soporte mostrando un dashboard de métricas",
+    alt: "Aplicación web a medida en pantalla",
   },
   {
     title: "Marketing Digital",
@@ -44,7 +40,7 @@ const services = [
       "Estrategias de adquisición y contenido que conectan con las personas correctas en el momento correcto — medimos cada resultado para que la inversión se traduzca en crecimiento real.",
     bullets: ["Estrategia de contenido", "Pauta y performance", "Analítica y reportes"],
     image: marketingImage,
-    alt: "Laptop con paleta de colores y notas de diseño",
+    alt: "Estrategia de marketing digital",
   },
   {
     title: "Auditoría Digital",
@@ -53,7 +49,7 @@ const services = [
       "Revisamos a fondo tu stack, tu seguridad y tu performance para que sepas exactamente dónde estás parado y qué resolver antes de que se vuelva un problema.",
     bullets: ["Diagnóstico técnico", "Análisis de seguridad", "Plan de acción"],
     image: auditImage,
-    alt: "Pasillo de un centro de datos",
+    alt: "Auditoría digital de un sistema",
   },
 ];
 ---
@@ -67,17 +63,6 @@ const services = [
     >
       <span class="text-secondary">Desarrollamos, </span><span class="text-navy">código con propósito</span>
     </h2>
-    <div class="lg:flex lg:justify-end">
-      <p
-        data-text-reveal
-        data-reveal
-        class="font-body text-[16px] leading-[1.5] tracking-[-0.3px] text-ink sm:text-[18px] sm:tracking-[-0.5px] lg:max-w-[600px] lg:text-[26px] lg:tracking-[-0.5px]"
-      >
-        TechGroup tenía un problema que nadie quería resolver: un sistema interno que frenaba a sus equipos. Lo
-        reinventamos desde cero. El resultado fue una plataforma que redujo tiempos operativos un 40% y devolvió la
-        agilidad que habían perdido.
-      </p>
-    </div>
   </div>
 
   <div class="mt-12 flex flex-col gap-12 lg:mt-16 lg:flex-row lg:items-center lg:gap-[92px]">
