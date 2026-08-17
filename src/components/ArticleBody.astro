@@ -1,0 +1,145 @@
+---
+import { Image } from "astro:assets";
+import diagramImage from "../assets/img/blog/article-iso9001-diagram.png";
+
+/*
+  Cuerpo del artículo (Figma: Artículo, node 282:584, Frame 80 =
+  282:790). El Figma trae, en la columna izquierda de 334px, una lista
+  fija "Puntos clave del artículo" — a pedido explícito del cliente esa
+  columna se reemplaza por completo por un nav de navegación pegajoso
+  (un link por cada sección H2 del artículo, resaltando la sección
+  activa mientras se scrollea), igual al de la referencia que pasó
+  (clay.global/blog/.../cognitive-load, componente ArticleNavigation).
+
+  "Pegajoso" es position:sticky nativo (alcanza para "se queda en modo
+  stack a pesar de que el usuario siga scrolleando", no hace falta
+  JS de por medio para la posición en sí) + IntersectionObserver en
+  article-nav.js solo para resaltar qué sección está activa, ver ese
+  archivo.
+
+  Solo las 2 primeras secciones ("Beneficios tangibles..." y "Ruta de
+  implementación...", con la imagen) traen copy real del Figma; las
+  otras 4 son contenido inventado para que el artículo tenga más
+  cuerpo y el nav pegajoso se note de verdad al scrollear (pedido
+  explícito del cliente). "sections" solo alimenta el nav — el
+  contenido de cada una sigue a mano abajo porque es un artículo de
+  ejemplo fijo, no un renderer genérico de rich text.
+*/
+const sections = [
+  { id: "beneficios", heading: "Beneficios tangibles de implementar la ISO 9001" },
+  { id: "principios", heading: "Los siete principios de la gestión de calidad" },
+  { id: "ruta-implementacion", heading: "Ruta de implementación: del diagnóstico a la certificación" },
+  { id: "errores-comunes", heading: "Errores comunes al implementar la ISO 9001" },
+  { id: "mantener-certificacion", heading: "Cómo mantener la certificación en el tiempo" },
+  { id: "preguntas-frecuentes", heading: "Preguntas frecuentes sobre la ISO 9001" },
+];
+---
+
+<section class="wrapper section-y">
+  <div class="flex flex-col gap-16 lg:flex-row lg:items-start lg:gap-[111px]">
+    <nav class="hidden w-[288px] shrink-0 flex-col gap-6 lg:top-[140px] lg:flex lg:sticky" data-article-nav aria-label="Navegación del artículo">
+      {
+        sections.map((s) => (
+          <a href={`#${s.id}`} data-article-nav-link data-target={s.id} class="font-body text-[14px] leading-[1.4] tracking-[-0.5px] text-secondary transition-colors duration-300 hover:text-navy">
+            {s.heading}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="flex w-full flex-col gap-16 lg:w-[656px] lg:shrink-0" data-reveal-fade>
+      <div class="flex flex-col gap-[20px] font-body text-[18px] leading-[1.5] tracking-[-0.5px] text-ink">
+        <p>
+          La ISO 9001 es la norma internacional de referencia para sistemas de gestión de calidad (SGC), publicada por la Organización Internacional de Normalización. Más de un millón de organizaciones en 170 países la han adoptado como marco para garantizar la consistencia y mejora de sus procesos.
+        </p>
+        <p>
+          Su estructura se fundamenta en siete principios: enfoque al cliente, liderazgo, participación del personal, enfoque a procesos, mejora, toma de decisiones basada en evidencia y gestión de relaciones. Juntos conforman un sistema robusto que trasciende la simple documentación.
+        </p>
+        <p>
+          Lo que distingue a esta norma es su universalidad. Desde una startup tecnológica hasta una planta manufacturera con décadas de operación, cualquier organización puede implementarla para elevar la calidad de sus productos y servicios de forma sistemática y medible.
+        </p>
+      </div>
+
+      <div id={sections[0].id} class="flex flex-col gap-8" data-article-section>
+        <h2 class="font-display text-[32px] leading-[1.05] tracking-[-1px] sm:text-[40px] lg:text-[54px] lg:tracking-[-1.62px]">{sections[0].heading}</h2>
+        <div class="flex flex-col gap-[20px] font-body text-[18px] leading-[1.5] tracking-[-0.5px] text-ink">
+          <p>
+            La implementación de un SGC bajo ISO 9001 genera resultados concretos: estandariza operaciones, reduce errores y reprocesos, y establece métricas claras de desempeño. Para empresas que participan en licitaciones públicas o buscan acceder a mercados internacionales, la certificación se convierte en un diferenciador competitivo y, en muchos casos, en un requisito obligatorio.
+          </p>
+          <p>
+            Según datos del ISO Survey 2023, las organizaciones certificadas reportan una reducción promedio del 30% en costos asociados a no conformidades y un incremento del 20% en la retención de clientes durante los primeros 18 meses tras obtener la certificación.
+          </p>
+          <p>
+            Más allá de los números, el impacto cultural es significativo. Al integrar a todos los niveles de la organización en el SGC, se construye una responsabilidad compartida sobre la calidad y se establece un lenguaje común que facilita la comunicación entre departamentos y con partes interesadas externas.
+          </p>
+        </div>
+      </div>
+
+      <div id={sections[1].id} class="flex flex-col gap-8" data-article-section>
+        <h2 class="font-display text-[32px] leading-[1.05] tracking-[-1px] sm:text-[40px] lg:text-[54px] lg:tracking-[-1.62px]">{sections[1].heading}</h2>
+        <div class="flex flex-col gap-[20px] font-body text-[18px] leading-[1.5] tracking-[-0.5px] text-ink">
+          <p>
+            Los siete principios que sostienen la norma son: enfoque al cliente, liderazgo, participación activa del personal, enfoque basado en procesos, mejora continua, toma de decisiones basada en evidencia y gestión de las relaciones con proveedores y otras partes interesadas. No son requisitos aislados, sino una forma de pensar la organización de punta a punta.
+          </p>
+          <p>
+            El enfoque a procesos, por ejemplo, obliga a mapear cómo fluye el trabajo entre áreas en vez de gestionarlas como silos independientes, mientras que la toma de decisiones basada en evidencia reemplaza la intuición por datos concretos de desempeño. Entender estos principios antes de escribir el primer procedimiento evita que la certificación termine siendo solo papeleo.
+          </p>
+        </div>
+      </div>
+
+      <div id={sections[2].id} class="flex flex-col gap-8" data-article-section>
+        <h2 class="font-display text-[32px] leading-[1.05] tracking-[-1px] sm:text-[40px] lg:text-[54px] lg:tracking-[-1.62px]">{sections[2].heading}</h2>
+        <div class="flex flex-col gap-[20px] font-body text-[18px] leading-[1.5] tracking-[-0.5px] text-ink">
+          <p>
+            El proceso comienza con un diagnóstico de brechas que evalúa la distancia entre los procesos actuales y los requisitos de la norma. A partir de ahí, se define el alcance del SGC, se redacta la política de calidad y se documentan los procesos críticos. Es esencial designar un responsable de calidad con autoridad real y conformar un comité que lidere la implementación con respaldo directo de la alta dirección.
+          </p>
+          <div class="aspect-[756/430] w-full overflow-hidden">
+            <Image src={diagramImage} alt="Diagrama de auditoría de calidad junto a laptop y documentos" width={756} height={430} class="h-full w-full object-cover" />
+          </div>
+          <p>
+            La fase final incluye la ejecución de auditorías internas para verificar el cumplimiento, la corrección de no conformidades detectadas y la contratación de un organismo de certificación acreditado para la auditoría externa. El proceso completo suele tomar entre 6 y 12 meses, dependiendo de la madurez organizacional y la complejidad de los procesos involucrados.
+          </p>
+        </div>
+      </div>
+
+      <div id={sections[3].id} class="flex flex-col gap-8" data-article-section>
+        <h2 class="font-display text-[32px] leading-[1.05] tracking-[-1px] sm:text-[40px] lg:text-[54px] lg:tracking-[-1.62px]">{sections[3].heading}</h2>
+        <div class="flex flex-col gap-[20px] font-body text-[18px] leading-[1.5] tracking-[-0.5px] text-ink">
+          <p>
+            El error más frecuente es tratar la norma como un ejercicio de documentación: se redactan procedimientos que nadie sigue en el día a día porque nunca se ajustaron a cómo trabaja realmente el equipo. Cuando el SGC vive solo en carpetas, la certificación se sostiene en el papel pero no cambia nada en la operación.
+          </p>
+          <p>
+            Otros errores comunes son delegar todo el proceso en el área de calidad sin respaldo de la alta dirección, subestimar el tiempo que toma capacitar al personal, y dejar las auditorías internas para el final en vez de usarlas como una herramienta de mejora continua durante todo el camino.
+          </p>
+        </div>
+      </div>
+
+      <div id={sections[4].id} class="flex flex-col gap-8" data-article-section>
+        <h2 class="font-display text-[32px] leading-[1.05] tracking-[-1px] sm:text-[40px] lg:text-[54px] lg:tracking-[-1.62px]">{sections[4].heading}</h2>
+        <div class="flex flex-col gap-[20px] font-body text-[18px] leading-[1.5] tracking-[-0.5px] text-ink">
+          <p>
+            Obtener el certificado no es el final del camino: la ISO 9001 exige auditorías de seguimiento, generalmente anuales, para verificar que el SGC se sigue cumpliendo, y una auditoría de recertificación cada tres años. Faltar a estos controles puede significar la suspensión o pérdida del certificado.
+          </p>
+          <p>
+            Las organizaciones que mantienen la certificación en el tiempo suelen ser las que integraron el SGC a su gestión diaria en vez de tratarlo como un evento puntual: revisan indicadores con regularidad, actualizan procedimientos cuando cambian los procesos y usan cada auditoría interna como una oportunidad real de mejora.
+          </p>
+        </div>
+      </div>
+
+      <div id={sections[5].id} class="flex flex-col gap-8" data-article-section>
+        <h2 class="font-display text-[32px] leading-[1.05] tracking-[-1px] sm:text-[40px] lg:text-[54px] lg:tracking-[-1.62px]">{sections[5].heading}</h2>
+        <div class="flex flex-col gap-[20px] font-body text-[18px] leading-[1.5] tracking-[-0.5px] text-ink">
+          <p>
+            <strong class="font-bold text-ink">¿Cuánto tiempo toma certificarse?</strong> Entre 6 y 12 meses en promedio, dependiendo del tamaño de la organización y de qué tan cerca estén sus procesos actuales de los requisitos de la norma antes de empezar.
+          </p>
+          <p>
+            <strong class="font-bold text-ink">¿Es obligatoria para todas las empresas?</strong> No, es una certificación voluntaria, aunque muchos clientes corporativos y procesos de licitación pública la exigen como requisito para contratar proveedores.
+          </p>
+          <p>
+            <strong class="font-bold text-ink">¿Se puede implementar sin ayuda externa?</strong> Sí, pero contar con una consultora especializada suele acortar los tiempos y reducir el riesgo de no conformidades durante la auditoría externa, sobre todo en la primera certificación.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

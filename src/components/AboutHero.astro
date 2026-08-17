@@ -1,0 +1,29 @@
+---
+import { Image } from "astro:assets";
+import heroImage from "../assets/img/team-consulting/strategy-meeting.png";
+
+/*
+  Cabecera de /sobre-nosotros — mismo patrón que ProjectsHero.astro
+  (H1 en su posición normal + imagen que crece de ancho con el scroll
+  normal, sin pin), pero arranca más angosta: 582px de 1312px
+  (44.36%) en vez de 912px (69.51%) — por eso usa su propio script
+  (about-hero.js) con el porcentaje de arranque distinto, en vez de
+  reusar projects-hero.js tal cual.
+*/
+---
+
+<section class="mx-auto flex w-full max-w-[1312px] flex-col items-center px-5 py-16 sm:px-8 lg:px-0 lg:py-[100px]">
+  <h1
+    data-text-reveal
+    data-reveal
+    class="max-w-[941px] text-center font-display text-[38px] leading-[1.05] tracking-[-1.2px] sm:text-[52px] sm:tracking-[-2px] lg:text-[78px] lg:tracking-[-3.12px]"
+  >
+    <span class="text-slate">Conoce al equipo </span><span class="text-navy">detrás de tu proyecto</span>
+  </h1>
+
+  <div class="mt-[54px] w-[44.36%]" data-about-hero-image>
+    <div class="aspect-[1312/898] w-full overflow-hidden lg:aspect-auto lg:h-[898px]">
+      <Image src={heroImage} alt="Equipo de Acide trabajando en conjunto" width={1312} height={898} class="h-full w-full object-cover" />
+    </div>
+  </div>
+</section>

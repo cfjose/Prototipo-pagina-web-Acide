@@ -1,0 +1,33 @@
+---
+import { Image } from "astro:assets";
+import heroImage from "../assets/img/blog/article-iso9001-hero.png";
+
+/*
+  Cabecera del artículo de ejemplo "ISO 9001: Cómo implementarla con
+  éxito" (Figma: Artículo, node 282:584, Frame 83 = 282:820) — poco
+  animada a propósito (mismo criterio que CaseStudyHero.astro), solo
+  el reveal simple de texto que usa el resto del sitio.
+*/
+---
+
+<section class="wrapper pt-16 lg:pt-[100px]">
+  <div class="flex flex-col gap-8" data-reveal>
+    <div class="flex max-w-[1038px] flex-col gap-8">
+      <p class="font-body text-[18px] tracking-[-0.5px] text-secondary">Calidad</p>
+      <h1 data-text-reveal class="font-display text-[38px] leading-[1.05] tracking-[-1.2px] sm:text-[52px] sm:tracking-[-2px] lg:text-[78px] lg:tracking-[-3.12px]">
+        <span class="text-ink">ISO 9001: Cómo </span><span class="text-navy">implementarla con éxito</span>
+      </h1>
+      <p class="font-body text-[20px] leading-[1.5] tracking-[-0.5px] text-ink lg:text-[26px]">
+        La certificación ISO 9001 es el estándar internacional más reconocido para sistemas de gestión de calidad. En esta guía completa te explicamos qué es, por qué es importante y cómo preparar a tu organización paso a paso para obtener la certificación.
+      </p>
+      <div class="flex flex-wrap gap-4 font-body text-[16px] tracking-[-0.5px] sm:gap-8 sm:text-[18px]">
+        <p><span class="text-secondary">Creado: </span><span class="text-ink">15 de mar, 2025</span></p>
+        <p><span class="text-secondary">Tiempo de lectura: </span><span class="text-ink">12 min</span></p>
+      </div>
+    </div>
+
+    <div class="h-[300px] w-full overflow-hidden sm:h-[450px] lg:h-[747px]">
+      <Image src={heroImage} alt="Reunión de equipo directivo revisando la implementación de ISO 9001" width={1312} height={747} class="h-full w-full object-cover" />
+    </div>
+  </div>
+</section>

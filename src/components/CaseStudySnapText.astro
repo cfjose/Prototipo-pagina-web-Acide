@@ -9,11 +9,11 @@
   - Todos los ítems comparten el MISMO tamaño de fuente — no hay uno
     grande y otros chicos. Lo único que cambia con la distancia al
     activo es la opacidad: opacity = 1 - dist × 0.82 (mínimo 0.15).
-  - El prefijo ("Nosotros hicimos") NO anima, siempre está fijo, en el
-    azul del sistema (navy).
-  - El activo queda en la MISMA línea que el prefijo, mismo color navy
-    — el resto del texto, en el mismo tono, solo que más transparente
-    según qué tan lejos esté.
+  - El prefijo ("Nosotros hicimos") NO anima, siempre está fijo, en
+    negro (color "ink" del sistema) — los ítems de la lista (el activo
+    y los demás) van en azul (navy), solo el prefijo es negro.
+  - El resto de los ítems usan el mismo azul, solo que más
+    transparente según qué tan lejos estén del activo.
   - Arranca en el PRIMER ítem ("el diseño UX/UI") — no hace falta que
     haya nada arriba de él, como en el ejemplo real (empieza con el
     primero, no con uno del medio).
@@ -37,7 +37,7 @@ const activeIndex = 0; // "el diseño UX/UI" — arranca en el primero, como en 
 <!-- Desktop: pin a pantalla completa con el scroll-snap-text -->
 <section class="hidden lg:block lg:h-screen" data-snaptext-pin>
   <div class="wrapper flex h-full items-center">
-    <p class="shrink-0 font-body text-[54px] font-bold tracking-[-1.62px] text-navy" data-snaptext-prefix>Nosotros hicimos</p>
+    <p class="shrink-0 font-body text-[54px] font-bold tracking-[-1.62px] text-ink" data-snaptext-prefix>Nosotros hicimos</p>
     <div class="relative ml-4 h-[350px] w-[873px] overflow-hidden">
       <div data-snaptext-track>
         {
@@ -64,7 +64,7 @@ const activeIndex = 0; // "el diseño UX/UI" — arranca en el primero, como en 
           i === activeIndex ? "opacity-100" : "opacity-40",
         ]}
       >
-        {i === activeIndex && <span>Nosotros hicimos </span>}
+        {i === activeIndex && <span class="text-ink">Nosotros hicimos </span>}
         {item}
       </p>
     ))

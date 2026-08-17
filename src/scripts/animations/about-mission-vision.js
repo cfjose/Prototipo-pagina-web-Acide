@@ -3,33 +3,27 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { prefersReducedMotion } from "../utils/reduced-motion.js";
 
 /*
-  Adaptado de services-gallery.js (Home) — mismo mecanismo de pin +
-  cruce de texto/imagen + barras de progreso continuas. La imagen usa
-  EXACTAMENTE la misma transición que ahí (cross-fade + scale, sin
-  tocar). El texto es DISTINTO a propósito — no el cross-fade con blur
-  de Servicios, sino una cinta continua vertical: el bloque que sale
-  sigue subiendo y se desvanece (no se queda fijo desvaneciéndose en
-  el lugar), y el que entra viene de abajo hacia su posición, también
-  con un fade suave — para que se note que es un scroll (uno sube y
-  sale, el otro sube y entra), no un simple cambio de opacidad.
+  Adaptado de case-study-results.js — mismo mecanismo de pin + cruce de
+  texto/imagen + barra de progreso, acá con 2 ítems (misión/visión) en
+  vez de 4. Mismo texto "cinta continua" (el que sale sigue subiendo/
+  bajando mientras se desvanece, el que entra viene del lado
+  contrario) e imagen con cross-fade + zoom.
 
-  Atributos con prefijo "case-" — ver el comentario en
-  CaseStudyResults.astro sobre por qué no reusar data-gallery-*.
+  Atributos con prefijo "about-mv-" — mismo motivo de siempre: no
+  chocar con los otros gallery-pin de la página (ver el comentario en
+  AboutMissionVision.astro).
 */
-const TEXT_RISE = 90; // distancia vertical del "viaje" del texto (px)
+const TEXT_RISE = 90;
 
-export function initCaseStudyResults() {
-  const pinTarget = document.querySelector("[data-case-results-pin]");
-  const pinContent = document.querySelector("[data-case-results-pin-content]");
-  const bars = document.querySelector("[data-case-results-bars]");
-  const textItems = document.querySelectorAll("[data-case-results-text-item]");
-  const mediaItems = document.querySelectorAll("[data-case-results-media-item]");
-  const barFills = document.querySelectorAll("[data-case-results-bar-fill]");
+export function initAboutMissionVision() {
+  const pinTarget = document.querySelector("[data-about-mv-pin]");
+  const pinContent = document.querySelector("[data-about-mv-pin-content]");
+  const bars = document.querySelector("[data-about-mv-bars]");
+  const textItems = document.querySelectorAll("[data-about-mv-text-item]");
+  const mediaItems = document.querySelectorAll("[data-about-mv-media-item]");
+  const barFills = document.querySelectorAll("[data-about-mv-bar-fill]");
   if (!pinTarget || !textItems.length || !mediaItems.length) return;
 
-  // Mismo criterio que ServicesGallery: si las barras no entran sin
-  // que el stage completo supere el alto del viewport (rompiendo el
-  // pin), se esconden enteras en vez de recortarse.
   const checkBarsFit = () => {
     if (!pinContent || !bars) return;
     bars.style.display = "";
@@ -58,7 +52,7 @@ export function initCaseStudyResults() {
 
   const goTo = (index) => {
     if (index === current) return;
-    const direction = index > current ? 1 : -1; // 1 = avanzando, -1 = retrocediendo
+    const direction = index > current ? 1 : -1;
     current = index;
 
     textItems.forEach((item, i) => {
@@ -68,15 +62,9 @@ export function initCaseStudyResults() {
         return;
       }
       if (i === index) {
-        // Entra desde abajo (o desde arriba si se retrocede) hacia su lugar, con fade suave.
         gsap.set(item, { zIndex: 2 });
-        gsap.fromTo(
-          item,
-          { opacity: 0, y: TEXT_RISE * direction },
-          { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" },
-        );
+        gsap.fromTo(item, { opacity: 0, y: TEXT_RISE * direction }, { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" });
       } else {
-        // El que sale sigue el mismo sentido: continúa subiendo (o bajando) y se desvanece.
         gsap.to(item, { opacity: 0, y: -TEXT_RISE * direction, duration: 0.6, ease: "power2.out", zIndex: 1 });
       }
     });
@@ -96,7 +84,6 @@ export function initCaseStudyResults() {
     });
   };
 
-  // Estado inicial: el primer resultado visible, el resto oculto (sin desplazamiento).
   gsap.set(textItems, { opacity: (i) => (i === 0 ? 1 : 0), y: 0, zIndex: (i) => (i === 0 ? 2 : 1) });
   gsap.set(mediaItems, { opacity: (i) => (i === 0 ? 1 : 0), zIndex: (i) => (i === 0 ? 2 : 1) });
   updateBars(0);

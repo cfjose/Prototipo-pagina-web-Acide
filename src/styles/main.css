@@ -40,7 +40,7 @@
   */
   @media (min-width: 1280px) {
     main {
-      padding-top: 107px;
+      padding-top: 84px;
     }
   }
 }
@@ -145,5 +145,30 @@
     scale: none;
     transition: none !important;
     animation: none !important;
+  }
+}
+
+/*
+  Cursor de la animación de tipeo (text-type.js) — un caracter de ancho
+  fijo que parpadea, mismo criterio que la referencia (text-type.html)
+  que pasó el cliente. El color lo pone el JS por inline style (navy o
+  teal según el título), por eso acá no hay color propio.
+*/
+.text-type-caret {
+  display: inline-block;
+  width: 0.085em;
+  height: 0.82em;
+  margin-left: 0.06em;
+  vertical-align: -8%;
+  animation: text-type-caret 1s steps(2) infinite;
+}
+@keyframes text-type-caret {
+  50% {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .text-type-caret {
+    display: none;
   }
 }

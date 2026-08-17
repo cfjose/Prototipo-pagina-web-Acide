@@ -1,0 +1,100 @@
+---
+import { Image } from "astro:assets";
+import hero1 from "../assets/img/blog/hero-1-iso9001.png";
+import hero2 from "../assets/img/hero/server-room.png";
+import hero3 from "../assets/img/hero/digital-wave.png";
+import hero4 from "../assets/img/hero/handshake.png";
+
+/*
+  Cabecera de /blog (Figma: Blog, node 251:2126, Frame 66 = 256:327) —
+  en el Figma solo hay UNA imagen fija con tag+título y una barra de
+  4 segmentos (estilo Instagram Stories, el primero en rojo). El cliente
+  pidió que sea un carrusel real de 4 publicaciones destacadas que
+  avanza solo: cada segmento se llena en rojo mientras esa publicación
+  está activa y, al completarse, pasa a la siguiente — la que entra
+  empuja a la que sale hacia la izquierda (ver blog-hero.js).
+
+  Las barras van DENTRO de cada slide (no como overlay compartido)
+  para poder pedir exactamente 72px de separación con el título vía
+  gap, tal como en el Figma — igual que ahí, texto y barras son parte
+  de la misma columna, ancladas abajo. Solo se ve/clickea el set de
+  barras del slide activo (los demás quedan fuera del área visible por
+  el overflow-hidden del contenedor), blog-hero.js sincroniza el
+  progreso sobre el set del slide activo en cada momento y cualquier
+  barra (de cualquier slide) permite saltar directo a esa publicación.
+
+  Solo el primer slide (ISO 9001) trae copy real del Figma; los otros 3
+  son contenido inventado para cubrir categorías que no tenían ejemplo
+  (Ciberseguridad, Transformación Digital, Innovación), reusando fotos
+  de stock ya presentes en el sitio.
+*/
+const slides = [
+  {
+    tag: "Calidad",
+    title: "ISO 9001: Cómo implementarla con éxito",
+    image: hero1,
+    alt: "Equipo directivo revisando documentación de calidad en sala de reuniones",
+    href: "/blog/iso-9001-como-implementarla-con-exito",
+  },
+  {
+    tag: "Ciberseguridad",
+    title: "Ciberseguridad: protege la información de tu empresa",
+    image: hero2,
+    alt: "Sala de servidores de una empresa",
+    href: "#",
+  },
+  {
+    tag: "Transformación Digital",
+    title: "Transformación digital: el camino hacia la eficiencia",
+    image: hero3,
+    alt: "Onda digital abstracta representando transformación tecnológica",
+    href: "#",
+  },
+  {
+    tag: "Innovación",
+    title: "Alianzas estratégicas que impulsan la innovación",
+    image: hero4,
+    alt: "Apretón de manos entre socios estratégicos",
+    href: "#",
+  },
+];
+---
+
+<section class="wrapper pt-8 pb-16 lg:pb-0">
+  <div class="relative h-[500px] w-full overflow-hidden sm:h-[600px] lg:h-[737px]" data-blog-hero>
+    {
+      slides.map((slide, i) => (
+        <div
+          class:list={["absolute inset-0 flex flex-col justify-end gap-[72px] p-8 lg:p-16", i !== 0 && "translate-x-full"]}
+          data-blog-hero-slide
+        >
+          <Image src={slide.image} alt={slide.alt} width={1312} height={737} class="absolute inset-0 -z-10 h-full w-full object-cover" />
+          <div class="absolute inset-0 -z-10 bg-gradient-to-t from-black/80 from-[8%] to-transparent to-[65%]" />
+
+          <a href={slide.href} class="flex flex-col gap-[24px] text-white lg:gap-[35px]">
+            <p class="font-body text-[18px] font-bold tracking-[-0.5px]">{slide.tag}</p>
+            <p class="max-w-[690px] font-display text-[34px] leading-[1.05] tracking-[-1px] sm:text-[48px] sm:tracking-[-1.6px] lg:text-[66px] lg:tracking-[-1.98px]">
+              {slide.title}
+            </p>
+          </a>
+
+          <div class="flex gap-5">
+            {
+              slides.map((_, barIndex) => (
+                <button
+                  type="button"
+                  aria-label={`Ir a la publicación ${barIndex + 1}`}
+                  class="h-1 flex-1 bg-white/40"
+                  data-blog-hero-bar
+                  data-index={barIndex}
+                >
+                  <span class="block h-full bg-red" data-blog-hero-bar-fill style="width:0%" />
+                </button>
+              ))
+            }
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</section>

@@ -1,0 +1,22 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import BlogHero from "../components/BlogHero.astro";
+import BlogArticles from "../components/BlogArticles.astro";
+import Footer from "../components/Footer.astro";
+
+/*
+  /blog (Figma: Blog, node 251:2126) — ver el comentario largo en
+  BlogArticles.astro para el reparto exacto de qué controla el filtro
+  de categorías.
+*/
+---
+
+<BaseLayout title="Blog | Acide" description="Artículos, guías y recursos sobre gestión de calidad, normas ISO, sostenibilidad ambiental, seguridad ocupacional y desarrollo de software.">
+  <Header />
+  <main>
+    <BlogHero />
+    <BlogArticles />
+  </main>
+  <Footer />
+</BaseLayout>

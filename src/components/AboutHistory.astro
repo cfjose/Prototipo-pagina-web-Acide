@@ -1,0 +1,163 @@
+---
+/*
+  "Nuestra historia" — línea de tiempo horizontal, del Figma, con la
+  animación de "HoverableColumns" que pasó el cliente (referencia real:
+  metalab.com/what-we-do — no es fantasy.co, aunque el copy de ejemplo
+  que mandó era de ahí). Cada columna (año + título) siempre muestra
+  año y título; la descripción arranca oculta y se revela con hover AL
+  COSTADO del título (no arriba/abajo) — un panel que crece en ancho
+  (grid-cols, mismo truco de grid-rows que usamos en otros lados pero
+  en el eje horizontal) empujando las columnas siguientes hacia la
+  derecha, tal como en la referencia. El borde superior de la columna
+  activa pasa a navy, y aparece un cursor a medida siguiendo el mouse
+  que dice "Hover" (mismo patrón que el cursor "Ver proyecto" de
+  ResultsCarousel.astro/results-carousel.js).
+
+  Solo entran ~4 columnas por pantalla — las flechas (data-history-nav)
+  scrollean la franja horizontalmente para ver el resto (ver
+  about-history.js).
+
+  Contenido real que pasó el cliente (6 hitos, 2008-2024) — los títulos
+  venían en mayúsculas totales, pasados acá a formato título (primera
+  letra de cada palabra en mayúscula, conectores como "y"/"de"/"del" en
+  minúscula) por pedido explícito, conservando las siglas/nombres
+  propios (MTPE, OSCE, ISO, PROINTEC, INNOVATE PERÚ) tal cual.
+*/
+const milestones = [
+  {
+    year: "2024",
+    title: "Reconocimiento a la Innovación y Excelencia Emprendedora",
+    description:
+      "La Municipalidad Provincial de Arequipa otorgó a ACIDE un reconocimiento por su esfuerzo, innovación y excelencia en el ámbito emprendedor, destacando su impacto y contribución al desarrollo económico y social.",
+  },
+  {
+    year: "2023",
+    title: "Reconocimiento del Congreso de la República por Trayectoria y Desarrollo Sostenible",
+    description:
+      "El Congreso de la República del Perú otorgó a ACIDE un reconocimiento a su trayectoria por su contribución al desarrollo sostenible del país, destacando sus valores y principios que fortalecen una práctica empresarial ética y responsable en favor de la sociedad.",
+  },
+  {
+    year: "2018",
+    title: "Expansión y Distinciones",
+    description:
+      "ACIDE establece su Centro Técnico Productivo PROINTEC, reconocido por la Resolución Gerencial Regional N° 0685. Además, recibió la Mención INNOVATE PERÚ como la consultora de mayor trascendencia a nivel nacional y estableció alianzas estratégicas con las universidades La Salle, UNSA y San Martín de Porres.",
+  },
+  {
+    year: "2016",
+    title: "Reconocimientos y Certificación de Calidad",
+    description:
+      "OSCE reconoció a ACIDE como Aliado Estratégico, ubicándola entre las 4 principales capacitadoras del sector logístico a nivel nacional. Además, obtuvo la certificación ISO 9001, destacando su gestión en atención al cliente, proyectos, asesoría y capacitación en sectores públicos y privados.",
+  },
+  {
+    year: "2013",
+    title: "Alianzas Estratégicas y Convenios",
+    description:
+      "ACIDE se convirtió en Aliado Estratégico del Organismo Supervisor de las Contrataciones del Estado (OSCE), capacitando a funcionarios en contrataciones del Estado. También firmó un convenio con la Gerencia Regional de Educación de Arequipa (GREA) para formar a docentes y administrativos en gestión pública y educativa.",
+  },
+  {
+    year: "2008",
+    title: "Ministerio de Trabajo Promoción y Empleo - MTPE Proveedor",
+    description:
+      "Inicio de actividades en la Zona Sur del país, desarrollando 50 planes de negocios en Puno y Arequipa a través del Programa NIE (Nuevas Iniciativas Empresariales).",
+  },
+];
+---
+
+<section class="wrapper section-y">
+  <h2 class="font-display text-[32px] leading-[1.1] tracking-[-1px] sm:text-[44px] sm:tracking-[-1.4px] lg:text-[66px] lg:tracking-[-1.98px]">
+    <span class="text-navy">Nuestra</span> <span class="text-teal">historia</span>
+  </h2>
+
+  <div class="mt-16 flex flex-col items-end gap-7">
+    <div class="w-full overflow-x-hidden" data-history-scroll>
+      <div class="flex w-max items-start gap-8 lg:gap-10" data-history-track>
+        {
+          milestones.map((m, i) => (
+            <>
+              {i > 0 && <div class="h-[469px] w-px shrink-0 bg-black/10" />}
+              <div
+                class="group/item flex h-[469px] shrink-0 items-end border-b-[4px] border-black/10 pb-6 transition-colors duration-300 hover:border-teal"
+                data-history-item
+              >
+                <div class="flex h-full w-[240px] shrink-0 flex-col justify-between">
+                  <p class="font-body text-[18px] tracking-[-0.5px] text-secondary">{m.year}</p>
+                  <p class="font-body text-[18px] leading-[1.5] tracking-[-0.5px] text-ink transition-colors duration-300 group-hover/item:text-navy">
+                    {m.title}
+                  </p>
+                </div>
+
+                <div class="grid grid-cols-[0fr] transition-[grid-template-columns] duration-500 ease-[var(--ease-default)] group-hover/item:grid-cols-[1fr]">
+                  <div class="overflow-hidden">
+                    <p class="w-[320px] pl-9 font-body text-[16px] leading-[1.5] tracking-[-0.3px] text-secondary" data-history-description>
+                      {m.description}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </>
+          ))
+        }
+        <!--
+          Espaciador al final para que la última columna tenga lugar de sobra
+          para expandirse en el hover. Necesita w-max en el track (arriba) para
+          funcionar: sin eso, el navegador no cuenta el espaciador (ni ningún
+          margin/padding después del último ítem) al calcular cuánto se puede
+          scrollear — un bug de layout con flex+gap+overflow, no algo nuestro.
+        -->
+        <div class="w-[356px] shrink-0" aria-hidden="true" />
+      </div>
+    </div>
+
+    <div class="flex items-center gap-4" data-history-nav>
+      <button
+        type="button"
+        aria-label="Anterior"
+        class="group flex size-8 items-center justify-center text-ink transition-[color,scale] duration-300 hover:scale-110 hover:text-navy"
+        data-history-prev
+      >
+        <svg
+          width="16"
+          height="12"
+          viewBox="0 0 16 12"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="transition-[stroke-width] duration-300 group-hover:stroke-[2.6px]"
+        >
+          <path d="M15 6H1M1 6l5-5M1 6l5 5" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        aria-label="Siguiente"
+        class="group flex size-8 items-center justify-center text-ink transition-[color,scale] duration-300 hover:scale-110 hover:text-navy"
+        data-history-next
+      >
+        <svg
+          width="16"
+          height="12"
+          viewBox="0 0 16 12"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="transition-[stroke-width] duration-300 group-hover:stroke-[2.6px]"
+        >
+          <path d="M1 6h14M10 1l5 5-5 5" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Cursor a medida: mismo patrón que ResultsCarousel.astro, "Hover" en vez de "Ver proyecto" — sin recuadro, solo texto. -->
+  <div
+    class="pointer-events-none fixed top-0 left-0 z-50 hidden -translate-x-1/2 -translate-y-1/2 scale-75 items-center justify-center font-body text-[14px] tracking-[-0.3px] text-teal opacity-0 lg:flex"
+    data-history-cursor
+    aria-hidden="true"
+  >
+    Hover
+  </div>
+</section>

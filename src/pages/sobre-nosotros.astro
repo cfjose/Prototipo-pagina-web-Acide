@@ -1,0 +1,32 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import AboutHero from "../components/AboutHero.astro";
+import AboutIntro from "../components/AboutIntro.astro";
+import AboutMissionVision from "../components/AboutMissionVision.astro";
+import AboutHistory from "../components/AboutHistory.astro";
+import AboutCertifications from "../components/AboutCertifications.astro";
+import AboutPartners from "../components/AboutPartners.astro";
+import AboutUnique from "../components/AboutUnique.astro";
+import Footer from "../components/Footer.astro";
+
+/*
+  "Sobre nosotros" (Figma: About us, node 239:1519) — reciclaje de
+  patrones que ya construimos en el resto del sitio, ver el comentario
+  en cada componente para el mapeo puntual a la sección que reusa.
+*/
+---
+
+<BaseLayout title="Sobre nosotros | Acide" description="Conoce al equipo detrás de tu proyecto — nuestra misión, historia, certificaciones y los socios que nos acompañan.">
+  <Header />
+  <main>
+    <AboutHero />
+    <AboutIntro />
+    <AboutMissionVision />
+    <AboutHistory />
+    <AboutCertifications />
+    <AboutPartners />
+    <AboutUnique />
+  </main>
+  <Footer />
+</BaseLayout>

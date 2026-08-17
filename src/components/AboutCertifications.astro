@@ -1,0 +1,111 @@
+---
+import { Image } from "astro:assets";
+import isoImage from "../assets/img/servicios/img-2-design-desk.png";
+import qualityImage from "../assets/img/hero/desk-palette.png";
+import securityImage from "../assets/img/servicios/img-5-control-room.png";
+
+/*
+  "Certificaciones" — idéntico al patrón de "Así lo resolvimos"
+  (CaseStudySolution.astro/case-study-solution.js): fotos apiladas que
+  suben desde fuera de vista siempre en opacidad 100%, con borde
+  blanco + sombra. Título fijo arriba, sin cruzar con el texto.
+
+  El Figma solo trae la ISO 9001:2015 — las otras 2 certificaciones
+  son modelo mío (mismo tono), y las 3 fotos reusan imágenes que ya
+  existen en el proyecto (limpias, de escritorio/oficina, pocos
+  colores) — no hay herramienta de generación de imágenes disponible.
+
+  Atributos con prefijo "about-cert-" para no chocar con el mismo
+  patrón que ya usa CaseStudySolution (data-solution-*) en la otra página.
+*/
+const certifications = [
+  {
+    title: "ISO 9001:2015",
+    description:
+      "Desarrollo de sistemas de información geográfica y portales de transparencia para gobiernos regionales, facilitando el acceso a datos públicos y fortaleciendo la gobernanza digital en la región sur del país.",
+    image: isoImage,
+    alt: "Escritorio de diseño con paleta de colores y notas",
+  },
+  {
+    title: "ISO 27001:2013",
+    description:
+      "Certificación de nuestro sistema de gestión de seguridad de la información — protocolos de acceso, cifrado de datos y auditorías periódicas que garantizan la confidencialidad de cada proyecto que manejamos.",
+    image: securityImage,
+    alt: "Sala de control con monitores de seguridad",
+  },
+  {
+    title: "CMMI Nivel 3",
+    description:
+      "Reconocimiento a la madurez de nuestros procesos de desarrollo — desde la planificación hasta el despliegue, cada proyecto sigue estándares medibles y repetibles que reducen el riesgo y mejoran los tiempos de entrega.",
+    image: qualityImage,
+    alt: "Escritorio minimalista con laptop y paleta de colores",
+  },
+];
+---
+
+<!-- Desktop: fondo azul, viewport completo, título fijo, sección fija (pin) -->
+<section class="hidden lg:flex lg:h-screen lg:flex-col lg:items-center lg:justify-center lg:bg-[#0B2238]" data-about-cert-pin>
+  <div class="wrapper flex w-full flex-col items-center gap-[84px]">
+    <h2 data-text-reveal data-reveal class="text-center font-display text-[66px] leading-none tracking-[-1.98px] text-white">Certificaciones</h2>
+
+    <div class="flex w-full items-center gap-[111px]">
+      <div class="flex w-[529px] shrink-0 flex-col items-start gap-9">
+        <div class="grid w-full" data-about-cert-text-stack>
+          {
+            certifications.map((cert, i) => (
+              <div class="col-start-1 row-start-1 flex flex-col items-start gap-9 text-left" data-about-cert-text-item data-index={i}>
+                <h3 class="font-body text-[54px] leading-none font-medium tracking-[-1.62px] text-white" data-about-cert-title>
+                  {cert.title}
+                </h3>
+                <p class="font-body text-[26px] leading-[1.5] tracking-[-0.5px] text-white/90" data-about-cert-description>
+                  {cert.description}
+                </p>
+              </div>
+            ))
+          }
+        </div>
+        <svg class="size-9 text-white/70" viewBox="0 0 256 256" fill="currentColor">
+          <path d="M205.66,149.66l-72,72a8,8,0,0,1-11.32,0l-72-72a8,8,0,0,1,11.32-11.32L120,196.69V40a8,8,0,0,1,16,0V196.69l58.34-58.35a8,8,0,0,1,11.32,11.32Z" />
+        </svg>
+      </div>
+
+      <div class="relative h-[700px] w-full flex-1" data-about-cert-media-stack>
+        <div class="absolute top-0 left-1/2 h-full w-[145%] -translate-x-1/2 overflow-hidden">
+          {
+            certifications.map((cert, i) => (
+              <div
+                class="absolute top-1/2 left-1/2 h-[494px] w-[672px] -mt-[247px] -ml-[336px] border-[10px] border-white bg-[#0B2238] shadow-2xl shadow-black/40"
+                data-about-cert-media-item
+                data-index={i}
+              >
+                <Image src={cert.image} alt={cert.alt} width={672} height={494} class="h-full w-full object-cover" />
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Mobile/tablet: lista vertical simple, sin pin -->
+<section class="wrapper section-y bg-[#0B2238] lg:hidden">
+  <h2 data-text-reveal data-reveal class="mb-10 text-center font-display text-[32px] leading-[1.1] tracking-[-1px] text-white sm:text-[44px] sm:tracking-[-1.4px]">
+    Certificaciones
+  </h2>
+  <div class="flex flex-col gap-8">
+    {
+      certifications.map((cert) => (
+        <div class="flex flex-col overflow-hidden border border-white/10" data-reveal>
+          <div class="aspect-[672/494] w-full overflow-hidden">
+            <Image src={cert.image} alt={cert.alt} width={672} height={494} class="h-full w-full object-cover" />
+          </div>
+          <div class="flex flex-col gap-3 p-6">
+            <h3 class="font-body text-[22px] font-medium tracking-[-0.66px] text-white">{cert.title}</h3>
+            <p class="font-body text-[16px] leading-[1.5] tracking-[-0.3px] text-white/80">{cert.description}</p>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</section>

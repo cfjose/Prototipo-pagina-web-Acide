@@ -38,6 +38,17 @@ export function playWordReveal(words, { stagger = 0.025, duration = 0.8, delay =
   );
 }
 
+/*
+  Los h1/h2 en navy o teal usan la animación de tipeo (ver text-type.js)
+  en vez de este reveal palabra-por-palabra — así que si un elemento
+  con [data-text-reveal] es un h1/h2 con color navy/teal, lo salteamos
+  acá para no animarlo dos veces.
+*/
+const isTypewriterHeading = (el) => {
+  if (!/^H[12]$/.test(el.tagName)) return false;
+  return el.matches(".text-navy, .text-teal") || !!el.querySelector(".text-navy, .text-teal");
+};
+
 export function initTextReveal() {
   const els = document.querySelectorAll("[data-text-reveal]");
   if (!els.length) return;
@@ -45,6 +56,7 @@ export function initTextReveal() {
   if (prefersReducedMotion()) return;
 
   els.forEach((el) => {
+    if (isTypewriterHeading(el)) return;
     const words = splitWords(el);
 
     ScrollTrigger.create({

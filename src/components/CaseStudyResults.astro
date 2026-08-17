@@ -6,21 +6,26 @@ import techgroupImage from "../assets/img/results/image-techgroup.png";
 import bankingImage from "../assets/img/servicios/img-1-banking-app.png";
 
 /*
-  4 resultados del caso — misma animación que el carrusel de Resultados
-  de la Home (ResultsCarousel.astro): centro grande + dos costados
-  asomando por el borde de la pantalla (full-bleed), y al scrollear el
-  activo pasa a ser otro (el que entra crece con zoom suave, el que
-  sale se achica y "teletransporta" al otro lado — ver
-  case-study-results.js, mismo patrón de slots que results-carousel.js
-  pero generalizado a 4 tarjetas en vez de 3).
+  4 resultados del caso — mismo patrón que ServicesGallery.astro (Home:
+  "Sitios Web / Aplicaciones Web / ..."): sección fija (pin) en el
+  viewport, dos columnas (texto a la izquierda, imagen a la derecha),
+  el scroll avanza entre los 4 resultados en el mismo lugar, con una
+  barra de progreso por resultado debajo. Ver case-study-results.js.
 
-  A diferencia de la Home, acá el título + descripción del resultado
-  van DENTRO de la imagen (no en una leyenda aparte debajo) — y solo se
-  ven en la tarjeta que está al centro (las de los costados son solo
-  foto, sin texto, igual que se ve en la referencia).
+  Atributos con prefijo "case-" (data-case-results-*) A PROPÓSITO —
+  mismo motivo que antes: ServicesGallery usa data-gallery-* e
+  initServicesGallery() corre en TODAS las páginas vía main.js, así que
+  si usáramos esos mismos nombres acá los dos scripts agarrarían estos
+  elementos a la vez (mismo bug de pin duplicado que ya pasamos).
 
-  En mobile no hay pin ni zoom — franja horizontal con scroll-snap
-  nativo, mismo criterio que el resto del sitio.
+  A diferencia de ServicesGallery: acá no hay eyebrow numérico ni botón
+  por ítem (no hay a dónde linkear cada resultado individual), y la
+  transición del texto es distinta — ver el comentario en
+  case-study-results.js sobre por qué el texto NO usa el mismo
+  cross-fade con blur que Servicios.
+
+  En mobile no hay pin — lista normal con imagen, mismo criterio que
+  ServicesGallery.
 */
 const results = [
   {
@@ -50,9 +55,48 @@ const results = [
 ];
 ---
 
-<section class="section-y overflow-hidden">
-  <!-- Mobile/tablet: título en flujo normal, sin pin -->
-  <div class="wrapper lg:hidden">
+<section class="wrapper section-y">
+  <!-- Desktop: stage fijo, los 4 resultados se cruzan en el mismo lugar -->
+  <div class="relative hidden lg:block" data-case-results-pin>
+    <div data-case-results-pin-content>
+      <div class="grid w-full grid-cols-2 items-center gap-[92px]">
+        <div class="grid" data-case-results-text-stack>
+          {
+            results.map((result, i) => (
+              <div class="col-start-1 row-start-1 flex flex-col justify-center gap-4" data-case-results-text-item data-index={i}>
+                <p class="font-display text-[54px] leading-[1.05] tracking-[-1.62px] text-navy">{result.title}</p>
+                <p class="max-w-[460px] font-body text-[22px] leading-[1.5] tracking-[-0.5px] text-ink">{result.description}</p>
+              </div>
+            ))
+          }
+        </div>
+
+        <div class="relative mx-auto aspect-[755/1024] h-[75vh] w-auto max-w-full overflow-hidden" data-case-results-media-stack>
+          {
+            results.map((result) => (
+              <div class="absolute inset-0" data-case-results-media-item>
+                <Image src={result.image} alt={result.alt} width={755} height={1024} class="h-full w-full object-cover" />
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Barra de progreso, mismo criterio de "si no entra, se esconde" que ServicesGallery. -->
+    <div class="mt-[80px] flex items-center gap-3" data-case-results-bars>
+      {
+        results.map(() => (
+          <div class="h-[3px] flex-1 overflow-hidden bg-black/10">
+            <div class="h-full w-0 bg-navy" data-case-results-bar-fill />
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- Mobile/tablet: lista normal, sin pin -->
+  <div class="flex flex-col gap-16 lg:hidden">
     <h2
       data-text-reveal
       data-reveal
@@ -60,51 +104,14 @@ const results = [
     >
       El resultado <span class="text-navy">que logramos</span>
     </h2>
-  </div>
-
-  <!--
-    Desktop: stage fijo con zoom, centro grande + costados asomando.
-    Atributos con prefijo "case-" (data-case-results-*) a propósito —
-    ResultsCarousel.astro (Home) usa data-results-* y initResultsCarousel()
-    corre en TODAS las páginas vía main.js, así que si usáramos los
-    mismos nombres acá, los dos scripts agarrarían los mismos elementos
-    con document.querySelector y los pinearían por separado (duración de
-    scroll duplicada, tarjetas peleándose por posición/z-index).
-  -->
-  <div class="relative mt-16 hidden lg:block" data-case-results-pin>
-    <div class="wrapper">
-      <h2 data-text-reveal data-reveal class="text-center font-display text-[66px] leading-none tracking-[-1.98px] text-secondary">
-        El resultado <span class="text-navy">que logramos</span>
-      </h2>
-    </div>
-
-    <div class="relative left-1/2 mt-16 w-screen -translate-x-1/2" data-case-results-stage>
-      {
-        results.map((result, i) => (
-          <div class="absolute top-1/2 overflow-hidden" data-case-results-card data-index={i}>
-            <Image src={result.image} alt={result.alt} width={1184} height={664} class="h-full w-full object-cover" />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/85 from-[5%] via-black/10 via-[45%] to-transparent opacity-0" data-case-results-gradient />
-            <div class="absolute inset-0 flex flex-col justify-end gap-2 p-10 opacity-0" data-case-results-caption>
-              <p class="font-body text-[32px] leading-[1.1] font-medium tracking-[-0.5px] text-white">{result.title}</p>
-              <p class="max-w-[460px] font-body text-[18px] leading-[1.5] tracking-[-0.3px] text-white/85">{result.description}</p>
-            </div>
-          </div>
-        ))
-      }
-    </div>
-  </div>
-
-  <!-- Mobile/tablet: franja horizontal con scroll-snap, sin pin -->
-  <div class="mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2 lg:hidden">
     {
       results.map((result) => (
-        <div class="group relative aspect-[3/4] w-[85%] shrink-0 snap-center overflow-hidden sm:w-[60%]">
-          <Image src={result.image} alt={result.alt} width={400} height={533} class="h-full w-full object-cover" />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/85 from-[5%] via-black/10 via-[45%] to-transparent" />
-          <div class="absolute inset-0 flex flex-col justify-end gap-2 p-6">
-            <p class="font-body text-[26px] leading-[1.1] font-medium tracking-[-0.5px] text-white">{result.title}</p>
-            <p class="max-w-[280px] font-body text-[16px] leading-[1.5] tracking-[-0.3px] text-white/85">{result.description}</p>
+        <div class="flex flex-col gap-6">
+          <div class="relative aspect-[1184/664] w-full overflow-hidden">
+            <Image src={result.image} alt={result.alt} width={1184} height={664} class="h-full w-full object-cover" />
           </div>
+          <p class="font-display text-[38px] leading-[1.05] tracking-[-1.2px] text-navy sm:text-[44px]">{result.title}</p>
+          <p class="font-body text-[18px] leading-[1.5] tracking-[-0.5px] text-ink">{result.description}</p>
         </div>
       ))
     }

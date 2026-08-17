@@ -1,0 +1,312 @@
+---
+import { Image } from "astro:assets";
+import featured1 from "../assets/img/blog/featured-1-huella-carbono.png";
+import featured2 from "../assets/img/blog/featured-2-auditorias-internas.png";
+import featured3 from "../assets/img/blog/featured-3-automatizacion-pruebas.png";
+import featured4 from "../assets/img/servicios/img-5-control-room.png";
+import featured5 from "../assets/img/hero/digital-wave.png";
+import featured6 from "../assets/img/hero/desk-writing.png";
+
+import grid1 from "../assets/img/blog/grid-1-auditoria-iso.png";
+import grid2 from "../assets/img/blog/grid-2-cultura-seguridad.png";
+import grid3 from "../assets/img/blog/grid-3-devops.png";
+import grid4 from "../assets/img/blog/grid-4-residuos.png";
+import grid5 from "../assets/img/blog/grid-5-pdca.png";
+import grid6 from "../assets/img/blog/grid-6-riesgos-laborales.png";
+import grid7 from "../assets/img/blog/grid-7-apis-rest.png";
+import grid8 from "../assets/img/blog/grid-8-eficiencia-energetica.png";
+import grid9 from "../assets/img/blog/grid-9-ux-empresarial.png";
+import grid10 from "../assets/img/hero/server-room.png";
+import grid11 from "../assets/img/hero/phone-app.png";
+
+/*
+  Filtros + carrusel destacado + "Últimas publicaciones" (Figma: Blog,
+  node 251:2126, Frame 76 = 256:387 y Frame 73 = 256:384).
+
+  Las 7 categorías y sus 145px de chip vienen del Figma tal cual. El
+  carrusel de destacadas (3 tarjetas visibles, w-max + overflow-hidden,
+  mismo truco de scrollWidth que AboutHistory) SIEMPRE muestra las
+  mismas 6 publicaciones sin importar el filtro activo — así lo muestra
+  el Figma (una sola fila fija) — con flechas que dan la vuelta al
+  llegar al final, pedido explícito del cliente.
+
+  El filtro sí controla, vía blog-filters.js:
+  1. El título "Blog" (pasa a ser el nombre de la categoría elegida).
+  2. La descripción de abajo.
+  3. Qué tarjetas de "Últimas publicaciones" quedan visibles + el conteo.
+  "Últimas publicaciones" como título de sección se queda fijo (así
+  está en el Figma, nunca dice el nombre de la categoría).
+
+  Solo 3 de las 6 destacadas y 9 de las 11 de "Últimas publicaciones"
+  traen copy real del Figma; el resto es contenido inventado para que
+  las 7 categorías tengan al menos una publicación cuando se filtra
+  (el Figma no traía ejemplos de Innovación ni Ciberseguridad).
+*/
+const categories = ["Todos", "ISO Calidad", "Ambiental", "Seguridad", "Innovación", "Ciberseguridad", "Desarrollo Web"];
+
+const categoryCopy = {
+  Todos: {
+    title: "Blog",
+    description:
+      "Artículos, guías y recursos sobre gestión de calidad, normas ISO, sostenibilidad ambiental, seguridad ocupacional y desarrollo de software. Mantente actualizado con las últimas tendencias.",
+  },
+  "ISO Calidad": {
+    title: "ISO Calidad",
+    description: "Buenas prácticas, normas y casos aplicados de sistemas de gestión de calidad ISO 9001 y mejora continua.",
+  },
+  Ambiental: {
+    title: "Ambiental",
+    description: "Estrategias de sostenibilidad, gestión ambiental y reducción del impacto ecológico en la operación de tu empresa.",
+  },
+  Seguridad: {
+    title: "Seguridad",
+    description: "Cultura de prevención, evaluación de riesgos y protocolos de seguridad ocupacional para entornos de trabajo seguros.",
+  },
+  Innovación: {
+    title: "Innovación",
+    description: "Tendencias, cultura de innovación y nuevas formas de trabajo para equipos que quieren ir un paso adelante.",
+  },
+  Ciberseguridad: {
+    title: "Ciberseguridad",
+    description: "Protección de la información, buenas prácticas y certificaciones para blindar a tu empresa frente a amenazas digitales.",
+  },
+  "Desarrollo Web": {
+    title: "Desarrollo Web",
+    description: "Tecnología, automatización y desarrollo de software aplicados a la eficiencia operativa de tu negocio.",
+  },
+};
+
+const featured = [
+  { title: "Huella de carbono en las empresas", image: featured1 },
+  { title: "Auditorías internas: guía básica", image: featured2 },
+  { title: "Automatización de pruebas de software", image: featured3 },
+  { title: "Certificación ISO 27001: primeros pasos", image: featured4 },
+  { title: "Cultura de innovación en equipos técnicos", image: featured5 },
+  { title: "Protocolos de seguridad ocupacional en obra", image: featured6 },
+];
+
+const posts = [
+  {
+    category: "ISO Calidad",
+    image: grid1,
+    title: "Cómo preparar una auditoría ISO",
+    excerpt: "Consejos prácticos para que tu empresa esté lista ante una auditoría de certificación de calidad.",
+    date: "10 Ene 2025",
+    readTime: "4 min read",
+  },
+  {
+    category: "Seguridad",
+    image: grid2,
+    title: "Cultura de seguridad ocupacional",
+    excerpt: "Cómo construir una cultura preventiva que reduzca accidentes y mejore el bienestar de los colaboradores.",
+    date: "12 Feb 2025",
+    readTime: "5 min read",
+  },
+  {
+    category: "Desarrollo Web",
+    image: grid3,
+    title: "DevOps: integración y despliegue",
+    excerpt: "Cómo implementar pipelines de CI/CD para automatizar el despliegue de aplicaciones web empresariales.",
+    date: "18 Mar 2025",
+    readTime: "8 min read",
+  },
+  {
+    category: "Ambiental",
+    image: grid4,
+    title: "Gestión de residuos industriales",
+    excerpt: "Estrategias efectivas para la clasificación, tratamiento y disposición final de residuos en tu planta.",
+    date: "25 Ene 2025",
+    readTime: "6 min read",
+  },
+  {
+    category: "ISO Calidad",
+    image: grid5,
+    title: "Mejora continua con ciclo PDCA",
+    excerpt: "El ciclo Planificar-Hacer-Verificar-Actuar es la base de la mejora continua en sistemas de gestión ISO.",
+    date: "28 Feb 2025",
+    readTime: "4 min read",
+  },
+  {
+    category: "Seguridad",
+    image: grid6,
+    title: "Evaluación de riesgos laborales",
+    excerpt: "Metodología IPER para identificar peligros y evaluar riesgos en entornos industriales y de oficina.",
+    date: "01 Abr 2025",
+    readTime: "6 min read",
+  },
+  {
+    category: "Desarrollo Web",
+    image: grid7,
+    title: "APIs REST: buenas prácticas 2025",
+    excerpt: "Guía actualizada sobre diseño, documentación y seguridad de APIs REST para proyectos empresariales.",
+    date: "05 Feb 2025",
+    readTime: "7 min read",
+  },
+  {
+    category: "Ambiental",
+    image: grid8,
+    title: "Eficiencia energética en oficinas",
+    excerpt: "Medidas simples y efectivas para reducir el consumo energético en espacios de trabajo y oficinas modernas.",
+    date: "08 Mar 2025",
+    readTime: "5 min read",
+  },
+  {
+    category: "Innovación",
+    image: grid9,
+    title: "UX en aplicaciones empresariales",
+    excerpt: "Por qué la experiencia de usuario es clave para la adopción exitosa de herramientas digitales internas.",
+    date: "15 Abr 2025",
+    readTime: "5 min read",
+  },
+  {
+    category: "Ciberseguridad",
+    image: grid10,
+    title: "Cómo proteger tu empresa del ransomware",
+    excerpt: "Medidas de prevención y respuesta ante uno de los ataques más comunes contra empresas hoy en día.",
+    date: "20 Abr 2025",
+    readTime: "6 min read",
+  },
+  {
+    category: "Innovación",
+    image: grid11,
+    title: "Cultura de innovación: cómo fomentarla",
+    excerpt: "Prácticas concretas para que los equipos propongan, prueben y mejoren ideas de forma constante.",
+    date: "22 Abr 2025",
+    readTime: "5 min read",
+  },
+];
+---
+
+<section class="pt-16 pb-16 lg:pt-[100px] lg:pb-[160px]" data-blog-filters-section>
+  <div class="wrapper flex flex-col gap-[120px]">
+    <div class="flex flex-wrap items-center gap-[12px]" data-reveal>
+      {
+        categories.map((cat, i) => (
+          <button
+            type="button"
+            data-blog-filter
+            data-category={cat}
+            aria-pressed={i === 0 ? "true" : "false"}
+            class:list={[
+              "flex-1 px-6 py-2 text-center font-body text-[18px] tracking-[-0.5px] transition-colors duration-300",
+              i === 0 ? "bg-navy text-white" : "bg-mist text-secondary hover:text-navy",
+            ]}
+          >
+            {cat}
+          </button>
+        ))
+      }
+    </div>
+
+    <div class="flex flex-col gap-10" data-reveal-fade>
+      <p class="font-display text-[32px] leading-[1.1] tracking-[-1px] sm:text-[44px] sm:tracking-[-1.4px] lg:text-[66px] lg:tracking-[-1.98px]" data-blog-title>
+        Blog
+      </p>
+
+      <div class="flex flex-wrap items-end justify-between gap-6">
+        <div class="max-w-[744px]">
+          <p class="font-body text-[20px] leading-[1.5] tracking-[-0.5px] text-secondary lg:text-[26px]" data-blog-description>
+            {categoryCopy.Todos.description}
+          </p>
+          <p class="mt-3 font-body text-[16px] tracking-[-0.3px] text-teal" data-blog-count></p>
+        </div>
+
+        <div class="flex shrink-0 items-center gap-5">
+          <button
+            type="button"
+            aria-label="Publicación anterior"
+            class="group flex size-12 items-center justify-center text-ink transition-[color,scale] duration-300 hover:scale-110 hover:text-navy lg:size-14"
+            data-blog-carousel-prev
+          >
+            <svg width="24" height="18" viewBox="0 0 24 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="transition-[stroke-width] duration-300 group-hover:stroke-[2.8px]">
+              <path d="M22 9H2M2 9l7-7M2 9l7 7" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            aria-label="Siguiente publicación"
+            class="group flex size-12 items-center justify-center text-ink transition-[color,scale] duration-300 hover:scale-110 hover:text-navy lg:size-14"
+            data-blog-carousel-next
+          >
+            <svg width="24" height="18" viewBox="0 0 24 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="transition-[stroke-width] duration-300 group-hover:stroke-[2.8px]">
+              <path d="M2 9h20M15 2l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--
+    El carrusel se sale del wrapper (max-w-1312) a propósito: el
+    cliente pidió que rompa esa estructura y llegue hasta el borde real
+    de la pantalla (no el borde del wrapper), para que en pantallas
+    anchas se alcancen a ver 2 tarjetas y media, con la tercera
+    recortada por el viewport mismo. El padding-left replica a mano el
+    inset izquierdo que da .wrapper (px-5/sm:px-8, y el margen extra
+    que suma mx-auto una vez el viewport supera 1312+64px) para que la
+    fila arranque alineada con el título de arriba; a la derecha no
+    hay tope, así que sigue hasta el borde de la ventana.
+  -->
+  <div class="mt-10 w-full overflow-x-hidden pl-5 sm:pl-8" data-blog-carousel-viewport>
+    <div class="flex w-max gap-4" data-blog-carousel-track>
+      {
+        featured.map((item) => (
+          <div class="group relative flex h-[300px] w-[420px] shrink-0 items-end overflow-hidden p-7 sm:h-[354px] sm:w-[629px] sm:p-9" data-blog-carousel-item>
+            <Image
+              src={item.image}
+              alt={item.title}
+              width={629}
+              height={354}
+              class="absolute inset-0 -z-10 h-full w-full object-cover transition-transform duration-500 ease-[var(--ease-default)] group-hover:scale-105"
+            />
+            <div class="absolute inset-0 -z-10 bg-gradient-to-t from-black/80 to-transparent" />
+            <p class="relative max-w-[430px] font-body text-[24px] font-medium tracking-[-0.7px] text-white sm:text-[32px] sm:tracking-[-0.96px]">
+              {item.title}
+            </p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<section class="wrapper pt-0 pb-16 lg:pb-[100px]">
+  <p data-reveal-fade class="font-display text-[32px] leading-[1.1] tracking-[-1px] sm:text-[44px] sm:tracking-[-1.4px] lg:text-[66px] lg:tracking-[-1.98px]">
+    Últimas publicaciones
+  </p>
+
+  <div class="mt-16 grid grid-cols-1 gap-x-6 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
+    {
+      posts.map((post) => (
+        <a href="#" class="group flex flex-col items-start" data-blog-post data-category={post.category} data-reveal-fade>
+          <div class="h-[300px] w-full overflow-hidden">
+            <Image
+              src={post.image}
+              alt={post.title}
+              width={420}
+              height={300}
+              class="h-full w-full object-cover transition-transform duration-500 ease-[var(--ease-default)] group-hover:scale-105"
+            />
+          </div>
+          <div class="flex flex-col items-start gap-6 py-6">
+            <div class="flex flex-col items-start gap-2">
+              <p class="font-body text-[18px] tracking-[-0.5px] text-secondary">{post.category}</p>
+              <div class="flex flex-col items-start gap-2">
+                <p class="font-body text-[26px] leading-[1.2] tracking-[-0.7px] text-ink transition-colors duration-300 group-hover:text-navy sm:text-[32px] sm:tracking-[-0.96px]">
+                  {post.title}
+                </p>
+                <p class="font-body text-[18px] leading-[1.5] tracking-[-0.5px] text-secondary">{post.excerpt}</p>
+              </div>
+            </div>
+            <p class="font-body text-[14px] tracking-[-0.2px] text-secondary">
+              {`Creado: ${post.date} • ${post.readTime}`}
+            </p>
+          </div>
+        </a>
+      ))
+    }
+  </div>
+</section>
+
+<script type="application/json" data-blog-copy set:html={JSON.stringify(categoryCopy)} />

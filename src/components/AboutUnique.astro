@@ -1,0 +1,95 @@
+---
+import { Image } from "astro:assets";
+import innovationImage from "../assets/img/servicios/img-7-tablet-hand.png";
+import adaptabilityImage from "../assets/img/hero/desk-writing.png";
+import qualityImage from "../assets/img/servicios/img-8-multi-device.png";
+import commitmentImage from "../assets/img/digital-today/team.png";
+import collaborationImage from "../assets/img/servicios/img-3-dashboard-monitor.png";
+
+/*
+  "Lo que nos hace únicos" — idéntico al patrón de "Lo que
+  desarrollamos" (ServicePortfolio.astro): grilla masonry de 2
+  columnas, mismo reveal (data-reveal) y mismo hover CSS puro (imagen
+  con scale, descripción con fade de opacidad debajo del título).
+
+  El Figma solo trae la descripción real de "Innovación" — las otras 4
+  son copy modelo mío, mismo tono, mismo criterio que ya usamos en
+  ServicePortfolio.
+*/
+const items = [
+  {
+    title: "Innovación",
+    description: "Aplicamos tecnologías emergentes y metodologías ágiles para crear soluciones que anticipan las necesidades del mercado.",
+    image: innovationImage,
+    alt: "Mano sosteniendo una tablet con datos de investigación",
+    aspect: "632/356",
+  },
+  {
+    title: "Adaptabilidad",
+    description: "Cada cliente opera distinto — ajustamos nuestro proceso a su realidad, no al revés, para que la solución encaje desde el primer día.",
+    image: adaptabilityImage,
+    alt: "Persona escribiendo un boceto en un escritorio",
+    aspect: "624/632",
+  },
+  {
+    title: "Calidad",
+    description: "Código revisado, procesos documentados y pruebas antes de cada entrega — la calidad no es un paso final, es parte de todo el camino.",
+    image: qualityImage,
+    alt: "Múltiples dispositivos mostrando una misma plataforma",
+    aspect: "632/356",
+  },
+  {
+    title: "Compromiso",
+    description: "No entregamos y desaparecemos — acompañamos cada proyecto después del lanzamiento, con el mismo nivel de atención del primer día.",
+    image: commitmentImage,
+    alt: "Equipo trabajando en conjunto frente a pantallas",
+    aspect: "624/632",
+  },
+  {
+    title: "Colaboración",
+    description: "Trabajamos codo a codo con el equipo del cliente, no en paralelo — las mejores decisiones salen cuando todos están en la misma mesa.",
+    image: collaborationImage,
+    alt: "Monitor mostrando un dashboard de analítica",
+    aspect: "632/356",
+  },
+];
+
+const leftColumn = [items[0], items[1], items[2]];
+const rightColumn = [items[3], items[4]];
+---
+
+<section class="wrapper section-y">
+  <h2 class="text-center font-display text-[32px] leading-[1.1] tracking-[-1px] sm:text-[44px] sm:tracking-[-1.4px] lg:text-[66px] lg:tracking-[-1.98px]">
+    <span class="text-navy">Lo que nos</span> <span class="text-teal">hace únicos</span>
+  </h2>
+
+  <div class="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:gap-16">
+    {
+      [leftColumn, rightColumn].map((column) => (
+        <div class="flex flex-col gap-16 sm:gap-32">
+          {column.map((item) => (
+            <div class="group flex flex-col items-start gap-6">
+              <div class="relative w-full overflow-hidden" style={`aspect-ratio: ${item.aspect};`} data-reveal>
+                <Image
+                  src={item.image}
+                  alt={item.alt}
+                  width={632}
+                  height={632}
+                  class="h-full w-full object-cover transition-transform duration-500 ease-[var(--ease-default)] group-hover:scale-105"
+                />
+              </div>
+              <div class="flex flex-col gap-2">
+                <p class="font-body text-[24px] font-medium tracking-[-0.72px] text-ink sm:text-[32px] sm:tracking-[-0.96px]">
+                  {item.title}
+                </p>
+                <p class="pt-1 font-body text-[16px] leading-[1.5] tracking-[-0.3px] text-secondary opacity-0 transition-opacity duration-500 ease-[var(--ease-default)] group-hover:opacity-100">
+                  {item.description}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      ))
+    }
+  </div>
+</section>

@@ -1,0 +1,79 @@
+---
+import { Image } from "astro:assets";
+import related1 from "../assets/img/blog/related-iso14001.png";
+import related2 from "../assets/img/blog/related-pdca.png";
+import related3 from "../assets/img/blog/related-iso45001.png";
+
+/*
+  "Últimas publicaciones" al pie del artículo (Figma: Artículo, node
+  282:584, Frame 82 = 282:723) — 3 tarjetas fijas, mismo componente
+  visual que el grid de /blog (BlogArticles.astro). "ISO 14001..." e
+  "ISO 45001..." son artículos nuevos que solo aparecen acá en el
+  Figma (no existen todavía como página propia, por eso quedan sin
+  link real, igual que el resto de tarjetas de ejemplo del sitio).
+*/
+const related = [
+  {
+    category: "Ambiental",
+    image: related1,
+    title: "ISO 14001 y la gestión ambiental",
+    excerpt: "Descubre cómo la norma ISO 14001 ayuda a las empresas a reducir su impacto ambiental y cumplir la ley.",
+    date: "20 Feb 2025",
+    readTime: "7 min read",
+  },
+  {
+    category: "ISO Calidad",
+    image: related2,
+    title: "Mejora continua con ciclo PDCA",
+    excerpt: "El ciclo Planificar-Hacer-Verificar-Actuar es la base de la mejora continua en sistemas de gestión ISO.",
+    date: "28 Feb 2025",
+    readTime: "4 min read",
+  },
+  {
+    category: "Seguridad",
+    image: related3,
+    title: "ISO 45001: Seguridad en el trabajo",
+    excerpt: "La norma ISO 45001 establece los requisitos para gestionar la seguridad y salud en el trabajo de forma eficaz.",
+    date: "10 Mar 2025",
+    readTime: "8 min read",
+  },
+];
+---
+
+<section class="wrapper pt-0 pb-16 lg:pb-[100px]">
+  <p data-reveal-fade class="font-display text-[32px] leading-[1.1] tracking-[-1px] sm:text-[44px] sm:tracking-[-1.4px] lg:text-[54px] lg:tracking-[-1.62px]">
+    Últimas publicaciones
+  </p>
+
+  <div class="mt-16 grid grid-cols-1 gap-x-6 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
+    {
+      related.map((post) => (
+        <a href="#" class="group flex flex-col items-start" data-reveal-fade>
+          <div class="h-[300px] w-full overflow-hidden">
+            <Image
+              src={post.image}
+              alt={post.title}
+              width={420}
+              height={300}
+              class="h-full w-full object-cover transition-transform duration-500 ease-[var(--ease-default)] group-hover:scale-105"
+            />
+          </div>
+          <div class="flex flex-col items-start gap-6 py-6">
+            <div class="flex flex-col items-start gap-2">
+              <p class="font-body text-[18px] tracking-[-0.5px] text-secondary">{post.category}</p>
+              <div class="flex flex-col items-start gap-2">
+                <p class="font-body text-[26px] leading-[1.2] tracking-[-0.7px] text-ink transition-colors duration-300 group-hover:text-navy sm:text-[32px] sm:tracking-[-0.96px]">
+                  {post.title}
+                </p>
+                <p class="font-body text-[18px] leading-[1.5] tracking-[-0.5px] text-secondary">{post.excerpt}</p>
+              </div>
+            </div>
+            <p class="font-body text-[14px] tracking-[-0.2px] text-secondary">
+              {`Creado: ${post.date} • ${post.readTime}`}
+            </p>
+          </div>
+        </a>
+      ))
+    }
+  </div>
+</section>
