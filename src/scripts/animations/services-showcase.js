@@ -47,12 +47,26 @@ export function initServicesShowcase() {
   // fotos vecinas terminan tapadas igual (bug reportado que persistía).
   // Un ResizeObserver reacciona a CUALQUIER cambio real de tamaño del
   // texto, tipeo incluido, sin importar la causa.
+  //
+  // IGUALAR EL ALTO NO ALCANZA: el título se posiciona con un top fijo
+  // en % (pensado para el alto original del grid), así que si el alto
+  // de la fila vacía cambia, el título y la fila dejan de coincidir en
+  // POSICIÓN aunque midan lo mismo — el título termina más abajo (o más
+  // arriba) que la fila que se supone lo tapa, y vuelve a comerse parte
+  // de las fotos vecinas (bug reportado: "sigue cortando las imágenes
+  // con un rectángulo blanco"). Por eso acá también movemos el título
+  // (top en px, no %) para que su borde superior calce exacto con el de
+  // la fila vacía, siempre, sin importar cómo cambie el alto del texto.
   const applyGapHeight = () => {
     if (!title || !gapRows.length) return;
     const gapHeight = Math.ceil(title.getBoundingClientRect().height);
     gapRows.forEach((row) => {
       row.style.height = `${gapHeight}px`;
     });
+
+    const showcaseRect = showcase.getBoundingClientRect();
+    const gapRect = gapRows[0].getBoundingClientRect();
+    title.style.top = `${gapRect.top - showcaseRect.top}px`;
   };
 
   if (title && gapRows.length && "ResizeObserver" in window) {
