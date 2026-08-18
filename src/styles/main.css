@@ -25,24 +25,24 @@
 }
 
 @layer base {
+  :root {
+    --header-height: 3.25rem;
+  }
+  @media (min-width: 1024px) {
+    :root {
+      --header-height: 3.5rem;
+    }
+  }
+  @media (min-width: 1280px) {
+    :root {
+      --header-height: 3.75rem;
+    }
+  }
+
   body {
     font-family: var(--font-body);
     color: var(--color-ink);
     background: var(--color-canvas);
-  }
-
-  /*
-    El header pasa a xl:fixed (ver Header.astro, para que el cambio
-    entre estado "default" y "floating" no mueva contenido) — este
-    padding compensa el espacio que dejaba de ocupar en el flujo
-    normal. Valor = alto real del header renderizado (medido en
-    navegador), no un número inventado — recalculado a 76px cuando el
-    padding vertical del header bajó de py-5 (20px) a py-4 (16px).
-  */
-  @media (min-width: 1280px) {
-    main {
-      padding-top: 76px;
-    }
   }
 }
 
@@ -94,14 +94,60 @@
   }
 
   .nav-link {
-    @apply relative;
+    @apply relative py-1 transition-colors duration-200 ease-[var(--ease-default)];
   }
-  .nav-link::after {
+  .nav-link:hover,
+  .nav-link:focus-visible,
+  .nav-link[aria-current="page"] {
+    @apply text-navy;
+  }
+  .nav-link:focus-visible {
+    @apply outline-none;
+  }
+
+  /*
+    Un solo subrayado para todo el nav — GSAP anima translate/scale
+    (propiedades individuales, no el shorthand transform).
+  */
+  .nav-underline {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 1px;
+    width: 1px;
+    background: var(--color-navy);
+    pointer-events: none;
+    translate: 0 0;
+    scale: 0 1;
+    transform-origin: left center;
+  }
+
+  .btn-paint {
+    @apply relative isolate overflow-hidden font-body text-[15px] font-bold tracking-[-0.3px] text-navy ring-1 ring-inset ring-navy;
+  }
+  .btn-paint > span {
+    @apply relative z-10 transition-colors duration-200 delay-100 ease-[var(--ease-default)];
+  }
+  .btn-paint::before {
     content: "";
-    @apply absolute -bottom-1 left-0 h-px w-full origin-right scale-x-0 bg-current transition-transform duration-300 ease-[var(--ease-default)];
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: var(--color-navy);
+    transform-origin: left center;
+    scale: 0 1;
+    transition: scale 400ms var(--ease-default);
   }
-  .nav-link:hover::after {
-    @apply origin-left scale-x-100;
+  .btn-paint:hover > span,
+  .btn-paint:focus-visible > span {
+    @apply text-white delay-75;
+  }
+  .btn-paint:hover::before,
+  .btn-paint:focus-visible::before {
+    scale: 1 1;
+  }
+  .btn-paint:focus-visible {
+    @apply outline-none ring-2 ring-navy ring-offset-2;
   }
 }
 
@@ -139,8 +185,7 @@
   translate: 0 24px;
 }
 [data-hero-underline] {
-  scale: 0 1;
-  transform-origin: left;
+  clip-path: inset(0 100% 0 0);
 }
 [data-hero-description] {
   opacity: 0;
@@ -151,11 +196,13 @@
 .no-js [data-reveal-fade],
 .no-js [data-reveal-scale],
 .no-js [data-reveal-toggle],
-.no-js [data-hero-underline],
 .no-js [data-hero-description] {
   opacity: 1;
   translate: none;
   scale: none;
+}
+.no-js [data-hero-underline] {
+  clip-path: inset(0 0 0 0);
 }
 
 /* Respeta la preferencia de accesibilidad del sistema operativo */
@@ -164,13 +211,25 @@
   [data-reveal-fade],
   [data-reveal-scale],
   [data-reveal-toggle],
-  [data-hero-underline],
   [data-hero-description] {
     opacity: 1;
     translate: none;
     scale: none;
     transition: none !important;
     animation: none !important;
+  }
+  [data-hero-underline] {
+    clip-path: inset(0 0 0 0);
+    transition: none !important;
+    animation: none !important;
+  }
+
+  [data-header],
+  [data-mobile-nav],
+  .nav-link,
+  .btn-paint::before,
+  .btn-paint > span {
+    transition: none !important;
   }
 }
 

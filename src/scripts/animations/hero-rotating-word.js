@@ -1,30 +1,26 @@
+import { gsap } from "gsap";
 import { prefersReducedMotion } from "../utils/reduced-motion.js";
 
 /*
-  Efecto de tipeo ROTATIVO, solo para el acento del H1 del Hero (home):
-  tipea una frase, espera, la borra, tipea la siguiente de la lista (en
-  loop infinito mientras el heading esté en pantalla) — a diferencia de
-  text-type.js (que tipea UNA VEZ y se queda, para todo el resto de
-  títulos del sitio), este es el único lugar con loop de borrar/re-tipear,
-  porque el pedido puntual era que rotaran varias frases que completan
-  "Tu próxima gran idea merece el ___". Por eso vive en su propio
-  archivo en vez de una opción más de text-type.js — text-type.js
-  ignora explícitamente el heading que tenga [data-hero-rotating-word]
-  adentro para que los dos no compitan por el mismo texto.
-
-  Las frases salen de data-words (JSON) en el propio HTML, no
-  hardcodeadas aquí, para que cambiarlas sea editar el .astro y no el
-  script.
+  Tipeo rotativo del acento del H1. El layout no salta: un sizer
+  invisible con la frase más larga reserva el espacio. Cuando una
+  frase termina, la línea (gruesa a la izquierda, fina a la derecha)
+  se pinta de izq. a der. con clip-path.
 */
 const TYPE_MS = 45;
 const DELETE_MS = 28;
-const HOLD_MS = 1800;
-const GAP_MS = 300;
-const CARET_HTML = `<span class="text-type-caret" style="background-color:var(--color-navy)"></span>`;
+const HOLD_MS = 4200;
+const GAP_MS = 450;
+const PAINT_S = 0.75;
+const ERASE_S = 0.22;
 
 export function initHeroRotatingWord() {
   const el = document.querySelector("[data-hero-rotating-word]");
   if (!el) return;
+
+  const textEl = el.querySelector("[data-hero-rotating-text]");
+  const caretEl = el.querySelector("[data-hero-caret]");
+  const underline = el.querySelector("[data-hero-underline]");
 
   let words = [];
   try {
@@ -32,27 +28,62 @@ export function initHeroRotatingWord() {
   } catch {
     words = [];
   }
-  if (!words.length) return;
+  if (!words.length || !textEl) return;
+
+  const CLIP_HIDDEN = "inset(0 100% 0 0)";
+  const CLIP_SHOWN = "inset(0 0% 0 0)";
+
+  if (underline) gsap.set(underline, { clipPath: CLIP_HIDDEN });
 
   if (prefersReducedMotion()) {
-    el.textContent = words[0];
+    textEl.textContent = words[0];
+    if (caretEl) caretEl.hidden = true;
+    if (underline) gsap.set(underline, { clipPath: CLIP_SHOWN });
     return;
   }
 
   let wordIndex = 0;
   let charIndex = 0;
-  let phase = "typing"; // typing | holding | deleting | gap
+  let phase = "typing";
   let waitUntil = 0;
   let last = 0;
   let rafId = null;
 
-  const render = () => {
-    el.innerHTML = `${words[wordIndex].slice(0, charIndex)}${CARET_HTML}`;
+  const paintLine = () => {
+    if (!underline) return;
+    gsap.fromTo(
+      underline,
+      { clipPath: CLIP_HIDDEN },
+      { clipPath: CLIP_SHOWN, duration: PAINT_S, ease: "power2.inOut", overwrite: true },
+    );
+  };
+
+  const eraseLine = () => {
+    if (!underline) return;
+    gsap.to(underline, {
+      clipPath: CLIP_HIDDEN,
+      duration: ERASE_S,
+      ease: "power1.in",
+      overwrite: true,
+    });
+  };
+
+  const render = ({ caret = true } = {}) => {
+    textEl.textContent = words[wordIndex].slice(0, charIndex);
+    if (caretEl) caretEl.hidden = !caret;
   };
 
   const tick = (now) => {
     if (phase === "holding" || phase === "gap") {
-      if (now >= waitUntil) phase = phase === "holding" ? "deleting" : "typing";
+      if (now >= waitUntil) {
+        if (phase === "holding") {
+          eraseLine();
+          phase = "deleting";
+          last = now;
+        } else {
+          phase = "typing";
+        }
+      }
       rafId = requestAnimationFrame(tick);
       return;
     }
@@ -62,14 +93,16 @@ export function initHeroRotatingWord() {
       last = now;
       if (phase === "typing") {
         charIndex++;
-        render();
+        render({ caret: true });
         if (charIndex >= words[wordIndex].length) {
+          render({ caret: false });
+          paintLine();
           phase = "holding";
           waitUntil = now + HOLD_MS;
         }
       } else {
         charIndex--;
-        render();
+        render({ caret: true });
         if (charIndex <= 0) {
           wordIndex = (wordIndex + 1) % words.length;
           phase = "gap";
@@ -91,13 +124,13 @@ export function initHeroRotatingWord() {
     rafId = null;
   };
 
-  render();
+  render({ caret: true });
 
   const observer = new IntersectionObserver(
     (entries) => {
-      entries.forEach((entry) => (entry.isIntersecting ? start() : stop()));
+      entries.forEach((event) => (event.isIntersecting ? start() : stop()));
     },
-    { threshold: 0.1 }
+    { threshold: 0.1 },
   );
   observer.observe(el);
 }

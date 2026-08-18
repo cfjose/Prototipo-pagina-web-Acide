@@ -12,25 +12,14 @@ import Footer from "../components/Footer.astro";
 
 <BaseLayout>
   <!--
-    "100vh" solo tiene sentido en desktop: en mobile/tablet el hero se
-    apila (texto arriba, galería abajo) y necesita más de una pantalla
-    para verse bien, forzarlo a 100svh ahí recortaría contenido. Por eso
-    el alto fijo (no min-height — flex-grow necesita un alto DEFINIDO
-    para poder repartir "lo que sobra" entre Header y Hero) es lg: only.
+    Header sticky fuera de este bloque para que se quede pegado en
+    toda la página (si vive acá, el alto 100svh lo despega al salir).
+    El hero sigue midiendo "lo que queda" de la primera pantalla.
+    En mobile/tablet no forzamos 100svh: el hero se apila y necesita
+    más de un viewport.
   -->
-  <!--
-    xl:pt-[76px] (mismo valor que el padding-top de <main>, ver main.css
-    — recalculado cuando el header bajó de py-5 a py-4) — el Header pasa
-    a fixed/fuera-de-flujo justo en xl (ver Header.astro), así que sin
-    este padding el Hero arranca en y=0, DETRÁS del header: no se ve
-    roto a simple vista porque el título está centrado más abajo, pero
-    sí tapaba el tramo más opaco del degradado blanco de arriba de la
-    galería (bug reportado: "no se ve el degradado arriba, solo abajo")
-    — con este padding el degradado completo queda debajo del header,
-    visible como el de abajo.
-  -->
-  <div class="flex flex-col lg:h-[100svh] xl:pt-[76px]">
-    <Header />
+  <Header />
+  <div class="flex flex-col lg:h-[calc(100svh-var(--header-height))]">
     <Hero />
   </div>
   <main>

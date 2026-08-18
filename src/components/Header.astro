@@ -8,43 +8,54 @@ const navLinks = [
   { label: "Blog", href: "/blog" },
 ];
 
-/*
-  Una sola versión del header (blanca, siempre igual) — ya no hay
-  estado "floating" navy, eso quedó descartado. Referencia pedida:
-  ramotion.com/about — su header es SIEMPRE fixed arriba (top:0), con
-  fondo transparente/plano (nada de caja blanca ni sombra propia), y
-  solo se mueve: se oculta trasladándose hacia arriba al scrollear
-  hacia abajo, reaparece al scrollear hacia arriba. Acá replicamos esa
-  misma lógica de posición/animación (ver header-scroll.js), con nuestro
-  propio diseño (Figma node 338:757: 54px de gap entre ítems, botón
-  navy, texto "ink").
+const currentPath = Astro.url.pathname.replace(/\/$/, "") || "/";
+const isCurrent = (href) =>
+  href === "/" ? currentPath === "/" : currentPath === href || currentPath.startsWith(`${href}/`);
 
-  Solo en desktop (xl+) el header es fixed — en mobile/tablet queda en
-  flujo normal arriba de la página, como siempre.
+/*
+  Un solo header sticky (flujo normal, se queda arriba al scrollear).
+  Fondo de vidrio translúcido. Tipografía más chica que el 18px de Figma.
+  Un único subrayado que viaja entre ítems (header-scroll.js).
+  CTA con relleno tipo pintura (.btn-paint).
 */
 ---
 
-<header data-header data-header-hidden="false" class="relative z-50 bg-canvas xl:fixed xl:inset-x-0 xl:top-0 xl:transition-transform xl:duration-500 xl:ease-[var(--ease-default)]">
-  <div class="wrapper flex items-center justify-between py-4">
-    <a href="/" class="shrink-0">
-      <img src={logo.src} width={logo.width} height={logo.height} alt="Acide" class="h-[28px] w-auto lg:h-[34px]" />
+<header
+  data-header
+  class="sticky top-0 z-50 bg-canvas/75 backdrop-blur-md backdrop-saturate-150"
+>
+  <div class="wrapper flex items-center justify-between py-3">
+    <a
+      href="/"
+      class="inline-flex shrink-0 items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy focus-visible:ring-offset-2"
+    >
+      <img src={logo.src} width={logo.width} height={logo.height} alt="Acide" class="h-[24px] w-auto lg:h-[28px]" />
     </a>
 
-    <nav class="hidden items-center gap-[54px] font-body text-[18px] tracking-[-0.5px] text-ink xl:flex">
+    <nav
+      data-header-nav
+      class="relative hidden items-center gap-10 font-body text-[15px] tracking-[-0.3px] text-ink xl:flex"
+    >
       {
         navLinks.map((link) => (
-          <a href={link.href} class="nav-link hover:text-navy">
+          <a
+            href={link.href}
+            class="nav-link"
+            data-nav-link
+            aria-current={isCurrent(link.href) ? "page" : undefined}
+          >
             {link.label}
           </a>
         ))
       }
+      <span data-nav-underline aria-hidden="true" class="nav-underline"></span>
     </nav>
 
     <a
       href="#contacto"
-      class="hidden items-center justify-center bg-navy px-6 py-2 font-body text-[18px] font-bold tracking-[-0.5px] text-white transition-transform duration-300 ease-[var(--ease-default)] hover:-translate-y-0.5 xl:inline-flex"
+      class="btn-paint hidden min-h-10 items-center justify-center px-5 xl:inline-flex"
     >
-      Contáctanos
+      <span>Contáctanos</span>
     </a>
 
     <button
@@ -52,13 +63,13 @@ const navLinks = [
       data-menu-toggle
       aria-expanded="false"
       aria-controls="mobile-nav"
-      class="-mr-2 flex items-center justify-center p-2 xl:hidden"
+      class="-mr-2 flex size-10 cursor-pointer items-center justify-center text-ink transition-colors duration-200 hover:text-navy focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy focus-visible:ring-offset-2 aria-expanded:text-navy xl:hidden"
     >
       <span class="sr-only">Abrir menú</span>
-      <svg data-menu-icon-open width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <svg data-menu-icon-open width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round">
         <path d="M3 6h18M3 12h18M3 18h18" />
       </svg>
-      <svg data-menu-icon-close class="hidden" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <svg data-menu-icon-close class="hidden" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round">
         <path d="M6 6l12 12M18 6L6 18" />
       </svg>
     </button>
@@ -67,18 +78,24 @@ const navLinks = [
   <div
     id="mobile-nav"
     data-mobile-nav
-    class="grid grid-rows-[0fr] overflow-hidden transition-[grid-template-rows] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] xl:hidden"
+    class="grid grid-rows-[0fr] overflow-hidden transition-[grid-template-rows] duration-300 ease-[var(--ease-default)] xl:hidden"
   >
     <div class="min-h-0">
-      <nav class="wrapper flex flex-col gap-1 pb-6 font-body text-[18px] text-secondary">
+      <nav class="wrapper flex flex-col pb-5 font-body text-[15px] tracking-[-0.3px] text-ink">
         {
           navLinks.map((link) => (
-            <a href={link.href} class="border-b border-black/5 py-4">
+            <a
+              href={link.href}
+              class="flex min-h-11 items-center border-b border-ink/[0.08] py-3.5 transition-colors duration-200 hover:text-navy focus-visible:text-navy focus-visible:outline-none active:text-navy aria-[current=page]:text-navy"
+              aria-current={isCurrent(link.href) ? "page" : undefined}
+            >
               {link.label}
             </a>
           ))
         }
-        <a href="#contacto" class="btn btn--primary mt-4 w-full">Contáctanos</a>
+        <a href="#contacto" class="btn-paint mt-4 flex min-h-11 items-center justify-center px-5 py-3">
+          <span>Contáctanos</span>
+        </a>
       </nav>
     </div>
   </div>
