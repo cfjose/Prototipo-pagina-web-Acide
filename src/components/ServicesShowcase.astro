@@ -14,44 +14,51 @@ import tile11 from "../assets/img/idea-showcase/tile-11.png";
 import tile12 from "../assets/img/idea-showcase/tile-12.png";
 
 /*
-  Rediseño 1:1 del Figma (node 178:1250): 6 columnas de 5 celdas, con
-  solo 13 de las 30 celdas ocupadas por foto — el resto quedan en
-  blanco a propósito, dando el patrón tipo tablero de ajedrez que se ve
-  en el diseño (cada columna alterna foto/vacío, y las columnas
-  vecinas empiezan en fase contraria). `null` = celda vacía.
+  Rediseño 1:1 del Figma (node 178:1250), con una diferencia a pedido:
+  las 2 filas de arriba se mueven hacia la derecha y las 2 de abajo
+  hacia la izquierda (antes todo el grid se movía junto, una sola
+  dirección). Como dentro de UN mismo track las filas comparten
+  siempre la misma posición X, no hay forma de que dos filas se muevan
+  en sentidos distintos si viven en el mismo elemento — por eso son
+  DOS tracks independientes (arriba/abajo), cada uno con su propio
+  loop infinito (ver services-showcase.js).
 
-  La fila del medio (índice 2) va vacía en las 6 columnas, sin
-  excepción — en el Figma original la columna 0 sí tenía foto ahí,
-  pero como esa columna quedaba lejos del título (centrado) nunca se
-  cruzaban. Acá el grid entero se desplaza en loop, así que esa foto
-  tarde o temprano pasaría justo detrás del título; para que eso no
-  choque nunca, se sacrifica esa foto (tile01, sin usar) y la fila del
-  medio queda limpia en todo el ancho.
+  Ojo con esto: en un intento anterior separamos arriba/abajo pero
+  reemplazamos la fila vacía del medio (que reservaba espacio real
+  para el título) por una caja de posición fija superpuesta con CSS —
+  eso rompió el calce y dejaba fotos asomando por los bordes del
+  título. Acá se vuelve al mecanismo que sí funcionaba: una fila
+  vacía real entre ambos tracks (data-showcase-gap-row) cuyo alto Y la
+  posición del título se recalculan por JS a partir del alto real del
+  texto (ver applyGapHeight en services-showcase.js) — mismo criterio
+  que en la versión de un solo grid, solo que ahora el "espaciador" es
+  un elemento aparte en vez de una fila compartida por las 6 columnas.
 
-  En desktop, todo el grid se duplica una vez al lado del otro dentro
-  de [data-showcase-track] y se traslada en loop infinito hacia la
-  derecha (ver services-showcase.js) — el truco estándar de "marquee":
-  como la copia 2 es idéntica a la 1, al completar un ciclo de
-  transformX el corte es invisible. [data-showcase-viewport] recorta
-  con overflow-hidden para que solo se vea un ancho de grid a la vez.
-
-  El hover que apaga el resto del collage mientras resalta la tarjeta
-  bajo el mouse es el mismo patrón que ya usábamos acá antes (y en
-  historias de clientes) — se mantiene igual, solo que ahora corre
-  sobre fotos estáticas en vez del Ken Burns anterior (el movimiento
-  ya lo da el propio scroll del carrusel).
+  Checkerboard: mismo patrón de ajedrez que el diseño original (cada
+  columna alterna foto/vacío, columnas vecinas en fase contraria),
+  separado en top (filas 0-1 del grid original) y bottom (filas 3-4) —
+  la fila 2 (el hueco del medio) es justamente la que ahora es el
+  espaciador de arriba. `null` = celda vacía.
 */
-const columns: (ImageMetadata | null)[][] = [
-  [tile00, null, null, null, tile02],
-  [null, tile03, null, tile04, null],
-  [tile05, null, null, null, tile06],
-  [null, tile07, null, tile08, null],
-  [tile09, null, null, null, tile10],
-  [null, tile11, null, tile12, null],
+const topColumns: (ImageMetadata | null)[][] = [
+  [tile00, null],
+  [null, tile03],
+  [tile05, null],
+  [null, tile07],
+  [tile09, null],
+  [null, tile11],
+];
+const bottomColumns: (ImageMetadata | null)[][] = [
+  [null, tile02],
+  [tile04, null],
+  [null, tile06],
+  [tile08, null],
+  [null, tile10],
+  [tile12, null],
 ];
 
 const alt = "Persona usando una app en el celular";
-const flatTiles = columns.flat().filter((tile): tile is ImageMetadata => tile !== null);
+const flatTiles = [...topColumns, ...bottomColumns].flat().filter((tile): tile is ImageMetadata => tile !== null);
 ---
 
 <section class="wrapper section-y xl:pt-5">
@@ -74,10 +81,12 @@ const flatTiles = columns.flat().filter((tile): tile is ImageMetadata => tile !=
       lg:bg-canvas + lg:p-[54px]: colchón de 54px pedido entre el texto
       y las imágenes que lo rodean — el ancho sube de 772 a 880 (772 +
       54*2) para que el ÁREA DE TEXTO siga siendo 772px como en el
-      Figma, el padding se suma afuera de eso, no lo achica. El fondo
-      blanco es más red de seguridad que necesidad real (la fila del
-      medio del grid ya viene vacía en las 6 columnas), por si el alto
-      real de esa fila terminara siendo menor al que hace falta acá.
+      Figma, el padding se suma afuera de eso, no lo achica.
+
+      lg:top-[38%] es solo el fallback antes de que corra el JS —
+      services-showcase.js pisa este top con un valor en px calculado
+      contra data-showcase-gap-row (ver applyGapHeight), igual que en
+      la versión de un solo grid.
 
       data-type-heading: el mismo efecto de tipeo/caret que usan los
       h1/h2 en navy o teal (ver text-type.js) — como este es un <p>, no
@@ -96,57 +105,92 @@ const flatTiles = columns.flat().filter((tile): tile is ImageMetadata => tile !=
       <span class="text-ink">De una idea a un gran </span><span class="text-navy">producto digital</span>
     </p>
 
-    <!-- Desktop: carrusel infinito de 2 copias del mismo grid -->
-    <div class="hidden lg:absolute lg:inset-0 lg:block lg:overflow-hidden" data-showcase-viewport>
+    <!--
+      Desktop: dos pistas apiladas (arriba se mueve a la derecha, abajo
+      a la izquierda), con una fila vacía real entre ambas que reserva
+      el espacio del título (data-showcase-gap-row, alto puesto por
+      JS) — mismo mecanismo que la versión de un solo grid, ver arriba.
+    -->
+    <div class="hidden lg:absolute lg:inset-0 lg:flex lg:flex-col lg:overflow-hidden">
       <!--
-        Mismo criterio que el degradado del Hero (home): como el
-        carrusel corta en seco a los costados, un degradado angosto a
-        blanco en cada borde disimula el corte — acá es horizontal
-        (izq/der) porque el movimiento es horizontal, a diferencia del
-        Hero que es vertical.
+        Degradado en los costados para disimular el corte del
+        carrusel — spannea las DOS pistas (arriba y abajo juntas),
+        mismo criterio que el degradado vertical del Hero.
       -->
       <div aria-hidden="true" class="pointer-events-none absolute inset-y-0 left-0 z-10 w-[8%] bg-gradient-to-r from-white to-white/0"></div>
       <div aria-hidden="true" class="pointer-events-none absolute inset-y-0 right-0 z-10 w-[8%] bg-gradient-to-l from-white to-white/0"></div>
-      <div class="flex h-full" data-showcase-track>
-        {
-          [0, 1].map((copyIndex) => (
-            <div class:list={["grid h-full shrink-0 grid-cols-6 gap-3", copyIndex === 1 && "ml-3"]} data-showcase-copy aria-hidden={copyIndex === 1}>
-              {
-                columns.map((col) => (
-                  <div class="flex h-full flex-col gap-3">
-                    {
-                      col.map((tile, ri) =>
-                        tile ? (
-                          <div class="relative flex-1 overflow-hidden" data-showcase-tile>
-                            <Image
-                              src={tile}
-                              alt={copyIndex === 0 ? alt : ""}
-                              width={230}
-                              height={191}
-                              class="h-full w-full object-cover"
-                              data-showcase-media
-                            />
-                          </div>
-                        ) : ri === 2 ? (
-                          // Alto fijo (no flex-1) — lo calcula measureLayout()
-                          // en services-showcase.js a partir del alto REAL del
-                          // texto (que no cambia con el ancho: es tamaño de
-                          // fuente fijo en px), para garantizar que esta fila
-                          // siempre sea al menos tan alta como el texto+padding
-                          // y las filas vecinas de fotos nunca queden tapadas
-                          // ni recortadas por él.
-                          <div class="shrink-0" data-showcase-gap-row />
-                        ) : (
-                          <div class="flex-1" />
+
+      <div class="relative flex-1 overflow-hidden" data-showcase-viewport-top>
+        <div class="flex h-full" data-showcase-track-top>
+          {
+            [0, 1].map((copyIndex) => (
+              <div class:list={["grid h-full shrink-0 grid-cols-6 gap-3", copyIndex === 1 && "ml-3"]} data-showcase-copy-top aria-hidden={copyIndex === 1}>
+                {
+                  topColumns.map((col) => (
+                    <div class="flex h-full flex-col gap-3">
+                      {
+                        col.map((tile) =>
+                          tile ? (
+                            <div class="relative flex-1 overflow-hidden" data-showcase-tile>
+                              <Image
+                                src={tile}
+                                alt={copyIndex === 0 ? alt : ""}
+                                width={230}
+                                height={191}
+                                class="h-full w-full object-cover"
+                                data-showcase-media
+                              />
+                            </div>
+                          ) : (
+                            <div class="flex-1" />
+                          )
                         )
-                      )
-                    }
-                  </div>
-                ))
-              }
-            </div>
-          ))
-        }
+                      }
+                    </div>
+                  ))
+                }
+              </div>
+            ))
+          }
+        </div>
+      </div>
+
+      <!-- Alto fijo (no flex-1) — lo calcula applyGapHeight() en services-showcase.js a partir del alto real del texto -->
+      <div class="shrink-0" data-showcase-gap-row></div>
+
+      <div class="relative flex-1 overflow-hidden" data-showcase-viewport-bottom>
+        <div class="flex h-full" data-showcase-track-bottom>
+          {
+            [0, 1].map((copyIndex) => (
+              <div class:list={["grid h-full shrink-0 grid-cols-6 gap-3", copyIndex === 1 && "ml-3"]} data-showcase-copy-bottom aria-hidden={copyIndex === 1}>
+                {
+                  bottomColumns.map((col) => (
+                    <div class="flex h-full flex-col gap-3">
+                      {
+                        col.map((tile) =>
+                          tile ? (
+                            <div class="relative flex-1 overflow-hidden" data-showcase-tile>
+                              <Image
+                                src={tile}
+                                alt={copyIndex === 0 ? alt : ""}
+                                width={230}
+                                height={191}
+                                class="h-full w-full object-cover"
+                                data-showcase-media
+                              />
+                            </div>
+                          ) : (
+                            <div class="flex-1" />
+                          )
+                        )
+                      }
+                    </div>
+                  ))
+                }
+              </div>
+            ))
+          }
+        </div>
       </div>
     </div>
 

@@ -2,76 +2,42 @@ import { gsap } from "gsap";
 import { prefersReducedMotion } from "../utils/reduced-motion.js";
 
 /*
-  Carrusel infinito: [data-showcase-track] tiene 2 copias idénticas del
-  grid una al lado de la otra ([data-showcase-copy] x2). Animamos su
-  posición x desde -distancia hasta 0 en loop (ease "none", sin
-  aceleración/frenado, para que se sienta como una cinta continua) —
-  cuando termina un ciclo, la copia 2 quedó exactamente donde estaba la
-  copia 1 al empezar, así que el reinicio de GSAP es invisible.
-  "distancia" = ancho real del viewport (medido, no inventado) + el gap
-  entre copias, para que el ancho de la copia siempre calce con lo que
-  se ve en pantalla sin importar el tamaño real del monitor.
+  Dos carruseles infinitos independientes (arriba/abajo del título) —
+  arriba se mueve hacia la derecha, abajo hacia la izquierda. Mismo
+  truco de "marquee" en ambas: 2 copias idénticas una al lado de la
+  otra, el tween anima x entre 0 y -distancia (o al revés, según la
+  dirección) en loop; como las copias son iguales, el reinicio es
+  invisible.
+
+  El título sigue alineado con JS igual que en la versión de un solo
+  grid (no se puede resolver solo con CSS): data-showcase-gap-row es
+  una fila real entre ambas pistas, y su alto se saca del alto real
+  del texto — el texto se TIPEA letra por letra (text-type.js) y
+  mientras tipea puede pasar por un estado de una sola línea antes de
+  completar las dos, así que un ResizeObserver reacciona a cualquier
+  cambio real de tamaño del texto, tipeo incluido.
+
+  IGUALAR EL ALTO NO ALCANZA: el título arranca con un top fijo en %
+  (pensado como fallback), así que si el alto de la fila vacía cambia,
+  el título y la fila dejan de coincidir en POSICIÓN aunque midan lo
+  mismo. Por eso acá también se mueve el título (top en px, no %) para
+  que su borde superior calce exacto con el de la fila vacía.
 
   El hover que apaga el resto del collage mientras resalta la tarjeta
-  bajo el mouse es el mismo patrón que ya usábamos acá (antes con Ken
-  Burns) y en historias de clientes — corre igual, independiente de si
-  el carrusel está animando o no.
+  bajo el mouse es el mismo patrón de siempre — corre sobre TODAS las
+  tarjetas de las dos pistas por igual.
 */
 const DIM_OPACITY = 0.25;
 const PX_PER_SECOND = 45;
 const COPY_GAP = 12;
 
-export function initServicesShowcase() {
-  const showcase = document.querySelector("[data-showcase]");
-  if (!showcase) return;
+const setupTrack = (showcase, { viewportSel, trackSel, copySel, direction, reduced }) => {
+  const viewport = showcase.querySelector(viewportSel);
+  const track = showcase.querySelector(trackSel);
+  const copies = showcase.querySelectorAll(copySel);
+  if (!viewport || !track || copies.length < 2) return;
 
-  const viewport = showcase.querySelector("[data-showcase-viewport]");
-  const track = showcase.querySelector("[data-showcase-track]");
-  const copies = showcase.querySelectorAll("[data-showcase-copy]");
-  const tiles = showcase.querySelectorAll("[data-showcase-tile]");
-  const title = showcase.querySelector("[data-type-heading]");
-  const gapRows = showcase.querySelectorAll("[data-showcase-gap-row]");
-  if (!viewport || !track || copies.length < 2 || !tiles.length) return;
-
-  const reduced = prefersReducedMotion();
-  let marqueeTween = null;
-
-  // La fila vacía del medio (data-showcase-gap-row) tiene que medir AL
-  // MENOS lo que mide el texto+padding real (title es position:absolute,
-  // así que medirlo no depende del propio grid — sin ciclo). Separado de
-  // measure() porque el alto del texto no solo cambia con el resize: el
-  // título se TIPEA letra por letra (text-type.js) y mientras tipea
-  // puede pasar por un estado de una sola línea antes de completar las
-  // dos — medir solo una vez al cargar (o solo en resize) deja la fila
-  // con el alto de un momento intermedio, más chico que el final, y las
-  // fotos vecinas terminan tapadas igual (bug reportado que persistía).
-  // Un ResizeObserver reacciona a CUALQUIER cambio real de tamaño del
-  // texto, tipeo incluido, sin importar la causa.
-  //
-  // IGUALAR EL ALTO NO ALCANZA: el título se posiciona con un top fijo
-  // en % (pensado para el alto original del grid), así que si el alto
-  // de la fila vacía cambia, el título y la fila dejan de coincidir en
-  // POSICIÓN aunque midan lo mismo — el título termina más abajo (o más
-  // arriba) que la fila que se supone lo tapa, y vuelve a comerse parte
-  // de las fotos vecinas (bug reportado: "sigue cortando las imágenes
-  // con un rectángulo blanco"). Por eso acá también movemos el título
-  // (top en px, no %) para que su borde superior calce exacto con el de
-  // la fila vacía, siempre, sin importar cómo cambie el alto del texto.
-  const applyGapHeight = () => {
-    if (!title || !gapRows.length) return;
-    const gapHeight = Math.ceil(title.getBoundingClientRect().height);
-    gapRows.forEach((row) => {
-      row.style.height = `${gapHeight}px`;
-    });
-
-    const showcaseRect = showcase.getBoundingClientRect();
-    const gapRect = gapRows[0].getBoundingClientRect();
-    title.style.top = `${gapRect.top - showcaseRect.top}px`;
-  };
-
-  if (title && gapRows.length && "ResizeObserver" in window) {
-    new ResizeObserver(applyGapHeight).observe(title);
-  }
+  let tween = null;
 
   const measure = () => {
     const width = viewport.getBoundingClientRect().width;
@@ -79,18 +45,24 @@ export function initServicesShowcase() {
       copy.style.width = `${width}px`;
     });
 
-    applyGapHeight();
+    if (tween) tween.kill();
+    const distance = width + COPY_GAP;
 
-    if (marqueeTween) marqueeTween.kill();
     if (reduced) {
       gsap.set(track, { x: 0 });
       return;
     }
 
-    const distance = width + COPY_GAP;
-    gsap.set(track, { x: -distance });
-    marqueeTween = gsap.to(track, {
-      x: 0,
+    // direction "right": arranca tapado a la izquierda (-distancia) y
+    // entra hacia 0 → el contenido avanza hacia la derecha.
+    // direction "left": arranca en 0 y sale hacia -distancia → el
+    // contenido avanza hacia la izquierda. Mismo mecanismo, sentido
+    // opuesto.
+    const from = direction === "right" ? -distance : 0;
+    const to = direction === "right" ? 0 : -distance;
+    gsap.set(track, { x: from });
+    tween = gsap.to(track, {
+      x: to,
       duration: distance / PX_PER_SECOND,
       ease: "none",
       repeat: -1,
@@ -99,6 +71,49 @@ export function initServicesShowcase() {
 
   measure();
   window.addEventListener("resize", measure);
+};
+
+export function initServicesShowcase() {
+  const showcase = document.querySelector("[data-showcase]");
+  if (!showcase) return;
+
+  const tiles = showcase.querySelectorAll("[data-showcase-tile]");
+  if (!tiles.length) return;
+
+  const title = showcase.querySelector("[data-type-heading]");
+  const gapRow = showcase.querySelector("[data-showcase-gap-row]");
+  const reduced = prefersReducedMotion();
+
+  const applyGapHeight = () => {
+    if (!title || !gapRow) return;
+    const gapHeight = Math.ceil(title.getBoundingClientRect().height);
+    gapRow.style.height = `${gapHeight}px`;
+
+    const showcaseRect = showcase.getBoundingClientRect();
+    const gapRect = gapRow.getBoundingClientRect();
+    title.style.top = `${gapRect.top - showcaseRect.top}px`;
+  };
+
+  if (title && gapRow && "ResizeObserver" in window) {
+    new ResizeObserver(applyGapHeight).observe(title);
+  }
+  applyGapHeight();
+  window.addEventListener("resize", applyGapHeight);
+
+  setupTrack(showcase, {
+    viewportSel: "[data-showcase-viewport-top]",
+    trackSel: "[data-showcase-track-top]",
+    copySel: "[data-showcase-copy-top]",
+    direction: "right",
+    reduced,
+  });
+  setupTrack(showcase, {
+    viewportSel: "[data-showcase-viewport-bottom]",
+    trackSel: "[data-showcase-track-bottom]",
+    copySel: "[data-showcase-copy-bottom]",
+    direction: "left",
+    reduced,
+  });
 
   tiles.forEach((tile) => {
     const media = tile.querySelector("[data-showcase-media]");
