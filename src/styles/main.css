@@ -24,6 +24,46 @@
   --ease-default: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/*
+  Tracking de -3% (em, no px) en TODOS los h1/h2 del sitio, a pedido —
+  fuera de @layer a propósito: las reglas sin capa ganan SIEMPRE sobre
+  cualquier regla dentro de una @layer (base/components/utilities),
+  sin importar su especificidad — mismo truco que ya usa .wrapper más
+  abajo para pisar en silencio el .container de Tailwind. Así esta
+  regla le gana a cualquier tracking-[Npx] puntual que haya quedado en
+  un h1/h2 específico, sin tener que salir a limpiar esos valores uno
+  por uno en cada componente — quedan ahí pero ya no hacen nada.
+  Usamos em (no %, que no es una unidad válida para letter-spacing) —
+  em escala solo con el font-size del propio elemento, así el -3% se
+  cumple igual en cada tamaño de texto sin recalcular nada por
+  breakpoint.
+*/
+h1,
+h2 {
+  letter-spacing: -0.03em;
+}
+
+/*
+  Border-radius consistente para imágenes/videos y barras de progreso
+  en TODO el sitio, a pedido (nada agresivo — 12px, el mismo criterio
+  que usan la mayoría de sitios modernos para tarjetas de foto).
+
+  En vez de agregar rounded-* a mano en los ~76 contenedores de imagen
+  repartidos en 33 componentes, esta regla se engancha al patrón que
+  YA usa todo el sitio para recortar fotos/video: un contenedor con la
+  clase overflow-hidden (literal, no lg:overflow-hidden — así no toca
+  los pocos carruseles a todo el ancho de pantalla, que usan la
+  variante responsive y NO deberían llevar esquinas redondeadas) que
+  tiene una <img>/<video> adentro (:has con descendiente, no solo hijo
+  directo, porque varios cross-fades meten un div "absolute inset-0"
+  de por medio). Los logos, íconos y paneles de dropdown no tienen
+  overflow-hidden + media adentro, así que quedan afuera solos.
+*/
+.overflow-hidden:has(img),
+.overflow-hidden:has(video) {
+  border-radius: 12px;
+}
+
 @layer base {
   :root {
     --header-height: 3.25rem;
@@ -78,7 +118,7 @@
   }
 
   .btn {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-4 font-body text-[18px] font-bold tracking-[-0.5px] transition-transform duration-300 ease-[var(--ease-default)];
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-6 py-4 font-body text-[18px] tracking-[-0.5px] transition-transform duration-300 ease-[var(--ease-default)];
   }
   .btn--primary {
     @apply bg-teal text-white;
@@ -87,10 +127,10 @@
     @apply -translate-y-0.5 shadow-lg shadow-teal/25;
   }
   .btn--secondary {
-    @apply bg-white text-navy ring-1 ring-inset ring-navy/15;
+    @apply bg-mist text-navy;
   }
   .btn--secondary:hover {
-    @apply -translate-y-0.5 bg-navy/5;
+    @apply -translate-y-0.5;
   }
 
   .nav-link {
@@ -236,15 +276,22 @@
 /*
   Cursor de la animación de tipeo (text-type.js) — un caracter de ancho
   fijo que parpadea, mismo criterio que la referencia (text-type.html)
-  que pasó el cliente. El color lo pone el JS por inline style (navy o
-  teal según el título), por eso acá no hay color propio.
+  que pasó el cliente. El color lo pone el JS por inline style, vía
+  border-right (no background-color) — ver por qué abajo.
+
+  display:inline (no inline-block): un inline-block es una caja atómica
+  que el navegador puede mandar sola a la siguiente línea si no entra,
+  AUNQUE no haya espacio en blanco antes — eso pasaba acá (bug
+  reportado: el cursor se iba a una 3ra línea solo, dejando un hueco
+  vacío abajo del título). Un <span> inline normal no tiene ese
+  problema, se pega al texto como un carácter más — pero un inline no
+  puede tener width/height propios, así que el "cursor" se dibuja con
+  border-right en vez de con la caja del elemento.
 */
 .text-type-caret {
-  display: inline-block;
-  width: 0.085em;
-  height: 0.82em;
+  display: inline;
+  border-right: 0.1em solid currentColor;
   margin-left: 0.06em;
-  vertical-align: -8%;
   animation: text-type-caret 1s steps(2) infinite;
 }
 @keyframes text-type-caret {

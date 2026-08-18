@@ -1,7 +1,7 @@
 import { gsap } from "gsap";
 import { prefersReducedMotion } from "../utils/reduced-motion.js";
 import { splitWords, playWordReveal } from "./text-reveal.js";
-import { createPixelWipe } from "./pixel-wipe.js";
+import { createImageTransition } from "./webgl-image-transition.js";
 
 /*
   Acordeón de servicios: un solo item expandido a la vez, por CLICK en el
@@ -14,13 +14,15 @@ import { createPixelWipe } from "./pixel-wipe.js";
   activo se rellena de color animando su ancho 0% → 100% — no hay un
   elemento de progreso separado ni se reubica nada en el DOM.
 
-  La imagen cambia con el efecto de "revelado en píxeles" (ver
-  pixel-wipe.js) si el cuadro tiene un [data-service-image-canvas] —
-  la imagen nueva no tiene transform propio, solo cambia de opacidad
-  en el instante en que el wipe la tapa por completo. Si algún cuadro
-  NO tiene canvas (instancia futura de este acordeón sin ese marcado),
-  cae de vuelta al reemplazo por deslizamiento de siempre (yPercent
-  100 → 0), para no romper esa variante.
+  La imagen cambia con la transición WebGL del demo de referencia (ver
+  webgl-image-transition.js: cada imagen desplaza a la otra según su
+  propio brillo mientras se cruzan) si el cuadro tiene un
+  [data-service-image-canvas] y el navegador soporta WebGL — la carga
+  de texturas es asíncrona, así que si alguien hace click ANTES de que
+  termine de cargar, ese click puntual cae al reemplazo por
+  deslizamiento de siempre (yPercent 100 → 0); los siguientes ya usan
+  WebGL una vez listo. Mismo fallback si el cuadro no tiene canvas, o
+  si WebGL no está disponible.
 
   La descripción que se abre usa el mismo reveal palabra por palabra que
   el resto del sitio (text-reveal.js), disparado a mano cada vez que el
@@ -42,7 +44,6 @@ export function initServicesAccordion() {
     const items = accordion.querySelectorAll("[data-accordion-item]");
     const images = scope.querySelectorAll("[data-service-image-item]");
     const canvas = scope.querySelector("[data-service-image-canvas]");
-    const pixelWipe = canvas ? createPixelWipe(canvas) : null;
     const lineFills = [...items].map((item) => item.querySelector("[data-accordion-line-fill]"));
     // Color del item activo — configurable por instancia, ej. data-accordion="navy"
     const activeColor = `text-${accordion.dataset.accordion || "navy"}`;
@@ -55,17 +56,28 @@ export function initServicesAccordion() {
     let activeIndex = [...items].findIndex((item) => item.dataset.active === "true");
     if (activeIndex < 0) activeIndex = 0;
     let advanceTimer = null;
+    let glTransition = null;
+
+    if (canvas && images.length && !reduced) {
+      const urls = [...images].map((item) => {
+        const img = item.querySelector("img");
+        return img?.currentSrc || img?.src;
+      });
+      createImageTransition(canvas, urls)
+        .then((transition) => {
+          glTransition = transition;
+        })
+        .catch((err) => console.error("createImageTransition failed", err));
+    }
 
     // Posición inicial de las imágenes vía GSAP (no CSS): la activa en su
     // lugar, el resto esperando justo debajo del cuadro, listas para
-    // "entrar" cuando les toque.
+    // "entrar" cuando les toque (fallback sin WebGL). Con WebGL, el
+    // canvas queda encima y tapa este stack por completo una vez cargado
+    // — este estado solo se ve de refilón mientras cargan las texturas.
     if (images.length) {
       images.forEach((img, i) => {
-        if (pixelWipe) {
-          gsap.set(img, { yPercent: 0, opacity: i === activeIndex ? 1 : 0, zIndex: i === activeIndex ? 2 : 1 });
-        } else {
-          gsap.set(img, { yPercent: i === activeIndex ? 0 : 100, zIndex: i === activeIndex ? 2 : 1 });
-        }
+        gsap.set(img, { yPercent: i === activeIndex ? 0 : 100, zIndex: i === activeIndex ? 2 : 1 });
       });
     }
 
@@ -134,19 +146,13 @@ export function initServicesAccordion() {
       if (reduced) {
         images.forEach((img, i) => {
           gsap.killTweensOf(img);
-          if (pixelWipe) gsap.set(img, { opacity: i === index ? 1 : 0, zIndex: i === index ? 2 : 1 });
-          else gsap.set(img, { yPercent: i === index ? 0 : 100, zIndex: i === index ? 2 : 1 });
+          gsap.set(img, { yPercent: i === index ? 0 : 100, zIndex: i === index ? 2 : 1 });
         });
         return;
       }
 
-      if (pixelWipe) {
-        pixelWipe.play(() => {
-          images.forEach((img, i) => {
-            gsap.killTweensOf(img);
-            gsap.set(img, { opacity: i === index ? 1 : 0, zIndex: i === index ? 2 : 1 });
-          });
-        });
+      if (glTransition) {
+        glTransition.goTo(index);
         return;
       }
 

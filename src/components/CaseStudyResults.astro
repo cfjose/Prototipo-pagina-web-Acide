@@ -91,8 +91,8 @@ const results = [
     <div class="mt-[80px] flex items-center gap-3" data-case-results-bars>
       {
         results.map(() => (
-          <div class="h-[3px] flex-1 overflow-hidden bg-black/10">
-            <div class="h-full w-0 bg-navy" data-case-results-bar-fill />
+          <div class="h-[3px] flex-1 overflow-hidden rounded-full bg-black/10">
+            <div class="h-full w-0 rounded-full bg-navy" data-case-results-bar-fill />
           </div>
         ))
       }
@@ -104,9 +104,9 @@ const results = [
     <h2
       data-text-reveal
       data-reveal
-      class="text-center font-display text-[32px] leading-[1.1] tracking-[-1px] text-secondary sm:text-[44px] sm:tracking-[-1.4px]"
+      class="text-center font-display text-[32px] leading-[1.1] tracking-[-1px] text-ink sm:text-[44px] sm:tracking-[-1.4px]"
     >
-      El resultado <span class="text-navy">que logramos</span>
+      El resultado <span class="font-bold text-navy">que logramos</span>
     </h2>
     {
       results.map((result) => (
