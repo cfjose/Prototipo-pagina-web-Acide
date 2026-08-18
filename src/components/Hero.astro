@@ -1,6 +1,5 @@
 ---
 import { Image } from "astro:assets";
-import underline from "../assets/img/hero/underline.svg";
 import dashboardMonitors from "../assets/img/hero/dashboard-monitors.png";
 import wireframeNotebook from "../assets/img/hero/wireframe-notebook.png";
 import codeBuildDesk from "../assets/img/hero/code-build-desk.png";
@@ -29,15 +28,14 @@ const columnRight = [
 // concuerdan en género con "el" (no "la") para que la oración siga
 // leyéndose bien sin importar cuál esté tipeada.
 const rotatingWords = ["mejor trabajo", "mejor equipo", "socio digital ideal", "software que necesitas", "aliado tecnológico correcto"];
+const longestWord = rotatingWords.reduce((a, b) => (a.length >= b.length ? a : b));
 ---
 
 
 <!--
-  El Header no es fijo — así que en vez de restarle un alto fijo en px
-  (frágil: el header mide distinto según el ancho de pantalla), este
-  section vive en un flex-col junto al Header (ver index.astro) con
-  flex-1: toma automáticamente "lo que sobra" de la pantalla después del
-  header, sin números mágicos, a cualquier ancho.
+  El header es sticky y vive arriba de este bloque (index.astro).
+  Este section usa flex-1 para ocupar lo que queda de la primera
+  pantalla en lg+, sin restarle un alto fijo en px.
 -->
 <section class="wrapper flex flex-col justify-center gap-8 py-8 lg:min-h-0 lg:flex-1 lg:flex-row lg:items-stretch lg:gap-[80px] lg:py-10">
   <div class="flex flex-col items-start justify-center gap-10 lg:w-[610px] lg:shrink-0 lg:gap-16">
@@ -45,22 +43,37 @@ const rotatingWords = ["mejor trabajo", "mejor equipo", "socio digital ideal", "
       <h1
         class="max-w-[560px] font-display text-[38px] leading-[1.12] tracking-[-1.2px] sm:text-[52px] sm:tracking-[-2px] lg:w-[610px] lg:max-w-none lg:text-[78px] lg:leading-[1.05] lg:tracking-[-4px]"
       >
-        <span class="text-ink">Tu próxima gran idea merece el </span><span
-          class="font-bold text-navy"
-          data-hero-rotating-word
-          data-words={JSON.stringify(rotatingWords)}
-          >{rotatingWords[0]}</span
-        >
+        <span class="text-slate">Tu próxima gran idea merece el </span>
+        <span class="relative inline-grid items-start justify-items-start">
+          <span class="invisible col-start-1 row-start-1 font-bold" aria-hidden="true">{longestWord}</span>
+          <span
+            class="relative col-start-1 row-start-1 self-start font-bold text-navy"
+            data-hero-rotating-word
+            data-words={JSON.stringify(rotatingWords)}
+          >
+            <span data-hero-rotating-text>{rotatingWords[0]}</span><span
+              class="text-type-caret"
+              data-hero-caret
+              style="background-color:var(--color-navy)"></span>
+            <svg
+              data-hero-underline
+              class="pointer-events-none absolute top-full left-0 mt-1 h-[0.44em] w-full overflow-visible"
+              viewBox="0 0 610 33.9558"
+              preserveAspectRatio="none"
+              overflow="visible"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <path
+                data-hero-underline-path
+                fill="#F43159"
+                d="M609.567 6.20395C574.48 6.20395 539.392 6.0599 504.33 6.25197C482.89 6.38001 461.451 6.89214 440.037 7.46833C420.354 7.9965 400.672 8.62071 381.014 9.56501C349.135 11.1015 317.205 12.494 285.453 14.7027C200.408 20.5927 115.464 26.8827 30.47 32.9807C24.3081 33.4288 17.8406 34.4532 12.0351 33.6689C7.681 33.0768 2.35928 30.4839 0.704207 27.9551C-1.86752 24.0178 2.97053 22.0971 9.28526 21.729C45.1876 19.5843 81.0899 17.3276 117.018 15.2149C184.01 11.2616 250.977 7.18023 318.02 3.56305C347.658 1.96253 377.45 0.986234 407.19 0.490071C417.248 0.330019 427.305 0.201997 437.389 0.00993384C446.046 -0.150119 455.034 1.69047 463.335 0.746161C475.71 -0.6623 487.703 2.47472 499.416 1.19431C515.152 -0.518255 530.251 1.99455 545.656 1.97855C561.85 1.94654 578.07 1.97857 594.264 2.29867C599.535 2.41071 604.755 3.49907 610 4.15528C609.873 4.8275 609.745 5.51573 609.618 6.20395H609.567Z"
+              />
+            </svg>
+          </span>
+        </span>
       </h1>
-      <img
-        data-hero-underline
-        src={underline.src}
-        width={underline.width}
-        height={underline.height}
-        alt=""
-        aria-hidden="true"
-        class="mt-5 h-auto w-[220px] sm:w-[320px] lg:absolute lg:-bottom-6 lg:left-0 lg:mt-0 lg:w-[520px]"
-      />
     </div>
 
     <!--

@@ -6,30 +6,19 @@ import { prefersReducedMotion } from "../utils/reduced-motion.js";
   tenga texto en navy o teal (los títulos en negro/gris/secondary
   siguen con el reveal de siempre, ver la exclusión en text-reveal.js).
 
-  Solo se tipea/borra la PARTE con color de acento (navy o teal) — el
-  resto del título (texto neutro: negro, gris, secondary...) se
-  muestra siempre entero, sin animar, tal como pidió el cliente. Se
-  arma a partir de los nodos hijos del título (texto plano + <span>/
-  <strong> con su clase original intacta, para no perder color ni
-  peso de fuente) y se reconstruye de a poco: los segmentos neutros
-  van siempre completos, el/los segmento(s) de acento se revelan
-  letra por letra. Tipea UNA VEZ y se queda así mientras el título
-  sigue a la vista — no hay loop de borrar/re-tipear mientras el
-  usuario lo está viendo. Si el usuario sale de la sección y vuelve a
-  entrar más tarde, ahí sí se repite desde cero.
+  Solo se tipea la PARTE con color de acento (navy o teal) — el resto
+  del título se muestra siempre entero. El hueco del acento se reserva
+  con un sizer invisible (misma lógica que el H1 del hero), así el
+  layout no salta: el texto se escribe "al lado" en su sitio.
 
-  El cursor parpadeante toma el color de acento del ÚLTIMO segmento
-  coloreado del título — si un mismo título tuviera navy y teal, gana
-  el que aparece más al final de la oración.
+  Tipea UNA VEZ y se queda. Si el usuario sale de la sección y vuelve,
+  se repite desde cero.
 */
 const TYPE_MS = 45;
 const ACCENT_COLORS = { navy: "var(--color-navy)", teal: "var(--color-teal)" };
 
 const escapeHtml = (str) => str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-// Descompone los hijos del título en segmentos {text, className, tag, accent} — un
-// segmento por nodo hijo directo (nodo de texto = sin clase/acento; <span>/<strong> =
-// con su class original intacta, para reconstruirlo igual).
 const buildSegments = (el) => {
   const segments = [];
   el.childNodes.forEach((node) => {
@@ -43,9 +32,6 @@ const buildSegments = (el) => {
     segments.push({ text: node.textContent, className, tag: node.tagName.toLowerCase(), accent });
   });
 
-  // Si NINGÚN hijo trae su propio color y el título entero es navy/teal
-  // (ej. <h2 class="text-teal">...</h2> sin spans adentro), todo el
-  // texto es "la parte con acento" — no hay parte neutra que dejar fija.
   if (!segments.some((seg) => seg.accent)) {
     const ownAccent = el.classList.contains("text-navy") ? "navy" : el.classList.contains("text-teal") ? "teal" : null;
     if (ownAccent) segments.forEach((seg) => (seg.accent = ownAccent));
@@ -54,26 +40,40 @@ const buildSegments = (el) => {
   return segments;
 };
 
-// Los segmentos NEUTROS van siempre completos (no animan) — solo los de
-// acento se revelan hasta `n` caracteres. El cursor se inserta justo
-// después del ÚLTIMO segmento de acento, donde sea que caiga en la
-// oración.
-const renderSegments = (el, segments, n, caretHTML) => {
-  const lastAccentIndex = segments.reduce((last, seg, i) => (seg.accent ? i : last), -1);
-  let remaining = n;
+const reserveAccentSpace = (el, segments) => {
   let html = "";
   segments.forEach((seg, i) => {
-    let text = seg.text;
-    if (seg.accent) {
-      const take = Math.min(remaining, seg.text.length);
-      text = seg.text.slice(0, take);
-      remaining -= take;
+    const escaped = escapeHtml(seg.text);
+    if (!seg.accent) {
+      html += seg.className ? `<${seg.tag} class="${seg.className}">${escaped}</${seg.tag}>` : escaped;
+      return;
     }
-    const escaped = escapeHtml(text);
-    html += seg.className ? `<${seg.tag} class="${seg.className}">${escaped}</${seg.tag}>` : escaped;
-    if (i === lastAccentIndex) html += caretHTML;
+    const tag = seg.tag || "span";
+    const cls = seg.className || "";
+    html += `<span class="relative inline-grid items-start justify-items-start">`;
+    html += `<span class="invisible col-start-1 row-start-1 ${cls}" aria-hidden="true">${escaped}</span>`;
+    html += `<${tag} class="col-start-1 row-start-1 self-start ${cls}" data-type-accent="${i}"></${tag}>`;
+    html += `</span>`;
   });
   el.innerHTML = html;
+};
+
+const renderAccents = (el, segments, n, caretHTML) => {
+  const lastAccentIndex = segments.reduce((last, seg, i) => (seg.accent ? i : last), -1);
+  let remaining = n;
+
+  segments.forEach((seg, i) => {
+    if (!seg.accent) return;
+    const node = el.querySelector(`[data-type-accent="${i}"]`);
+    if (!node) return;
+    const take = Math.min(remaining, seg.text.length);
+    remaining -= take;
+    node.textContent = seg.text.slice(0, take);
+  });
+
+  el.querySelectorAll(".text-type-caret").forEach((caret) => caret.remove());
+  const lastNode = el.querySelector(`[data-type-accent="${lastAccentIndex}"]`);
+  if (lastNode && caretHTML) lastNode.insertAdjacentHTML("beforeend", caretHTML);
 };
 
 const setupTypewriter = (el) => {
@@ -85,8 +85,10 @@ const setupTypewriter = (el) => {
   const caretColor = ACCENT_COLORS[lastAccent];
   const caretHTML = `<span class="text-type-caret" style="color:${caretColor}"></span>`;
 
+  reserveAccentSpace(el, segments);
+
   if (prefersReducedMotion()) {
-    renderSegments(el, segments, totalLength, "");
+    renderAccents(el, segments, totalLength, "");
     return;
   }
 
@@ -98,22 +100,19 @@ const setupTypewriter = (el) => {
     if (now - last > TYPE_MS) {
       n++;
       last = now;
-      renderSegments(el, segments, n, caretHTML);
+      renderAccents(el, segments, n, caretHTML);
       if (n >= totalLength) {
-        stop(); // termina de tipear y se queda ahí — nada de borrar/loop mientras sigue a la vista
+        stop();
         return;
       }
     }
     rafId = requestAnimationFrame(tick);
   };
 
-  // Cada vez que entra en pantalla arranca DE CERO — si sigue a la vista
-  // cuando termina de tipear, stop() ya cortó el rAF y no hay más que
-  // hacer hasta que salga y vuelva a entrar.
   const start = () => {
     if (rafId !== null) return;
     n = 0;
-    renderSegments(el, segments, 0, caretHTML);
+    renderAccents(el, segments, 0, caretHTML);
     last = performance.now();
     rafId = requestAnimationFrame(tick);
   };
@@ -123,26 +122,20 @@ const setupTypewriter = (el) => {
     rafId = null;
   };
 
-  renderSegments(el, segments, 0, caretHTML);
+  renderAccents(el, segments, 0, caretHTML);
 
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => (entry.isIntersecting ? start() : stop()));
     },
-    { threshold: 0.1 }
+    { threshold: 0.1 },
   );
   observer.observe(el);
 };
 
 export function initTextType() {
-  // [data-type-heading]: mismo tipeo que h1/h2, para el puñado de casos
-  // que no son h1/h2 pero lo piden igual (ej. el título de
-  // ServicesShowcase, que es un <p> por diseño).
   const headings = document.querySelectorAll("h1, h2, [data-type-heading]");
   headings.forEach((el) => {
-    // El H1 del Hero (home) tiene su propio efecto rotativo en loop
-    // (ver hero-rotating-word.js) — si este script también lo tipeara,
-    // los dos competirían por el mismo texto.
     if (el.querySelector("[data-hero-rotating-word]")) return;
     const hasAccent = el.matches(".text-navy, .text-teal") || !!el.querySelector(".text-navy, .text-teal");
     if (!hasAccent) return;

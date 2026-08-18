@@ -1,87 +1,96 @@
 import { gsap } from "gsap";
+import { prefersReducedMotion } from "../utils/reduced-motion.js";
 
 /*
-  Header fijo con una sola versión visual (blanca) — replica la
-  posición/animación del header de ramotion.com/about: SIEMPRE
-  position:fixed en top:0 (no hay estado "default en flujo" vs
-  "floating", eso quedó descartado), y solo se traslada hacia arriba
-  para ocultarse al scrollear hacia abajo, y vuelve a translateY(0)
-  al scrollear hacia arriba. Se oculta trasladando EXACTAMENTE su
-  propio alto (+ margen), no un valor fijo adivinado — así sea cual
-  sea el alto real del header, queda completamente afuera de la
-  pantalla.
-
-  Solo en desktop (xl+, ver Header.astro) — en mobile/tablet el header
-  se queda estático en flujo normal, sin este comportamiento.
-
-  Sin GSAP para el toggle en sí (es nada más un translateY, no una
-  animación que necesite scrub ni timeline) — pero SÍ hace falta
-  enganchar la detección al ticker de GSAP en vez de
-  "window.addEventListener('scroll', ...)": Lenis (smooth-scroll.js)
-  no dispara el evento scroll nativo, así que cualquier código que
-  dependa de él simplemente nunca corre. El resto del sitio ya lidia
-  con esto escuchando "lenis.on('scroll', ...)" — acá usamos
-  gsap.ticker (que ya corre en cada frame para el propio raf de
-  Lenis) y comparamos window.scrollY manualmente, más simple que
-  exponer la instancia de Lenis solo para esto.
+  Un subrayado único que viaja entre los links del header (hover,
+  foco y página actual). Si hay una posición guardada de la página
+  anterior, arranca desde ahí para que el salto de ruta se sienta
+  continuo. Lenis no hace falta: esto no depende del scroll.
 */
+const STORAGE_KEY = "acide-nav-underline";
+const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
+
 export function initHeaderScroll() {
-  const header = document.querySelector("[data-header]");
-  if (!header) return;
+  const nav = document.querySelector("[data-header-nav]");
+  const line = document.querySelector("[data-nav-underline]");
+  if (!nav || !line) return;
 
-  const desktopQuery = window.matchMedia("(min-width: 1280px)");
-  let lastScrollY = window.scrollY;
-  let active = false;
+  const links = [...nav.querySelectorAll("[data-nav-link]")];
+  const reduced = prefersReducedMotion();
+  const current = links.find((link) => link.getAttribute("aria-current") === "page");
 
-  const setHidden = (isHidden) => {
-    const value = String(isHidden);
-    if (header.dataset.headerHidden === value) return;
-    header.dataset.headerHidden = value;
-    if (isHidden) {
-      const hideDistance = header.offsetHeight + 40;
-      header.style.transform = `translateY(-${hideDistance}px)`;
+  const measure = (el) => {
+    const navBox = nav.getBoundingClientRect();
+    const box = el.getBoundingClientRect();
+    return { x: box.left - navBox.left, scaleX: Math.max(box.width, 1) };
+  };
+
+  const moveTo = (el, { duration = 0.4 } = {}) => {
+    const { x, scaleX } = measure(el);
+    gsap.to(line, {
+      x,
+      scaleX,
+      duration: reduced ? 0 : duration,
+      ease: EASE,
+      overwrite: "auto",
+    });
+    try {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ x, scaleX }));
+    } catch {
+      /* private mode */
+    }
+  };
+
+  const hide = () => {
+    gsap.to(line, {
+      scaleX: 0,
+      duration: reduced ? 0 : 0.22,
+      ease: "power1.in",
+      overwrite: "auto",
+    });
+  };
+
+  gsap.set(line, { x: 0, scaleX: 0, transformOrigin: "left center" });
+
+  if (current) {
+    const next = measure(current);
+    let from = null;
+    try {
+      from = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || "null");
+    } catch {
+      from = null;
+    }
+
+    if (from && Number.isFinite(from.x) && Number.isFinite(from.scaleX) && !reduced) {
+      gsap.fromTo(
+        line,
+        { x: from.x, scaleX: from.scaleX },
+        { x: next.x, scaleX: next.scaleX, duration: 0.45, ease: EASE },
+      );
     } else {
-      header.style.transform = "";
-    }
-  };
-
-  const tick = () => {
-    const y = window.scrollY;
-
-    // Arriba del todo: siempre visible, sin importar hacia dónde se venía scrolleando.
-    if (y <= 0) {
-      setHidden(false);
-      lastScrollY = y;
-      return;
+      gsap.set(line, next);
     }
 
-    const delta = y - lastScrollY;
-    if (delta > 5) {
-      setHidden(true);
-    } else if (delta < -5) {
-      setHidden(false);
+    try {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    } catch {
+      /* private mode */
     }
-    lastScrollY = y;
-  };
+  }
 
-  const enable = () => {
-    if (active) return;
-    active = true;
-    lastScrollY = window.scrollY;
-    gsap.ticker.add(tick);
-    tick();
-  };
+  links.forEach((link) => {
+    link.addEventListener("mouseenter", () => moveTo(link));
+    link.addEventListener("focus", () => moveTo(link));
+  });
 
-  const disable = () => {
-    if (!active) return;
-    active = false;
-    gsap.ticker.remove(tick);
-    header.dataset.headerHidden = "false";
-    header.style.transform = "";
-  };
+  nav.addEventListener("mouseleave", () => {
+    if (current) moveTo(current, { duration: 0.35 });
+    else hide();
+  });
 
-  const syncToViewport = () => (desktopQuery.matches ? enable() : disable());
-
-  syncToViewport();
-  desktopQuery.addEventListener("change", syncToViewport);
+  nav.addEventListener("focusout", (event) => {
+    if (nav.contains(event.relatedTarget)) return;
+    if (current) moveTo(current, { duration: 0.35 });
+    else hide();
+  });
 }
