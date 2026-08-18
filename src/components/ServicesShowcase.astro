@@ -1,66 +1,160 @@
 ---
 import { Image } from "astro:assets";
-import img1 from "../assets/img/servicios/img-1-banking-app.png";
-import img2 from "../assets/img/servicios/img-2-design-desk.png";
-import img3 from "../assets/img/servicios/img-3-dashboard-monitor.png";
-import img4 from "../assets/img/servicios/img-4-shopping-app.png";
-import img5 from "../assets/img/servicios/img-5-control-room.png";
-import img6 from "../assets/img/servicios/img-6-dashboard-laptop.png";
-import img7 from "../assets/img/servicios/img-7-tablet-hand.png";
-import img8 from "../assets/img/servicios/img-8-multi-device.png";
+import tile00 from "../assets/img/idea-showcase/tile-00.png";
+import tile02 from "../assets/img/idea-showcase/tile-02.png";
+import tile03 from "../assets/img/idea-showcase/tile-03.png";
+import tile04 from "../assets/img/idea-showcase/tile-04.png";
+import tile05 from "../assets/img/idea-showcase/tile-05.png";
+import tile06 from "../assets/img/idea-showcase/tile-06.png";
+import tile07 from "../assets/img/idea-showcase/tile-07.png";
+import tile08 from "../assets/img/idea-showcase/tile-08.png";
+import tile09 from "../assets/img/idea-showcase/tile-09.png";
+import tile10 from "../assets/img/idea-showcase/tile-10.png";
+import tile11 from "../assets/img/idea-showcase/tile-11.png";
+import tile12 from "../assets/img/idea-showcase/tile-12.png";
 
 /*
-  Collage disperso de 8 capturas, posiciones absolutas tomadas 1:1 del
-  Figma (expresadas en % vía custom properties sobre un wrapper con
-  aspect-ratio 1444/867) — pero eso solo tiene sentido en desktop: en
-  mobile/tablet los tiles quedarían de ~35px, ilegibles. Ahí es una
-  grilla 2 columnas normal, con el título arriba en vez de superpuesto.
+  Rediseño 1:1 del Figma (node 178:1250): 6 columnas de 5 celdas, con
+  solo 13 de las 30 celdas ocupadas por foto — el resto quedan en
+  blanco a propósito, dando el patrón tipo tablero de ajedrez que se ve
+  en el diseño (cada columna alterna foto/vacío, y las columnas
+  vecinas empiezan en fase contraria). `null` = celda vacía.
 
-  No son video real — no tenemos herramienta de generación de video, así
-  que cada imagen tiene un loop lento de zoom/pan (Ken Burns, ver
-  services-showcase.js) para simular movimiento, y al hacer hover esa
-  imagen se agranda un poco mientras el resto del collage pierde
-  opacidad (referencia: heyclicky.com). Ese hover es un plus de escritorio;
-  en mobile no pasa nada raro porque no hay hover real.
+  La fila del medio (índice 2) va vacía en las 6 columnas, sin
+  excepción — en el Figma original la columna 0 sí tenía foto ahí,
+  pero como esa columna quedaba lejos del título (centrado) nunca se
+  cruzaban. Acá el grid entero se desplaza en loop, así que esa foto
+  tarde o temprano pasaría justo detrás del título; para que eso no
+  choque nunca, se sacrifica esa foto (tile01, sin usar) y la fila del
+  medio queda limpia en todo el ancho.
+
+  En desktop, todo el grid se duplica una vez al lado del otro dentro
+  de [data-showcase-track] y se traslada en loop infinito hacia la
+  derecha (ver services-showcase.js) — el truco estándar de "marquee":
+  como la copia 2 es idéntica a la 1, al completar un ciclo de
+  transformX el corte es invisible. [data-showcase-viewport] recorta
+  con overflow-hidden para que solo se vea un ancho de grid a la vez.
+
+  El hover que apaga el resto del collage mientras resalta la tarjeta
+  bajo el mouse es el mismo patrón que ya usábamos acá antes (y en
+  historias de clientes) — se mantiene igual, solo que ahora corre
+  sobre fotos estáticas en vez del Ken Burns anterior (el movimiento
+  ya lo da el propio scroll del carrusel).
 */
-const tiles = [
-  { src: img1, alt: "App bancaria en un celular", left: 0, top: 31.49, width: 16.07, height: 26.53 },
-  { src: img2, alt: "Laptop con paleta de colores en un escritorio de diseño", left: 16, top: 0, width: 15.93, height: 17.65 },
-  { src: img3, alt: "Monitor mostrando un dashboard de métricas", left: 42.45, top: 13.84, width: 10.66, height: 17.65 },
-  { src: img4, alt: "Celular con una app de compras", left: 63.78, top: 0, width: 14.13, height: 23.53 },
-  { src: img5, alt: "Sala de control con pantallas de datos", left: 86.7, top: 21.8, width: 13.3, height: 14.65 },
-  { src: img6, alt: "Laptop con un dashboard de reportes", left: 24.86, top: 73.47, width: 15.93, height: 26.53 },
-  { src: img7, alt: "Mano usando una tablet", left: 58.38, top: 74.39, width: 10.66, height: 11.76 },
-  { src: img8, alt: "Laptop, tablet y celular mostrando la misma plataforma", left: 84, top: 68.86, width: 16, height: 26.64 },
+const columns: (ImageMetadata | null)[][] = [
+  [tile00, null, null, null, tile02],
+  [null, tile03, null, tile04, null],
+  [tile05, null, null, null, tile06],
+  [null, tile07, null, tile08, null],
+  [tile09, null, null, null, tile10],
+  [null, tile11, null, tile12, null],
 ];
+
+const alt = "Persona usando una app en el celular";
+const flatTiles = columns.flat().filter((tile): tile is ImageMetadata => tile !== null);
 ---
 
-<section class="wrapper section-y">
-  <div class="relative mx-auto w-full lg:aspect-[1444/867]" data-showcase>
+<section class="wrapper section-y xl:pt-5">
+  <!--
+    A diferencia del resto de la sección (título, grid mobile), el
+    carrusel de escritorio se pide a todo el ancho de la página, no
+    encajonado en el wrapper de 1312px — mismo truco de "breakout" que
+    ResultsCarousel.astro (left-1/2 + w-screen + -translate-x-1/2),
+    solo a partir de lg (en mobile/tablet sigue adentro del wrapper,
+    como el resto del sitio).
+
+    El alto YA NO se deriva de aspect-[1444/1001] (eso hacía que en
+    pantallas anchas y bajas el alto real superara por mucho el
+    viewport, obligando a scrollear DENTRO de la sección) — ahora es
+    lg:h-screen directo: el cuadro completo (ancho Y alto) mide
+    como mucho una pantalla, sin importar la proporción del monitor.
+  -->
+  <div class="relative mx-auto w-full lg:left-1/2 lg:h-screen lg:w-screen lg:-translate-x-1/2" data-showcase>
+    <!--
+      lg:bg-canvas + lg:p-[54px]: colchón de 54px pedido entre el texto
+      y las imágenes que lo rodean — el ancho sube de 772 a 880 (772 +
+      54*2) para que el ÁREA DE TEXTO siga siendo 772px como en el
+      Figma, el padding se suma afuera de eso, no lo achica. El fondo
+      blanco es más red de seguridad que necesidad real (la fila del
+      medio del grid ya viene vacía en las 6 columnas), por si el alto
+      real de esa fila terminara siendo menor al que hace falta acá.
+
+      data-type-heading: el mismo efecto de tipeo/caret que usan los
+      h1/h2 en navy o teal (ver text-type.js) — como este es un <p>, no
+      un h1/h2, no lo agarra el selector normal; esta marca lo suma a
+      esa lista sin ensanchar el selector a CUALQUIER <p> del sitio.
+      text-reveal.js ya sabe saltarse los elementos con esta marca para
+      no animarlo dos veces (ver isTypewriterHeading).
+    -->
     <p
       data-text-reveal
       data-reveal
-      class="static mb-10 text-center font-display text-[32px] leading-[1.05] tracking-[-1px] sm:text-[44px] sm:tracking-[-1.4px] lg:absolute lg:inset-x-0 lg:top-[38.06%] lg:z-10 lg:mx-auto lg:mb-0 lg:w-[772px] lg:text-[78px] lg:tracking-[-3.12px]"
+      data-type-heading
+      class="static mb-10 text-center font-display text-[32px] leading-[1.05] tracking-[-1px] sm:text-[44px] sm:tracking-[-1.4px] lg:absolute lg:inset-x-0 lg:top-[38.06%] lg:z-20 lg:mx-auto lg:mb-0 lg:w-[880px] lg:bg-canvas lg:p-[54px] lg:text-[78px] lg:tracking-[-3.12px]"
     >
       <span class="text-slate">De una idea a un gran </span><span class="text-navy">producto digital</span>
     </p>
 
-    <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:contents">
+    <!-- Desktop: carrusel infinito de 2 copias del mismo grid -->
+    <div class="hidden lg:absolute lg:inset-0 lg:block lg:overflow-hidden" data-showcase-viewport>
+      <!--
+        Mismo criterio que el degradado del Hero (home): como el
+        carrusel corta en seco a los costados, un degradado angosto a
+        blanco en cada borde disimula el corte — acá es horizontal
+        (izq/der) porque el movimiento es horizontal, a diferencia del
+        Hero que es vertical.
+      -->
+      <div aria-hidden="true" class="pointer-events-none absolute inset-y-0 left-0 z-10 w-[8%] bg-gradient-to-r from-white to-white/0"></div>
+      <div aria-hidden="true" class="pointer-events-none absolute inset-y-0 right-0 z-10 w-[8%] bg-gradient-to-l from-white to-white/0"></div>
+      <div class="flex h-full" data-showcase-track>
+        {
+          [0, 1].map((copyIndex) => (
+            <div class:list={["grid h-full shrink-0 grid-cols-6 gap-3", copyIndex === 1 && "ml-3"]} data-showcase-copy aria-hidden={copyIndex === 1}>
+              {
+                columns.map((col) => (
+                  <div class="flex h-full flex-col gap-3">
+                    {
+                      col.map((tile, ri) =>
+                        tile ? (
+                          <div class="relative flex-1 overflow-hidden" data-showcase-tile>
+                            <Image
+                              src={tile}
+                              alt={copyIndex === 0 ? alt : ""}
+                              width={230}
+                              height={191}
+                              class="h-full w-full object-cover"
+                              data-showcase-media
+                            />
+                          </div>
+                        ) : ri === 2 ? (
+                          // Alto fijo (no flex-1) — lo calcula measureLayout()
+                          // en services-showcase.js a partir del alto REAL del
+                          // texto (que no cambia con el ancho: es tamaño de
+                          // fuente fijo en px), para garantizar que esta fila
+                          // siempre sea al menos tan alta como el texto+padding
+                          // y las filas vecinas de fotos nunca queden tapadas
+                          // ni recortadas por él.
+                          <div class="shrink-0" data-showcase-gap-row />
+                        ) : (
+                          <div class="flex-1" />
+                        )
+                      )
+                    }
+                  </div>
+                ))
+              }
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <!-- Mobile/tablet: grid estático, sin carrusel ni hover (no hay mouse real) -->
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:hidden">
       {
-        tiles.map((tile) => (
-          <div
-            class="relative aspect-square overflow-hidden lg:absolute lg:aspect-auto lg:left-[var(--l)] lg:top-[var(--t)] lg:h-[var(--h)] lg:w-[var(--w)]"
-            style={`--l:${tile.left}%; --t:${tile.top}%; --w:${tile.width}%; --h:${tile.height}%;`}
-            data-showcase-tile
-          >
-            <Image
-              src={tile.src}
-              alt={tile.alt}
-              width={462}
-              height={462}
-              class="h-full w-full object-cover will-change-transform"
-              data-showcase-media
-            />
+        flatTiles.map((tile) => (
+          <div class="relative aspect-square overflow-hidden">
+            <Image src={tile} alt={alt} width={330} height={330} class="h-full w-full object-cover" />
           </div>
         ))
       }

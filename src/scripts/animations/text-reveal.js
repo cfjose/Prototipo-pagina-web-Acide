@@ -42,9 +42,12 @@ export function playWordReveal(words, { stagger = 0.025, duration = 0.8, delay =
   Los h1/h2 en navy o teal usan la animación de tipeo (ver text-type.js)
   en vez de este reveal palabra-por-palabra — así que si un elemento
   con [data-text-reveal] es un h1/h2 con color navy/teal, lo salteamos
-  acá para no animarlo dos veces.
+  acá para no animarlo dos veces. [data-type-heading] hace lo mismo
+  para el puñado de casos que no son h1/h2 pero igual quieren el tipeo
+  (ej. el título de ServicesShowcase, que es un <p>).
 */
 const isTypewriterHeading = (el) => {
+  if (el.hasAttribute("data-type-heading")) return true;
   if (!/^H[12]$/.test(el.tagName)) return false;
   return el.matches(".text-navy, .text-teal") || !!el.querySelector(".text-navy, .text-teal");
 };

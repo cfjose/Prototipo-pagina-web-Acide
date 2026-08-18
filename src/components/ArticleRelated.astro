@@ -40,7 +40,14 @@ const related = [
 ];
 ---
 
-<section class="wrapper pt-0 pb-16 lg:pb-[100px]">
+<!--
+  lg:pt-[80px]: le faltaba, dejaba el gap con ArticleBody en 80px en
+  vez de 160 (pt-0 hacía que ArticleBody tuviera que aportar los 160
+  enteros ella sola, pero usa section-y sin override — solo 80).
+  lg:pb-[160px]: última sección de la página de artículo antes del
+  footer — ver el mismo criterio en ResultsCarousel.astro.
+-->
+<section class="wrapper pt-0 pb-16 lg:pt-[80px] lg:pb-[160px]">
   <p data-reveal-fade class="font-display text-[32px] leading-[1.1] tracking-[-1px] sm:text-[44px] sm:tracking-[-1.4px] lg:text-[54px] lg:tracking-[-1.62px]">
     Últimas publicaciones
   </p>

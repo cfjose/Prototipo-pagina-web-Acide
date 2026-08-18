@@ -10,7 +10,12 @@ import heroImage from "../assets/img/blog/article-iso9001-hero.png";
 */
 ---
 
-<section class="wrapper pt-16 lg:pt-[100px]">
+<!--
+  lg:pb-[80px]: le faltaba, dejaba el gap con ArticleBody en 80px en
+  vez de 160 (ArticleBody usa section-y sin override, aporta sus
+  propios 80px arriba — a esto solo le faltaba aportar los otros 80).
+-->
+<section class="wrapper pt-16 lg:pt-[100px] lg:pb-[80px] xl:pt-5">
   <div class="flex flex-col gap-8" data-reveal>
     <div class="flex max-w-[1038px] flex-col gap-8">
       <p class="font-body text-[18px] tracking-[-0.5px] text-secondary">Calidad</p>

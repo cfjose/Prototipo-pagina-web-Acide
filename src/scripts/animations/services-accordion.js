@@ -1,6 +1,7 @@
 import { gsap } from "gsap";
 import { prefersReducedMotion } from "../utils/reduced-motion.js";
 import { splitWords, playWordReveal } from "./text-reveal.js";
+import { createPixelWipe } from "./pixel-wipe.js";
 
 /*
   Acordeón de servicios: un solo item expandido a la vez, por CLICK en el
@@ -13,9 +14,13 @@ import { splitWords, playWordReveal } from "./text-reveal.js";
   activo se rellena de color animando su ancho 0% → 100% — no hay un
   elemento de progreso separado ni se reubica nada en el DOM.
 
-  La imagen no usa un crossfade suave: la que entra aparece desde abajo
-  del cuadro y se asienta en su lugar (yPercent 100 → 0), sin animar
-  opacidad — es un reemplazo directo, no una disolución.
+  La imagen cambia con el efecto de "revelado en píxeles" (ver
+  pixel-wipe.js) si el cuadro tiene un [data-service-image-canvas] —
+  la imagen nueva no tiene transform propio, solo cambia de opacidad
+  en el instante en que el wipe la tapa por completo. Si algún cuadro
+  NO tiene canvas (instancia futura de este acordeón sin ese marcado),
+  cae de vuelta al reemplazo por deslizamiento de siempre (yPercent
+  100 → 0), para no romper esa variante.
 
   La descripción que se abre usa el mismo reveal palabra por palabra que
   el resto del sitio (text-reveal.js), disparado a mano cada vez que el
@@ -36,6 +41,8 @@ export function initServicesAccordion() {
     const scope = accordion.closest("section") ?? document;
     const items = accordion.querySelectorAll("[data-accordion-item]");
     const images = scope.querySelectorAll("[data-service-image-item]");
+    const canvas = scope.querySelector("[data-service-image-canvas]");
+    const pixelWipe = canvas ? createPixelWipe(canvas) : null;
     const lineFills = [...items].map((item) => item.querySelector("[data-accordion-line-fill]"));
     // Color del item activo — configurable por instancia, ej. data-accordion="navy"
     const activeColor = `text-${accordion.dataset.accordion || "navy"}`;
@@ -54,7 +61,11 @@ export function initServicesAccordion() {
     // "entrar" cuando les toque.
     if (images.length) {
       images.forEach((img, i) => {
-        gsap.set(img, { yPercent: i === activeIndex ? 0 : 100, zIndex: i === activeIndex ? 2 : 1 });
+        if (pixelWipe) {
+          gsap.set(img, { yPercent: 0, opacity: i === activeIndex ? 1 : 0, zIndex: i === activeIndex ? 2 : 1 });
+        } else {
+          gsap.set(img, { yPercent: i === activeIndex ? 0 : 100, zIndex: i === activeIndex ? 2 : 1 });
+        }
       });
     }
 
@@ -120,12 +131,27 @@ export function initServicesAccordion() {
 
       if (!images.length) return;
 
+      if (reduced) {
+        images.forEach((img, i) => {
+          gsap.killTweensOf(img);
+          if (pixelWipe) gsap.set(img, { opacity: i === index ? 1 : 0, zIndex: i === index ? 2 : 1 });
+          else gsap.set(img, { yPercent: i === index ? 0 : 100, zIndex: i === index ? 2 : 1 });
+        });
+        return;
+      }
+
+      if (pixelWipe) {
+        pixelWipe.play(() => {
+          images.forEach((img, i) => {
+            gsap.killTweensOf(img);
+            gsap.set(img, { opacity: i === index ? 1 : 0, zIndex: i === index ? 2 : 1 });
+          });
+        });
+        return;
+      }
+
       images.forEach((img, i) => {
         gsap.killTweensOf(img);
-        if (reduced) {
-          gsap.set(img, { yPercent: i === index ? 0 : 100, zIndex: i === index ? 2 : 1 });
-          return;
-        }
         if (i === index) {
           gsap.set(img, { yPercent: 100, zIndex: 2 });
           gsap.to(img, { yPercent: 0, duration: 0.6, ease: "power2.inOut" });

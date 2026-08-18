@@ -23,6 +23,12 @@ const columnRight = [
   { src: codeEditorLaptop, alt: "Laptop con un editor de código abierto" },
   { src: reportCalculator, alt: "Reporte con gráficos de crecimiento junto a una calculadora" },
 ];
+
+// Frases que rotan en el acento del H1 ("Tu próxima gran idea merece el
+// ___") — tipeo/borrado en loop, ver hero-rotating-word.js. Todas
+// concuerdan en género con "el" (no "la") para que la oración siga
+// leyéndose bien sin importar cuál esté tipeada.
+const rotatingWords = ["mejor trabajo", "mejor equipo", "socio digital ideal", "software que necesitas", "aliado tecnológico correcto"];
 ---
 
 
@@ -39,7 +45,12 @@ const columnRight = [
       <h1
         class="max-w-[560px] font-display text-[38px] leading-[1.12] tracking-[-1.2px] sm:text-[52px] sm:tracking-[-2px] lg:w-[610px] lg:max-w-none lg:text-[78px] lg:leading-[1.05] lg:tracking-[-4px]"
       >
-        <span class="text-slate">Tu próxima gran idea merece el </span><span class="font-bold text-navy">mejor trabajo</span>
+        <span class="text-slate">Tu próxima gran idea merece el </span><span
+          class="font-bold text-navy"
+          data-hero-rotating-word
+          data-words={JSON.stringify(rotatingWords)}
+          >{rotatingWords[0]}</span
+        >
       </h1>
       <img
         data-hero-underline
@@ -52,16 +63,14 @@ const columnRight = [
       />
     </div>
 
-    <div class="flex flex-col items-start gap-8 lg:gap-10">
-      <p
-        data-hero-description
-        class="max-w-[560px] font-body text-[16px] leading-[1.5] tracking-[-0.3px] text-ink sm:text-[18px] sm:tracking-[-0.5px] lg:max-w-[486px]"
-      >
-        Detrás de cada empresa que crece hay una decisión valiente: apostar por la tecnología correcta. Nosotros la
-        construimos contigo — desde la primera línea de código hasta el producto que tus usuarios no van a querer
-        soltar.
-      </p>
+    <div class="flex flex-col items-start gap-4 sm:flex-row sm:gap-4 lg:gap-5">
       <a href="#contacto" class="btn btn--primary">Descubre cómo lo hicimos</a>
+      <a href="#contacto" class="btn btn--secondary">
+        Contacte con nosotros
+        <svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
+          <path d="M222.37,158.46l-47.11-21.11-.12-.06a16,16,0,0,0-15.17,1.4,8.12,8.12,0,0,0-.75.56L134.87,160c-15.42-7.49-31.34-23.29-38.83-38.51l20.78-24.71c.2-.25.39-.5.57-.76a16,16,0,0,0,1.32-15.06l0-.13L97.54,33.63a16,16,0,0,0-16.62-9.52A56.26,56.26,0,0,0,32,80c0,80.47,65.53,146,146,146a56.26,56.26,0,0,0,55.89-48.92A16,16,0,0,0,222.37,158.46Z" />
+        </svg>
+      </a>
     </div>
   </div>
 

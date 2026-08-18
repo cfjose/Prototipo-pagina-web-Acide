@@ -135,8 +135,15 @@ const setupTypewriter = (el) => {
 };
 
 export function initTextType() {
-  const headings = document.querySelectorAll("h1, h2");
+  // [data-type-heading]: mismo tipeo que h1/h2, para el puñado de casos
+  // que no son h1/h2 pero lo piden igual (ej. el título de
+  // ServicesShowcase, que es un <p> por diseño).
+  const headings = document.querySelectorAll("h1, h2, [data-type-heading]");
   headings.forEach((el) => {
+    // El H1 del Hero (home) tiene su propio efecto rotativo en loop
+    // (ver hero-rotating-word.js) — si este script también lo tipeara,
+    // los dos competirían por el mismo texto.
+    if (el.querySelector("[data-hero-rotating-word]")) return;
     const hasAccent = el.matches(".text-navy, .text-teal") || !!el.querySelector(".text-navy, .text-teal");
     if (!hasAccent) return;
     setupTypewriter(el);

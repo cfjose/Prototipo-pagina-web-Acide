@@ -36,11 +36,12 @@
     entre estado "default" y "floating" no mueva contenido) — este
     padding compensa el espacio que dejaba de ocupar en el flujo
     normal. Valor = alto real del header renderizado (medido en
-    navegador), no un número inventado.
+    navegador), no un número inventado — recalculado a 76px cuando el
+    padding vertical del header bajó de py-5 (20px) a py-4 (16px).
   */
   @media (min-width: 1280px) {
     main {
-      padding-top: 84px;
+      padding-top: 76px;
     }
   }
 }
@@ -60,13 +61,20 @@
   }
 
   /*
-    Ritmo vertical entre secciones: en Figma cada sección deja exactamente
-    200px de aire hasta la siguiente (100px de cada lado). El Hero es la
-    excepción — mide 100svh justo, así que la sección de abajo se come
-    los 200px enteros como padding-top (ver Hero.astro / DigitalToday.astro).
+    Ritmo vertical entre secciones: 160px de aire hasta la siguiente
+    (80px de cada lado) — a pedido, antes eran 200px (100 de cada
+    lado). El Hero es la excepción — mide 100svh justo, así que la
+    sección de abajo se come los 160px enteros como padding-top (ver
+    Hero.astro / DigitalToday.astro). La última sección de cada página
+    (antes del footer) también se come el gap entero como
+    padding-bottom, porque el footer no aporta su propio margen arriba
+    — ver el override lg:pb-[160px] puntual en cada una de esas
+    secciones (ResultsCarousel, ServicePortfolio, ProjectsList,
+    CaseStudyResults, AboutUnique, ContactForm, ArticleRelated,
+    BlogArticles).
   */
   .section-y {
-    @apply py-16 lg:pt-[100px] lg:pb-[100px];
+    @apply py-16 lg:pt-[80px] lg:pb-[80px];
   }
 
   .btn {
@@ -77,6 +85,12 @@
   }
   .btn--primary:hover {
     @apply -translate-y-0.5 shadow-lg shadow-teal/25;
+  }
+  .btn--secondary {
+    @apply bg-white text-navy ring-1 ring-inset ring-navy/15;
+  }
+  .btn--secondary:hover {
+    @apply -translate-y-0.5 bg-navy/5;
   }
 
   .nav-link {

@@ -1,0 +1,28 @@
+---
+/*
+  Sección simple (Figma node 401:789): un solo párrafo. El BLOQUE de
+  texto va anclado al lado derecho del wrapper de 1312px (así está en
+  el Figma: dentro de un contenedor de 1615px sobre un lienzo de
+  1920px), pero el TEXTO dentro de ese bloque va alineado a la
+  izquierda (a pedido, se lee mejor así que justificado a la derecha).
+
+  Usa el reveal palabra por palabra con blur (data-text-reveal, ver
+  text-reveal.js) — el mismo que el resto del sitio usa para textos
+  normales (sin acento navy/teal, así que no le toca el efecto de
+  tipeo de text-type.js).
+*/
+---
+
+<section class="wrapper section-y">
+  <p
+    data-text-reveal
+    data-reveal
+    class="ml-auto max-w-[600px] text-left font-body text-[18px] leading-[1.5] tracking-[-0.3px] text-ink sm:text-[22px] lg:max-w-[735px] lg:text-[26px] lg:tracking-[-0.5px]"
+  >
+    Diseñamos y desarrollamos experiencias digitales que transforman la manera en que tus usuarios interactúan con tu
+    marca. Desde aplicaciones móviles intuitivas hasta plataformas web de alto rendimiento, combinamos estrategia,
+    diseño UX/UI de clase mundial y tecnología de vanguardia para crear productos digitales que no solo se ven
+    extraordinarios — generan resultados medibles. Cada pixel, cada interacción y cada línea de código están
+    pensados para impulsar el crecimiento de tu negocio.
+  </p>
+</section>

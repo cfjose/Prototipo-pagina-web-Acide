@@ -67,12 +67,26 @@ const items = [
   <!-- Desktop: stage fijo, los 4 servicios se cruzan en el mismo lugar -->
   <div class="relative hidden lg:block" data-gallery-pin>
     <div data-gallery-pin-content>
-      <div class="grid w-full grid-cols-2 items-center gap-[92px]">
-        <div class="grid" data-gallery-text-stack>
-          {
-            items.map((item, i) => (
-              <div class="col-start-1 row-start-1 flex flex-col justify-center gap-16" data-gallery-text-item data-index={i}>
-                <div class="flex flex-col gap-8">
+      <!--
+        Reemplaza al botón "Ver cómo lo logramos" que tenía cada ítem:
+        ahora toda la fila (texto + imagen) es un solo link, con cursor
+        a medida ("Ver más información", ver [data-gallery-cursor] más
+        abajo) en vez de un botón visible — mismo mecanismo que el
+        cursor "Ver proyecto" de ResultsCarousel, pero en azul navy.
+        class="contents" para que el <a> no rompa el grid-cols-2 de
+        adentro (el href se actualiza en JS según el ítem activo).
+      -->
+      <a href={items[0].href || "#contacto"} class="contents" data-gallery-link aria-label="Ver más información">
+        <div class="grid w-full grid-cols-2 items-center gap-[92px]">
+          <div class="grid" data-gallery-text-stack>
+            {
+              items.map((item, i) => (
+                <div
+                  class="col-start-1 row-start-1 flex flex-col justify-center gap-8"
+                  data-gallery-text-item
+                  data-index={i}
+                  data-href={item.href || "#contacto"}
+                >
                   <span data-gallery-eyebrow class="font-body text-[16px] tracking-[-0.3px] text-secondary opacity-60">
                     {item.eyebrow}
                   </span>
@@ -87,24 +101,21 @@ const items = [
                     {item.description}
                   </p>
                 </div>
-                <a href={item.href || "#contacto"} class="btn btn--primary w-fit bg-navy shadow-navy/25">
-                  Ver cómo lo logramos
-                </a>
-              </div>
-            ))
-          }
-        </div>
+              ))
+            }
+          </div>
 
-        <div class="relative mx-auto aspect-[755/1024] h-[75vh] w-auto max-w-full overflow-hidden" data-gallery-media-stack>
-          {
-            items.map((item) => (
-              <div class="absolute inset-0" data-gallery-media-item>
-                <Image src={item.image} alt={item.alt} width={755} height={1024} class="h-full w-full object-cover" />
-              </div>
-            ))
-          }
+          <div class="relative mx-auto aspect-[755/1024] h-[75vh] w-auto max-w-full overflow-hidden" data-gallery-media-stack>
+            {
+              items.map((item) => (
+                <div class="absolute inset-0" data-gallery-media-item>
+                  <Image src={item.image} alt={item.alt} width={755} height={1024} class="h-full w-full object-cover" />
+                </div>
+              ))
+            }
+          </div>
         </div>
-      </div>
+      </a>
     </div>
 
     <!--
@@ -121,6 +132,23 @@ const items = [
           </div>
         ))
       }
+    </div>
+
+    <!--
+      Cursor a medida "Ver más información" sobre [data-gallery-link] —
+      mismo mecanismo que [data-results-cursor] en ResultsCarousel, pero
+      en azul navy en vez de blanco (acá el fondo es blanco, no una
+      imagen oscurecida).
+    -->
+    <div
+      class="pointer-events-none fixed top-0 left-0 z-50 hidden -translate-x-1/2 -translate-y-1/2 scale-75 items-center gap-3 font-body text-[26px] tracking-[-0.5px] text-navy opacity-0 lg:flex"
+      data-gallery-cursor
+      aria-hidden="true"
+    >
+      <span>Ver más información</span>
+      <svg width="28" height="28" viewBox="0 0 256 256" fill="currentColor">
+        <path d="M168,96v48a8,8,0,0,1-16,0V115.31l-50.34,50.35a8,8,0,0,1-11.32-11.32L140.69,104H112a8,8,0,0,1,0-16h48A8,8,0,0,1,168,96Zm64,32A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z" />
+      </svg>
     </div>
   </div>
 

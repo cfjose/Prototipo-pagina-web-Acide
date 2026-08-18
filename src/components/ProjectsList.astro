@@ -109,12 +109,14 @@ projects.forEach((project, i) => gridColumns[i % 3].push(project));
 
 <!--
   Espaciado: de la imagen del hero (ProjectsHero) a los filtros son
-  200px (el ritmo estándar del sitio, 100 de cada sección — ver
+  160px (el ritmo estándar del sitio, 80 de cada sección — ver
   .section-y en main.css), de los filtros al heading "Lo que hemos
   construido juntos" son 84px, y de ahí a la primera fila de
-  proyectos (y entre filas) 64px.
+  proyectos (y entre filas) 64px. Esta es también la última sección de
+  /proyectos antes del footer — lg:pb-[160px] se come el ritmo entero
+  como padding-bottom, mismo criterio que ResultsCarousel.astro.
 -->
-<section class="wrapper section-y">
+<section class="wrapper section-y lg:pb-[160px]">
   <div class="relative z-30 flex flex-wrap items-center justify-between gap-4" data-projects-filters>
     <div class="flex flex-wrap items-center gap-4">
       <span class="font-body text-[18px] tracking-[-0.5px] text-ink">Filtros:</span>

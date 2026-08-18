@@ -82,8 +82,19 @@ const steps = [
           rotada mide ~697-705px de ancho (más que los 672px de la
           imagen), así que con 110% el borde izquierdo quedaba cortado
           ~24px. 145% deja margen de sobra para cualquier ángulo.
+
+          Alto del recorte = pantalla completa (h-screen), no h-full de
+          este contenedor de 700px — si el recorte midiera lo mismo que
+          la caja visible, las imágenes "aparecen" desde el borde de esa
+          caja (que por el título de arriba no llega hasta abajo de la
+          sección) en vez de desde abajo de la sección entera, como en
+          Servicios (ServiceProcess.astro, que si tiene esa altura
+          completa disponible). top-1/2 -translate-y-1/2 mantiene el
+          centro del recorte en el mismo punto de siempre (el centro de
+          la caja de 700px) para que las tarjetas no se muevan de lugar
+          en reposo — solo crece el margen de sobra hacia arriba/abajo.
         -->
-        <div class="absolute top-0 left-1/2 h-full w-[145%] -translate-x-1/2 overflow-hidden">
+        <div class="absolute top-1/2 left-1/2 h-screen w-[145%] -translate-x-1/2 -translate-y-1/2 overflow-hidden">
           {
             steps.map((step, i) => (
               <div

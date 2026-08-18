@@ -46,11 +46,11 @@ const items = [
 ---
 
 <section class="wrapper section-y">
-  <div class="flex flex-col gap-5 lg:gap-6">
+  <div class="flex flex-col items-center gap-5 lg:gap-6">
     <h2
       data-text-reveal
       data-reveal
-      class="max-w-[600px] font-display text-[32px] leading-[1.1] tracking-[-1px] sm:text-[44px] sm:tracking-[-1.4px] lg:max-w-[732px] lg:text-[66px] lg:tracking-[-1.98px]"
+      class="mx-auto max-w-[600px] text-center font-display text-[32px] leading-[1.1] tracking-[-1px] sm:text-[44px] sm:tracking-[-1.4px] lg:max-w-[732px] lg:text-[66px] lg:tracking-[-1.98px]"
     >
       <span class="text-secondary">Hacemos consultoría que </span><span class="text-teal">transforma equipos</span>
     </h2>
@@ -65,6 +65,7 @@ const items = [
           </div>
         ))
       }
+      <canvas class="pointer-events-none absolute inset-0 z-10 h-full w-full" data-service-image-canvas aria-hidden="true"></canvas>
     </div>
 
     <div class="flex flex-col lg:w-[477px] lg:shrink-0">

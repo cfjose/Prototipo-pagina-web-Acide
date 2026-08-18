@@ -44,7 +44,13 @@ const projects = [
 ];
 ---
 
-<section class="section-y overflow-hidden">
+<!--
+  lg:pb-[160px]: última sección de /servicios antes del footer — el
+  footer no aporta su propio margen arriba, así que esta sección se
+  come el ritmo de 160px entero como padding-bottom (mismo criterio
+  que el Hero con el padding-top, ver .section-y en main.css).
+-->
+<section class="section-y overflow-hidden lg:pb-[160px]">
   <!-- Mobile/tablet: el título vive afuera del pin, en flujo normal -->
   <div class="wrapper lg:hidden">
     <h2

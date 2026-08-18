@@ -18,7 +18,18 @@ import Footer from "../components/Footer.astro";
     el alto fijo (no min-height — flex-grow necesita un alto DEFINIDO
     para poder repartir "lo que sobra" entre Header y Hero) es lg: only.
   -->
-  <div class="flex flex-col lg:h-[100svh]">
+  <!--
+    xl:pt-[76px] (mismo valor que el padding-top de <main>, ver main.css
+    — recalculado cuando el header bajó de py-5 a py-4) — el Header pasa
+    a fixed/fuera-de-flujo justo en xl (ver Header.astro), así que sin
+    este padding el Hero arranca en y=0, DETRÁS del header: no se ve
+    roto a simple vista porque el título está centrado más abajo, pero
+    sí tapaba el tramo más opaco del degradado blanco de arriba de la
+    galería (bug reportado: "no se ve el degradado arriba, solo abajo")
+    — con este padding el degradado completo queda debajo del header,
+    visible como el de abajo.
+  -->
+  <div class="flex flex-col lg:h-[100svh] xl:pt-[76px]">
     <Header />
     <Hero />
   </div>

@@ -6,11 +6,11 @@ import visionImage from "../assets/img/mission-vision/vision.png";
 /*
   "Nuestra misión" / "Nuestra visión" — mismo patrón que "El resultado
   que logramos" del caso de estudio (case-study-results.js): sección
-  fija (pin), texto a la izquierda + imagen a la derecha, el scroll
-  cruza entre los 2 estados con la misma "cinta continua" (el texto
-  que sale sigue subiendo/bajando mientras se desvanece, el que entra
-  viene del lado contrario), imagen con cross-fade + zoom, barra de
-  progreso de 2 segmentos abajo.
+  fija (pin), texto a la izquierda + imagen a la derecha, el texto sube
+  de forma continua atado al scroll (no un salto discreto) y "emerge"
+  desde la posición real de la barra de progreso — ver
+  about-mission-vision.js. Imagen con cross-fade + zoom (sin cambios),
+  barra de progreso de 2 segmentos abajo.
 
   El Figma solo trae el copy de "Nuestra misión" (título+descripción+
   imagen) — no hay un estado de "visión" en el archivo. El texto de

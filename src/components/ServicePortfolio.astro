@@ -13,10 +13,10 @@ import landingPageImage from "../assets/img/sitios-web/portfolio/landing-page.pn
   tono que el resto del sitio, para que las 4 tengan algo que mostrar
   en el hover. Reemplazar cuando haya contenido real.
 
-  Reveal: cada imagen usa [data-reveal-toggle] (no el [data-reveal] del
-  resto del sitio) — fade + sube desde abajo, pero a diferencia del
-  resto se re-anima cada vez que vuelve a entrar en viewport en
-  cualquier dirección de scroll, no solo una vez (ver scroll-reveal.js).
+  Reveal: cada imagen usa [data-reveal], el mismo reveal de una sola vez
+  que el resto del sitio (fade + sube desde abajo). Antes usaba
+  [data-reveal-toggle] (la variante reversible), pero se sacó de acá por
+  el mismo motivo que en AboutUnique.astro — ver scroll-reveal.js.
 
   La descripción usa el estilo "Descripciones - 26px" del Figma
   (Satoshi Medium, 26px, tracking -0.5px) en desktop.
@@ -63,7 +63,11 @@ const leftColumn = [items[0], items[1]];
 const rightColumn = [items[2], items[3]];
 ---
 
-<section class="wrapper section-y">
+<!--
+  lg:pb-[160px]: última sección de /servicios/sitios-web antes del
+  footer — ver el mismo criterio en ResultsCarousel.astro.
+-->
+<section class="wrapper section-y lg:pb-[160px]">
   <h2
     data-text-reveal
     data-reveal
@@ -78,7 +82,7 @@ const rightColumn = [items[2], items[3]];
         <div class="flex flex-col gap-16 sm:gap-32">
           {column.map((item) => (
             <div class="group flex flex-col items-start gap-6">
-              <div class="relative w-full overflow-hidden" style={`aspect-ratio: ${item.aspect};`} data-reveal-toggle>
+              <div class="relative w-full overflow-hidden" style={`aspect-ratio: ${item.aspect};`} data-reveal>
                 <Image
                   src={item.image}
                   alt={item.alt}
