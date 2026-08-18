@@ -2,47 +2,44 @@
 import quotesIcon from "../assets/img/testimonials/quotes-vector.svg";
 
 /*
-  Solo el testimonio de Alejandra Martínez está escrito en Figma (el resto
-  de la sección se muestra con los 4 puntos de paginación, pero un solo
-  caso redactado). Los otros 3 son copy modelo — mismo tono, largo similar
-  para que el crossfade no salte de tamaño — usando nombres de clientes
-  reales que ya aparecen en la grilla de logos más abajo (Aurora, Cloudox,
-  Nexus). Reemplazar por testimonios reales cuando estén.
-
-  Los 4 testimonios son video (no foto) — pesan demasiado para pasar por
-  el pipeline de imágenes de Astro/Vite, así que viven en public/ y se
-  referencian por ruta directa en vez de import. El comportamiento
-  (autoplay muteado al entrar en viewport, click para pausar/reanudar,
-  cursor custom + overlay en hover) vive en testimonial-carousel.js.
+  Videos en Google Drive (archivos demasiado pesados para Git LFS en
+  local). Se embebe la vista previa: un <video src="drive..."> no
+  reproduce bien archivos de +100 MB (Drive interpone el aviso de
+  virus). Compartir como "cualquiera con el enlace".
 */
+const drivePreview = (url) => {
+  const id = url.match(/\/d\/([^/]+)/)?.[1] ?? url.match(/[?&]id=([^&]+)/)?.[1];
+  return id ? `https://drive.google.com/file/d/${id}/preview` : url;
+};
+
 const testimonials = [
   {
     quote:
       "Llegamos a Acide con una idea a medio armar y nos devolvieron un producto que superó lo que imaginábamos. Desde el día uno entendieron lo que necesitábamos y nos acompañaron sin soltar el timón. Profesionales de verdad.",
     name: "Alejandra Martínez",
     role: "Gerente en TechGroup",
-    video: "/videos/testimonials/alejandra.mp4",
+    video: drivePreview("https://drive.google.com/file/d/1cpz4TVK6tbXKmxxpRr0mXn7d1VYw0-xj/view?usp=sharing"),
   },
   {
     quote:
       "Necesitábamos una app que no se sintiera como una app corporativa más. Acide entendió el producto casi mejor que nosotros y lo tradujo en algo que nuestros usuarios realmente disfrutan usar.",
     name: "Rodrigo Fernández",
     role: "CEO en Aurora",
-    video: "/videos/testimonials/rodrigo.mp4",
+    video: drivePreview("https://drive.google.com/file/d/1nWU5_1x1PFSItCiA5Ubhp9YKq1g9LFHt/view?usp=sharing"),
   },
   {
     quote:
       "El equipo de Acide se metió de lleno en nuestra estrategia de marketing digital — no vinieron con una fórmula genérica, armaron algo a medida y los resultados se notaron en el primer trimestre.",
     name: "Camila Torres",
     role: "Directora de Marketing en Cloudox",
-    video: "/videos/testimonials/camila.mp4",
+    video: drivePreview("https://drive.google.com/file/d/1sT5ISTln4oFxKNmzbkNzhUB54fSHE1y7/view?usp=sharing"),
   },
   {
     quote:
       "La auditoría que nos hicieron encontró problemas que ni sabíamos que teníamos. Con ese diagnóstico pudimos priorizar en serio, en vez de seguir apagando incendios.",
     name: "Martín Silva",
     role: "Fundador de Nexus",
-    video: "/videos/testimonials/martin.mp4",
+    video: drivePreview("https://drive.google.com/file/d/1ufV3B4CwKicexigqMsytejrFpMLfqPe6/view?usp=sharing"),
   },
 ];
 ---
@@ -54,41 +51,28 @@ const testimonials = [
     </h2>
 
     <div class="mt-12 flex flex-col gap-10 lg:mt-16 lg:flex-row lg:items-center lg:gap-16">
-      <div class="relative aspect-[527/297] w-full overflow-hidden lg:flex-1" data-reveal-scale data-testimonial-video-group>
+      <div class="relative aspect-[527/297] w-full overflow-hidden rounded-[12px] lg:flex-1" data-reveal-scale data-testimonial-video-group>
         {
           testimonials.map((t, i) => (
             <div
-              class="absolute inset-0 cursor-none"
+              class="absolute inset-0"
               data-testimonial-image
               data-testimonial-video-wrapper
               style={i === 0 ? "opacity: 1; z-index: 2;" : "opacity: 0; z-index: 1; pointer-events: none;"}
             >
-              <video
-                src={t.video}
+              <iframe
                 data-testimonial-video
-                class="h-full w-full object-cover"
-                muted
-                loop
-                playsinline
-                preload="metadata"
-                aria-label={`Testimonio en video de ${t.name}`}
-              />
-              <div
-                class="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-300 ease-[var(--ease-default)]"
-                data-testimonial-video-overlay
+                data-src={t.video}
+                src={i === 0 ? t.video : undefined}
+                title={`Testimonio en video de ${t.name}`}
+                allow="autoplay"
+                allowfullscreen
+                class="absolute left-0 top-[-12%] h-[124%] w-full border-0"
               />
             </div>
           ))
         }
 
-        <div
-          class="pointer-events-none fixed z-50 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-2 bg-white px-4 py-2 font-body text-[14px] tracking-[-0.3px] text-ink"
-          data-testimonial-cursor
-        >
-          <svg data-testimonial-cursor-icon-play width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
-          <svg data-testimonial-cursor-icon-pause width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="hidden"><path d="M6 5h4v14H6zM14 5h4v14h-4z" /></svg>
-          <span data-testimonial-cursor-text>Pausa</span>
-        </div>
       </div>
 
       <div class="flex flex-col items-start gap-6 lg:w-[500px] lg:shrink-0">

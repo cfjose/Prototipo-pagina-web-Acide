@@ -38,28 +38,27 @@ export function initTestimonialCarousel() {
   const quoteWords = [...quotes].map((el) => splitWords(el));
 
   /*
-    Video: autoplay muteado solo mientras la sección de testimonios está
-    en pantalla (IntersectionObserver) y solo el video del testimonio
-    activo — el resto queda pausado en 0. El click sobre el video activo
-    alterna play/pausa a mano; como goTo() no se vuelve a llamar mientras
-    el índice no cambia, esa pausa manual se mantiene hasta que el
-    usuario avanza al siguiente testimonio (scroll o click en la barra).
+    Videos embebidos de Drive (iframe). No hay API play/pause: al
+    activar un testimonio se carga su preview y al salir se descarga
+    para que no sigan 4 reproductores a la vez.
   */
-  const playActiveVideo = () => {
-    const video = videos[current];
-    if (!video || !sectionInView) return;
-    video.play().catch(() => {});
+  const loadActiveEmbed = () => {
+    videos.forEach((frame, i) => {
+      const src = frame.dataset.src;
+      if (!src) return;
+      if (i === current && sectionInView) {
+        if (!frame.getAttribute("src")) frame.src = src;
+      } else if (frame.getAttribute("src")) {
+        frame.removeAttribute("src");
+      }
+    });
   };
 
   if (videos.length) {
     const observer = new IntersectionObserver(
       ([entry]) => {
         sectionInView = entry.isIntersecting;
-        if (sectionInView) {
-          playActiveVideo();
-        } else {
-          videos.forEach((v) => v.pause());
-        }
+        loadActiveEmbed();
       },
       { threshold: 0.35 },
     );
@@ -111,12 +110,13 @@ export function initTestimonialCarousel() {
       }
     });
 
-    videos.forEach((v, i) => {
+    videos.forEach((frame, i) => {
+      const src = frame.dataset.src;
+      if (!src) return;
       if (i === index) {
-        v.currentTime = 0;
-        playActiveVideo();
-      } else {
-        v.pause();
+        if (sectionInView) frame.src = src;
+      } else if (frame.getAttribute("src")) {
+        frame.removeAttribute("src");
       }
     });
 
@@ -143,62 +143,6 @@ export function initTestimonialCarousel() {
         goTo(i);
         updateBars((i + 0.5) / count);
       }
-    });
-  });
-
-  /*
-    Click sobre el video activo alterna play/pausa. Hover: se apaga el
-    cursor nativo (cursor-none en el wrapper, ver Testimonials.astro) y en
-    su lugar sigue al mouse una etiqueta "Play"/"Pausa" con su ícono, más
-    un overlay semitransparente que oscurece el video mientras está en
-    hover — un solo cursor/overlay reutilizado para los 4 videos porque
-    solo uno es interactivo (pointer-events) a la vez.
-  */
-  const cursor = document.querySelector("[data-testimonial-cursor]");
-  const cursorText = document.querySelector("[data-testimonial-cursor-text]");
-  const cursorPlayIcon = document.querySelector("[data-testimonial-cursor-icon-play]");
-  const cursorPauseIcon = document.querySelector("[data-testimonial-cursor-icon-pause]");
-  const wrappers = document.querySelectorAll("[data-testimonial-video-wrapper]");
-
-  const updateCursorState = (video) => {
-    if (!cursor) return;
-    const paused = video.paused;
-    cursorText.textContent = paused ? "Play" : "Pausa";
-    cursorPlayIcon.classList.toggle("hidden", !paused);
-    cursorPauseIcon.classList.toggle("hidden", paused);
-  };
-
-  wrappers.forEach((wrapper, i) => {
-    const video = videos[i];
-    const overlay = wrapper.querySelector("[data-testimonial-video-overlay]");
-    if (!video) return;
-
-    wrapper.addEventListener("click", () => {
-      if (video.paused) {
-        video.play().catch(() => {});
-      } else {
-        video.pause();
-      }
-      updateCursorState(video);
-    });
-
-    wrapper.addEventListener("mouseenter", () => {
-      if (cursor) cursor.classList.remove("hidden");
-      if (cursor) cursor.classList.add("flex");
-      if (overlay) overlay.classList.replace("bg-black/0", "bg-black/25");
-      updateCursorState(video);
-    });
-
-    wrapper.addEventListener("mousemove", (e) => {
-      if (!cursor) return;
-      cursor.style.left = `${e.clientX}px`;
-      cursor.style.top = `${e.clientY}px`;
-    });
-
-    wrapper.addEventListener("mouseleave", () => {
-      if (cursor) cursor.classList.add("hidden");
-      if (cursor) cursor.classList.remove("flex");
-      if (overlay) overlay.classList.replace("bg-black/25", "bg-black/0");
     });
   });
 
