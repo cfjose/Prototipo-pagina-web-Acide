@@ -20,7 +20,7 @@ const TYPE_MS = 45;
 const DELETE_MS = 28;
 const HOLD_MS = 1800;
 const GAP_MS = 300;
-const CARET_HTML = `<span class="text-type-caret" style="background-color:var(--color-navy)"></span>`;
+const CARET_HTML = `<span class="text-type-caret" style="color:var(--color-navy)"></span>`;
 
 export function initHeroRotatingWord() {
   const el = document.querySelector("[data-hero-rotating-word]");

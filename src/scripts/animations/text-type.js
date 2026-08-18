@@ -83,7 +83,7 @@ const setupTypewriter = (el) => {
 
   const lastAccent = [...segments].reverse().find((seg) => seg.accent)?.accent ?? "navy";
   const caretColor = ACCENT_COLORS[lastAccent];
-  const caretHTML = `<span class="text-type-caret" style="background-color:${caretColor}"></span>`;
+  const caretHTML = `<span class="text-type-caret" style="color:${caretColor}"></span>`;
 
   if (prefersReducedMotion()) {
     renderSegments(el, segments, totalLength, "");
